@@ -147,13 +147,14 @@ header .container {
     display: inline-block;
     width: 6px;
     height: 6px;
-    position: absolute;
-    top: 10px;
-    right: -5px;
     background-color: white;
     border-radius: 50%;
     box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.7);
     animation: sparkle 2s infinite;
+    margin: 0 2px;
+    vertical-align: super;
+    position: relative;
+    top: -8px;
 }
 
 .logo-text .leads {
@@ -895,9 +896,9 @@ footer::before {
     }
     
     .spark-icon {
-        top: 8px;
         width: 5px;
         height: 5px;
+        top: -6px;
     }
 }
 
@@ -944,10 +945,9 @@ footer::before {
     }
     
     .spark-icon {
-        top: 6px;
         width: 4px;
         height: 4px;
-        right: -4px;
+        top: -5px;
     }
 }
 
