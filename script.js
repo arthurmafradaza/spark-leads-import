@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmationFiles = document.getElementById('confirmationFiles');
     const progressSteps = document.querySelectorAll('.progress-step');
     const clientsUploadGroup = document.getElementById('clientsUploadGroup');
+    const progressBar = document.querySelector('.progress-bar');
     
     // Upload areas
     const policiesUploadArea = document.getElementById('policiesUploadArea');
@@ -39,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Estado atual
     let currentStep = 1;
     let selectedImportType = null;
+    let totalSteps = 4; // Padrão para "Importar Ambos"
     
     // Arquivos carregados
     let uploadedFiles = {
@@ -60,12 +62,67 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Ajustar a barra de progresso com base no tipo de importação
+    function adjustProgressBar(importType) {
+        // Limpar a barra de progresso existente
+        progressBar.innerHTML = '';
+        
+        // Configurar etapas com base no tipo de importação
+        let steps = [];
+        
+        if (importType === 'multiple-policies') {
+            steps = [
+                { number: 1, title: 'Tipo de Importação' },
+                { number: 2, title: 'Apólices/Clientes' },
+                { number: 3, title: 'Confirmação' }
+            ];
+            totalSteps = 3;
+        } else if (importType === 'multiple-agents') {
+            steps = [
+                { number: 1, title: 'Tipo de Importação' },
+                { number: 2, title: 'Agentes' },
+                { number: 3, title: 'Confirmação' }
+            ];
+            totalSteps = 3;
+        } else if (importType === 'import-both') {
+            steps = [
+                { number: 1, title: 'Tipo de Importação' },
+                { number: 2, title: 'Apólices/Clientes' },
+                { number: 3, title: 'Agentes' },
+                { number: 4, title: 'Confirmação' }
+            ];
+            totalSteps = 4;
+        }
+        
+        // Criar novas etapas de progresso
+        steps.forEach((step, index) => {
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'progress-step' + (index === 0 ? ' active' : '');
+            
+            const stepNumber = document.createElement('div');
+            stepNumber.className = 'step-number';
+            stepNumber.textContent = step.number;
+            
+            const stepTitle = document.createElement('div');
+            stepTitle.className = 'step-title';
+            stepTitle.textContent = step.title;
+            
+            stepDiv.appendChild(stepNumber);
+            stepDiv.appendChild(stepTitle);
+            
+            progressBar.appendChild(stepDiv);
+        });
+    }
+    
     // Função para avançar para a próxima etapa com base no tipo de importação
     function goToNextStep() {
         if (!selectedImportType) {
             alert('Por favor, selecione um tipo de importação.');
             return;
         }
+        
+        // Ajustar a barra de progresso para o tipo de importação selecionado
+        adjustProgressBar(selectedImportType);
         
         // Configurar próxima etapa com base no tipo de importação
         if (selectedImportType === 'multiple-policies') {
@@ -80,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
             importTypeWrapper.parentElement.style.display = 'none';
             updateStep(2);
             // Mudar o texto do botão próximo
-            nextBtn.innerHTML = 'Finalizar <i class="fas fa-check"></i>';
+            nextBtn.innerHTML = 'Próximo <i class="fas fa-arrow-right"></i>';
         } else if (selectedImportType === 'import-both') {
             // Mostrar etapa de apólices e clientes
             policiesStep.style.display = 'block';
@@ -234,6 +291,9 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.innerHTML = 'Próximo <i class="fas fa-arrow-right"></i>';
         nextBtn.style.display = 'flex';
         
+        // Restaurar barra de progresso padrão com 4 etapas
+        adjustProgressBar('import-both');
+        
         // Atualizar indicadores de progresso
         updateStep(1);
     }
@@ -314,6 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
         currentStep = step;
         
         // Atualizar indicadores de progresso
+        const progressSteps = document.querySelectorAll('.progress-step');
         progressSteps.forEach((stepElement, index) => {
             stepElement.classList.remove('active', 'completed');
             
@@ -402,12 +463,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // Processar conclusão
-                alert('Importação concluída com sucesso!');
-                console.log('Dados importados:', uploadedFiles);
+                // Preparar confirmação
+                prepareConfirmation();
                 
-                // Resetar formulário após conclusão
-                resetForm();
+                // Mostrar etapa de confirmação
+                agentsStep.style.display = 'none';
+                confirmationStep.style.display = 'block';
+                nextBtn.style.display = 'none';
+                updateStep(3);
             } else if (selectedImportType === 'import-both') {
                 // Verificar se arquivos de apólices e clientes foram carregados
                 if (!uploadedFiles.policies) {
@@ -472,6 +535,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 policiesStep.style.display = 'block';
                 nextBtn.style.display = 'flex';
                 updateStep(2);
+            } else if (selectedImportType === 'multiple-agents') {
+                // Voltar para etapa 2
+                confirmationStep.style.display = 'none';
+                agentsStep.style.display = 'block';
+                nextBtn.style.display = 'flex';
+                updateStep(2);
             } else if (selectedImportType === 'import-both') {
                 // Limpar upload de agentes
                 resetUploads('agents');
@@ -501,4 +570,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Resetar o formulário após o envio
         resetForm();
     });
+    
+    // Inicializar a barra de progresso padrão
+    adjustProgressBar('import-both');
 }); 
