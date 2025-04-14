@@ -129,6 +129,20 @@ header .container {
     border-color: var(--success);
 }
 
+.progress-step[style*="width: 100%"] {
+    display: flex;
+    justify-content: center;
+}
+
+.progress-step[style*="width: 100%"] .step-number {
+    margin-bottom: 10px;
+}
+
+.progress-step[style*="width: 100%"] .step-title {
+    font-weight: 600;
+    font-size: 16px;
+}
+
 .form-container {
     display: flex;
     margin-bottom: 40px;

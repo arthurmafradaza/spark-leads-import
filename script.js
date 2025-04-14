@@ -62,6 +62,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Inicializar apenas o passo 1 centralizado
+    function initSingleStepProgressBar() {
+        // Limpar a barra de progresso existente
+        progressBar.innerHTML = '';
+        
+        // Criar elemento centralizado
+        const stepDiv = document.createElement('div');
+        stepDiv.className = 'progress-step active';
+        stepDiv.style.width = '100%'; // Fazer ocupar toda a largura para centralizar
+        stepDiv.style.justifyContent = 'center'; // Centralizar conteúdo
+        
+        const stepNumber = document.createElement('div');
+        stepNumber.className = 'step-number';
+        stepNumber.textContent = '1';
+        
+        const stepTitle = document.createElement('div');
+        stepTitle.className = 'step-title';
+        stepTitle.textContent = 'Tipo de Importação';
+        
+        stepDiv.appendChild(stepNumber);
+        stepDiv.appendChild(stepTitle);
+        
+        progressBar.appendChild(stepDiv);
+    }
+    
     // Ajustar a barra de progresso com base no tipo de importação
     function adjustProgressBar(importType) {
         // Limpar a barra de progresso existente
@@ -94,10 +119,15 @@ document.addEventListener('DOMContentLoaded', function() {
             totalSteps = 4;
         }
         
+        // Remover o estilo de centralização
+        progressBar.style.justifyContent = '';
+        
         // Criar novas etapas de progresso
         steps.forEach((step, index) => {
             const stepDiv = document.createElement('div');
             stepDiv.className = 'progress-step' + (index === 0 ? ' active' : '');
+            // Remover width 100% para cada etapa ter a mesma largura
+            stepDiv.style.width = '';
             
             const stepNumber = document.createElement('div');
             stepNumber.className = 'step-number';
@@ -291,8 +321,8 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.innerHTML = 'Próximo <i class="fas fa-arrow-right"></i>';
         nextBtn.style.display = 'flex';
         
-        // Restaurar barra de progresso padrão com 4 etapas
-        adjustProgressBar('import-both');
+        // Restaurar barra de progresso inicial com apenas 1 passo
+        initSingleStepProgressBar();
         
         // Atualizar indicadores de progresso
         updateStep(1);
@@ -526,7 +556,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 nextBtn.innerHTML = 'Próximo <i class="fas fa-arrow-right"></i>';
             }
             
+            // Restaurar a visão inicial da barra de progresso
+            initSingleStepProgressBar();
+            
+            // Restaurar a tela inicial
             importTypeWrapper.parentElement.style.display = 'block';
+            selectedImportType = null;
+            importType.value = '';
             updateStep(1);
         } else if (currentStep === 3) {
             if (selectedImportType === 'multiple-policies') {
@@ -571,6 +607,6 @@ document.addEventListener('DOMContentLoaded', function() {
         resetForm();
     });
     
-    // Inicializar a barra de progresso padrão
-    adjustProgressBar('import-both');
+    // Inicializar a barra de progresso com apenas o primeiro passo
+    initSingleStepProgressBar();
 }); 
