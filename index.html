@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spark Leads - Importação</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Biblioteca SheetJS para conversão de planilhas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Spark Leads</h1>
+            </div>
+        </div>
+    </header>
+    
+    <div class="main-content">
+        <div class="container">
+            <div class="page-title">
+                <h2>Adicione seus clientes e agentes!</h2>
+                <p>Importe seus dados do Five Rings Portal para começar</p>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-step active">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Tipo de Importação</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Apólices</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Clientes</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Agentes</div>
+                </div>
+            </div>
+            
+            <div class="form-container">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="importType">Selecione um tipo de importação *</label>
+                        <div class="select-wrapper" id="importTypeWrapper">
+                            <input type="text" class="form-control" id="importType" placeholder="Clique aqui para selecionar" readonly>
+                            <div class="select-options">
+                                <div class="select-option" data-value="multiple-policies">Múltiplas Apólices (Five Rings)</div>
+                                <div class="select-option" data-value="multiple-agents">Múltiplos Agentes (Five Rings)</div>
+                                <div class="select-option" data-value="single-policy" disabled>Apólice Única (Indisponível)</div>
+                                <div class="select-option" data-value="single-agent" disabled>Agente Único (Indisponível)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Policies (Initially Hidden) -->
+                    <div id="policiesStep" style="display: none;">
+                        <div class="form-group">
+                            <label for="policiesUpload">Apólices *</label>
+                            <div class="upload-area" id="policiesUploadArea">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="upload-text">Inserir arquivo aqui</div>
+                                <div class="upload-help">Importe seu arquivo de apólices do Five Rings Portal</div>
+                                <div class="file-format-options">
+                                    <div class="format-option">
+                                        <input type="checkbox" id="convertPoliciesCSV" checked>
+                                        <label for="convertPoliciesCSV">Converter para CSV</label>
+                                    </div>
+                                </div>
+                                <div class="upload-btn">Escolher arquivo</div>
+                                <input type="file" id="policiesUpload" style="display: none;" accept=".xlsx,.xls,.csv">
+                                <div class="file-info" id="policiesFileInfo"></div>
+                                <div class="status" id="policiesStatus"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Clients (Initially Hidden) -->
+                    <div id="clientsStep" style="display: none;">
+                        <div class="form-group">
+                            <label for="clientsUpload">Upload de Clientes *</label>
+                            <div class="upload-area" id="clientsUploadArea">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="upload-text">Inserir arquivo aqui</div>
+                                <div class="upload-help">Importe seu arquivo de clientes do Five Rings Portal</div>
+                                <div class="file-format-options">
+                                    <div class="format-option">
+                                        <input type="checkbox" id="convertClientsCSV" checked>
+                                        <label for="convertClientsCSV">Converter para CSV</label>
+                                    </div>
+                                </div>
+                                <div class="upload-btn">Escolher arquivo</div>
+                                <input type="file" id="clientsUpload" style="display: none;" accept=".xlsx,.xls,.csv">
+                                <div class="file-info" id="clientsFileInfo"></div>
+                                <div class="status" id="clientsStatus"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Agents (Initially Hidden) -->
+                    <div id="agentsStep" style="display: none;">
+                        <div class="form-group">
+                            <label for="agentsUpload">Upload de Agentes *</label>
+                            <div class="upload-area" id="agentsUploadArea">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="upload-text">Inserir arquivo aqui</div>
+                                <div class="upload-help">Importe seu arquivo de agentes do Five Rings Portal</div>
+                                <div class="file-format-options">
+                                    <div class="format-option">
+                                        <input type="checkbox" id="convertAgentsCSV" checked>
+                                        <label for="convertAgentsCSV">Converter para CSV</label>
+                                    </div>
+                                </div>
+                                <div class="upload-btn">Escolher arquivo</div>
+                                <input type="file" id="agentsUpload" style="display: none;" accept=".xlsx,.xls,.csv">
+                                <div class="file-info" id="agentsFileInfo"></div>
+                                <div class="status" id="agentsStatus"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="navigation">
+                        <button class="btn btn-outline" id="prevBtn" style="display: none;">
+                            <i class="fas fa-arrow-left"></i> Anterior
+                        </button>
+                        <button class="btn btn-primary btn-next" id="nextBtn">
+                            Próximo <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-box">
+                        <div class="help-title">
+                            <i class="fas fa-info-circle"></i> Artigos Úteis:
+                        </div>
+                        <div class="help-links">
+                            <a href="https://www.sparkleads.pro/forms-5401" target="_blank">
+                                <i class="fas fa-video"></i> Como Importar Agentes
+                            </a>
+                            <a href="https://www.sparkleads.pro/forms-5401-9228" target="_blank">
+                                <i class="fas fa-video"></i> Como Importar Clientes
+                            </a>
+                        </div>
+                        <a href="https://portal.fiveringsfinancial.com/account/login" class="portal-btn" target="_blank">
+                            <i class="fas fa-globe"></i> Acesso ao Five Rings Portal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            &copy; 2025 Spark Leads. Todos os direitos reservados.
+        </div>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html> 
