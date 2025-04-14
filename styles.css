@@ -354,6 +354,17 @@ header .container {
     background-color: rgba(36, 113, 163, 0.1);
 }
 
+.btn-success {
+    background-color: var(--success);
+    color: var(--white);
+}
+
+.btn-success:hover {
+    background-color: #1e8449;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
 .btn i {
     margin-right: 8px;
 }
@@ -457,6 +468,78 @@ header .container {
 
 .status i {
     margin-right: 5px;
+}
+
+/* Confirmation Step Styles */
+.confirmation-container {
+    text-align: center;
+    padding: 30px 20px;
+    background-color: var(--light-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.confirmation-icon {
+    font-size: 64px;
+    color: var(--success);
+    margin-bottom: 20px;
+}
+
+.confirmation-container h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: var(--text);
+}
+
+.confirmation-container p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.confirmation-files {
+    background-color: var(--white);
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 25px;
+    text-align: left;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.confirmation-file {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.confirmation-file:last-child {
+    border-bottom: none;
+}
+
+.confirmation-file i {
+    font-size: 18px;
+    margin-right: 10px;
+    color: var(--primary);
+}
+
+.confirmation-file .file-name {
+    font-weight: 500;
+}
+
+.confirmation-file .file-type {
+    margin-left: auto;
+    font-size: 12px;
+    color: #888;
+    background-color: var(--light-bg);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.btn-confirm {
+    padding: 12px 30px;
+    font-size: 16px;
 }
 
 footer {
