@@ -1,32 +1,49 @@
 :root {
-    --primary: #3182CE;
-    --primary-dark: #2B6CB0;
-    --primary-light: #4299E1;
-    --secondary: #4FD1C5;
-    --secondary-dark: #38B2AC;
-    --accent: #667EEA;
-    --light-bg: #F8FAFC;
+    /* Cores principais - esquema teal/azul */
+    --primary: #00BCD4;
+    --primary-dark: #0097A7;
+    --primary-light: #B2EBF2;
+    --secondary: #3F51B5;
+    --secondary-dark: #303F9F;
+    --accent: #FF4081;
+    
+    /* Cores neutras */
+    --light-bg: #F5F8FA;
     --white: #FFFFFF;
-    --text: #2D3748;
-    --text-light: #718096;
-    --border: #E2E8F0;
-    --border-active: #CBD5E0;
-    --success: #48BB78;
-    --success-light: #C6F6D5;
-    --error: #F56565;
-    --error-light: #FED7D7;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --text: #263238;
+    --text-light: #607D8B;
+    --text-muted: #90A4AE;
+    
+    /* Cores de borda e estado */
+    --border: #E1E8ED;
+    --border-active: #B0BEC5;
+    --success: #4CAF50;
+    --success-light: #C8E6C9;
+    --error: #F44336;
+    --error-light: #FFCDD2;
+    --warning: #FFC107;
+    --info: #2196F3;
+    
+    /* Sombras */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 15px 25px rgba(0, 0, 0, 0.12);
+    
+    /* Transições e efeitos */
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --radius-sm: 6px;
+    --radius: 12px;
+    --radius-lg: 16px;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -35,9 +52,11 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    line-height: 1.5;
+    line-height: 1.6;
+    font-weight: 400;
 }
 
+/* Layout e containers */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -45,12 +64,15 @@ body {
     width: 100%;
 }
 
+/* Cabeçalho */
 header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: var(--white);
     padding: 20px 0;
-    box-shadow: var(--shadow);
-    position: relative;
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 header .container {
@@ -59,35 +81,50 @@ header .container {
     align-items: center;
 }
 
-.logo h1 {
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    background: linear-gradient(to right, #fff, rgba(255,255,255,0.8));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+.logo {
+    display: flex;
+    align-items: center;
 }
 
+.logo img {
+    height: 40px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Conteúdo principal */
 .main-content {
-    padding: 48px 0;
+    padding: 60px 0;
     flex: 1;
+    position: relative;
 }
 
+.main-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 240px;
+    background: linear-gradient(180deg, rgba(0, 188, 212, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+    z-index: -1;
+}
+
+/* Títulos e textos */
 .page-title {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 60px;
 }
 
 .page-title h2 {
-    font-size: 32px;
-    margin-bottom: 12px;
+    font-size: 36px;
+    margin-bottom: 16px;
     font-weight: 700;
-    background: linear-gradient(to right, var(--primary), var(--accent));
+    background: linear-gradient(to right, var(--primary-dark), var(--secondary));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     display: inline-block;
+    letter-spacing: -0.5px;
 }
 
 .page-title p {
@@ -95,10 +132,12 @@ header .container {
     color: var(--text-light);
     max-width: 600px;
     margin: 0 auto;
+    line-height: 1.5;
 }
 
+/* Barra de progresso */
 .progress-bar {
-    margin-bottom: 48px;
+    margin-bottom: 60px;
     display: flex;
     justify-content: space-between;
     position: relative;
@@ -135,15 +174,15 @@ header .container {
 }
 
 .step-number {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background-color: var(--white);
     border: 3px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     font-weight: 600;
     color: var(--text-light);
     box-shadow: var(--shadow-sm);
@@ -161,10 +200,11 @@ header .container {
 }
 
 .progress-step.active .step-number {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: var(--white);
     border-color: transparent;
     transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.2);
 }
 
 .progress-step.active .step-title {
@@ -184,12 +224,12 @@ header .container {
 }
 
 .progress-step[style*="width: 100%"] .step-number {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     transform: scale(1.2);
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: var(--white);
     border-color: transparent;
-    box-shadow: var(--shadow);
+    box-shadow: 0 0 0 5px rgba(0, 188, 212, 0.15);
 }
 
 .progress-step[style*="width: 100%"] .step-title {
@@ -199,44 +239,47 @@ header .container {
     letter-spacing: 0.5px;
 }
 
+/* Container de formulário */
 .form-container {
     display: flex;
-    margin-bottom: 48px;
+    margin-bottom: 60px;
     gap: 40px;
 }
 
 .form-section {
     background-color: var(--white);
-    border-radius: 12px;
+    border-radius: var(--radius);
     padding: 40px;
     box-shadow: var(--shadow-md);
     flex: 1;
     position: relative;
     overflow: hidden;
     transition: var(--transition);
+    border: 1px solid var(--border);
 }
 
-.form-section::after {
+.form-section::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 5px;
-    background: linear-gradient(to right, var(--primary), var(--accent));
+    background: linear-gradient(to right, var(--primary), var(--secondary));
 }
 
 .help-section {
     width: 350px;
 }
 
+/* Grupos de formulário */
 .form-group {
-    margin-bottom: 30px;
+    margin-bottom: 32px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-weight: 600;
     font-size: 14px;
     color: var(--text);
@@ -245,9 +288,9 @@ header .container {
 
 .form-control {
     width: 100%;
-    padding: 14px 16px;
+    padding: 15px 16px;
     border: 2px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-size: 15px;
     transition: var(--transition);
     background-color: var(--light-bg);
@@ -256,11 +299,16 @@ header .container {
 
 .form-control:focus {
     outline: none;
-    border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
     background-color: var(--white);
 }
 
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+/* Menu de seleção */
 .select-wrapper {
     position: relative;
 }
@@ -283,10 +331,11 @@ header .container {
     color: var(--primary);
 }
 
+/* Área de upload */
 .upload-area {
     border: 2px dashed var(--border);
-    border-radius: 12px;
-    padding: 36px 30px;
+    border-radius: var(--radius);
+    padding: 40px 30px;
     text-align: center;
     cursor: pointer;
     transition: var(--transition);
@@ -296,8 +345,8 @@ header .container {
 }
 
 .upload-area:hover {
-    border-color: var(--primary-light);
-    background-color: rgba(66, 153, 225, 0.05);
+    border-color: var(--primary);
+    background-color: rgba(0, 188, 212, 0.05);
     transform: translateY(-2px);
 }
 
@@ -306,37 +355,36 @@ header .container {
 }
 
 .upload-icon {
-    font-size: 42px;
-    color: var(--primary-light);
-    margin-bottom: 16px;
+    font-size: 48px;
+    color: var(--primary);
+    margin-bottom: 20px;
     transition: var(--transition);
 }
 
 .upload-text {
-    font-size: 16px;
+    font-size: 18px;
     color: var(--text);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 500;
 }
 
 .upload-help {
     font-size: 14px;
     color: var(--text-light);
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .upload-btn {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
+    padding: 14px 28px;
+    border-radius: var(--radius-sm);
     margin: 10px auto;
     display: inline-block;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
     position: relative;
-    z-index: 10;
     letter-spacing: 0.3px;
     box-shadow: var(--shadow);
 }
@@ -351,29 +399,31 @@ header .container {
     box-shadow: var(--shadow);
 }
 
+/* Seção de ajuda */
 .help-box {
     background-color: var(--white);
-    border-radius: 12px;
-    padding: 28px;
+    border-radius: var(--radius);
+    padding: 30px;
     box-shadow: var(--shadow-md);
     margin-bottom: 24px;
     position: relative;
     overflow: hidden;
+    border: 1px solid var(--border);
 }
 
-.help-box::after {
+.help-box::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 5px;
     height: 100%;
-    background: linear-gradient(to bottom, var(--primary), var(--accent));
+    background: linear-gradient(to bottom, var(--primary), var(--secondary));
 }
 
 .help-title {
     font-size: 18px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     color: var(--text);
     font-weight: 600;
     display: flex;
@@ -382,17 +432,17 @@ header .container {
 }
 
 .help-title i {
-    margin-right: 10px;
-    color: var(--accent);
+    margin-right: 12px;
+    color: var(--primary);
 }
 
 .help-links a {
     display: flex;
     align-items: center;
-    padding: 14px 18px;
+    padding: 16px 20px;
     margin-bottom: 12px;
     background-color: var(--light-bg);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     color: var(--text);
     text-decoration: none;
     font-weight: 500;
@@ -400,7 +450,7 @@ header .container {
 }
 
 .help-links a:hover {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: var(--white);
     transform: translateY(-2px);
     box-shadow: var(--shadow);
@@ -419,10 +469,10 @@ header .container {
 .portal-btn {
     display: block;
     padding: 16px;
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
     color: var(--white);
     text-align: center;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     text-decoration: none;
     font-weight: 600;
     margin-top: 24px;
@@ -445,15 +495,16 @@ header .container {
     margin-right: 10px;
 }
 
+/* Botões de navegação */
 .navigation {
     display: flex;
     justify-content: space-between;
-    margin-top: 30px;
+    margin-top: 40px;
 }
 
 .btn {
     padding: 14px 28px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
@@ -465,7 +516,7 @@ header .container {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: var(--white);
     box-shadow: var(--shadow);
 }
@@ -488,7 +539,7 @@ header .container {
 }
 
 .btn-outline:hover {
-    background-color: rgba(49, 130, 206, 0.1);
+    background-color: rgba(0, 188, 212, 0.1);
     transform: translateY(-2px);
     box-shadow: var(--shadow);
 }
@@ -499,7 +550,7 @@ header .container {
 }
 
 .btn-success {
-    background: linear-gradient(135deg, var(--success) 0%, var(--secondary) 100%);
+    background: linear-gradient(135deg, var(--success) 0%, var(--primary) 100%);
     color: var(--white);
     box-shadow: var(--shadow);
 }
@@ -524,6 +575,7 @@ header .container {
     margin-left: 10px;
 }
 
+/* Dropdown de seleção */
 .select-options {
     display: none;
     position: absolute;
@@ -533,14 +585,14 @@ header .container {
     background-color: var(--white);
     border: 2px solid var(--border-active);
     border-top: none;
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
     z-index: 10;
     box-shadow: var(--shadow-md);
     overflow: hidden;
 }
 
 .select-option {
-    padding: 14px 16px;
+    padding: 15px 16px;
     cursor: pointer;
     transition: var(--transition);
     font-weight: 500;
@@ -557,8 +609,8 @@ header .container {
 }
 
 .select-wrapper.open .form-control {
-    border-radius: 8px 8px 0 0;
-    border-color: var(--primary-light);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    border-color: var(--primary);
 }
 
 .select-wrapper.open .select-options {
@@ -566,11 +618,12 @@ header .container {
     animation: fadeIn 0.2s ease;
 }
 
+/* Informações do arquivo */
 .file-info {
-    margin-top: 20px;
-    padding: 16px;
+    margin-top: 24px;
+    padding: 18px;
     background-color: var(--light-bg);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-size: 14px;
     display: none;
     transition: var(--transition);
@@ -582,11 +635,16 @@ header .container {
     animation: slideDown 0.3s ease;
 }
 
+.file-info strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
 .status {
-    margin-top: 12px;
+    margin-top: 16px;
     font-size: 14px;
     display: none;
-    padding: 8px 0;
+    padding: 10px 0;
     font-weight: 500;
 }
 
@@ -607,19 +665,20 @@ header .container {
     font-size: 16px;
 }
 
+/* Confirmação */
 .confirmation-container {
     text-align: center;
-    padding: 40px 30px;
+    padding: 48px 40px;
     background-color: var(--light-bg);
-    border-radius: 12px;
+    border-radius: var(--radius);
     margin: 20px 0;
     box-shadow: var(--shadow-sm);
 }
 
 .confirmation-icon {
-    font-size: 72px;
+    font-size: 80px;
     color: var(--success);
-    margin-bottom: 24px;
+    margin-bottom: 30px;
     animation: scaleIn 0.5s ease;
 }
 
@@ -633,7 +692,7 @@ header .container {
 .confirmation-container p {
     font-size: 16px;
     color: var(--text-light);
-    margin-bottom: 24px;
+    margin-bottom: 30px;
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
@@ -641,9 +700,9 @@ header .container {
 
 .confirmation-files {
     background-color: var(--white);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 30px;
+    border-radius: var(--radius-sm);
+    padding: 24px;
+    margin-bottom: 36px;
     text-align: left;
     max-height: 250px;
     overflow-y: auto;
@@ -653,7 +712,7 @@ header .container {
 .confirmation-file {
     display: flex;
     align-items: center;
-    padding: 12px;
+    padding: 14px;
     border-bottom: 1px solid var(--border);
     transition: var(--transition);
 }
@@ -667,8 +726,8 @@ header .container {
 }
 
 .confirmation-file i {
-    font-size: 20px;
-    margin-right: 12px;
+    font-size: 22px;
+    margin-right: 14px;
     color: var(--primary);
 }
 
@@ -683,27 +742,29 @@ header .container {
     font-size: 12px;
     color: var(--text-light);
     background-color: var(--light-bg);
-    padding: 4px 10px;
-    border-radius: 16px;
+    padding: 4px 12px;
+    border-radius: 20px;
     font-weight: 500;
 }
 
 .btn-confirm {
-    padding: 16px 32px;
+    padding: 16px 36px;
     font-size: 16px;
-    min-width: 200px;
+    min-width: 220px;
 }
 
+/* Rodapé */
 footer {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
     color: var(--white);
-    padding: 24px 0;
+    padding: 30px 0;
     text-align: center;
     margin-top: auto;
     font-size: 14px;
     box-shadow: var(--shadow-lg);
 }
 
+/* Animações */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -719,6 +780,7 @@ footer {
     to { opacity: 1; transform: scale(1); }
 }
 
+/* Responsividade */
 @media (max-width: 992px) {
     .form-container {
         flex-direction: column;
@@ -730,6 +792,10 @@ footer {
     
     .form-section {
         padding: 30px;
+    }
+    
+    .page-title h2 {
+        font-size: 32px;
     }
 }
 
@@ -744,6 +810,10 @@ footer {
     
     .step-title {
         font-size: 12px;
+    }
+    
+    .main-content {
+        padding: 40px 0;
     }
 }
 
@@ -768,8 +838,12 @@ footer {
     }
     
     .upload-btn {
-        padding: 10px 20px;
+        padding: 12px 20px;
         font-size: 14px;
+    }
+    
+    .logo img {
+        height: 32px;
     }
 }
 
