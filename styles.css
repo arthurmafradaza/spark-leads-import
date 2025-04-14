@@ -68,10 +68,10 @@ body {
 header {
     background: #FFFFFF;
     color: var(--text);
-    padding: 15px 0;
+    padding: 20px 0;
     box-shadow: var(--shadow-md);
     position: relative;
-    height: 140px;
+    height: 260px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -106,7 +106,7 @@ header .container {
 }
 
 .logo img {
-    height: 100px;
+    height: 220px;
     max-width: 100%;
     background-color: transparent;
     transition: transform 0.3s ease;
@@ -797,6 +797,14 @@ footer {
     .main-content {
         padding: 40px 0;
     }
+    
+    header {
+        height: 200px;
+    }
+    
+    .logo img {
+        height: 160px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -825,7 +833,11 @@ footer {
     }
     
     .logo img {
-        height: 80px;
+        height: 140px;
+    }
+    
+    header {
+        height: 180px;
     }
 }
 
