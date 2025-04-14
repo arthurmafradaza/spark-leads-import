@@ -68,7 +68,7 @@ body {
 header {
     background: linear-gradient(90deg, #3b82f6 0%, #4f46e5 100%);
     color: var(--white);
-    padding: 25px 0;
+    padding: 15px 0;
     box-shadow: var(--shadow-md);
     position: relative;
 }
@@ -86,7 +86,7 @@ header .container {
 }
 
 .logo img {
-    height: 140px;
+    height: 60px;
     max-width: 100%;
 }
 
