@@ -66,7 +66,7 @@ body {
 
 /* Cabeçalho */
 header {
-    background: linear-gradient(90deg, #3b82f6 0%, #4f46e5 100%);
+    background: #3b82f6;
     color: var(--white);
     padding: 15px 0;
     box-shadow: var(--shadow-md);
@@ -90,6 +90,19 @@ header .container {
     justify-content: center;
     height: 100%;
     background-color: transparent;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.logo-container {
+    background-color: transparent;
+    border-radius: 8px;
+    padding: 5px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
 
 .logo img {
@@ -97,6 +110,8 @@ header .container {
     max-width: 100%;
     background-color: transparent;
     transition: transform 0.3s ease;
+    mix-blend-mode: darken;
+    filter: brightness(0) invert(1);
 }
 
 .logo img:hover {
