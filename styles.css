@@ -1,40 +1,40 @@
 :root {
-    /* Cores principais - esquema teal/azul */
-    --primary: #00BCD4;
-    --primary-dark: #0097A7;
-    --primary-light: #B2EBF2;
-    --secondary: #3F51B5;
-    --secondary-dark: #303F9F;
-    --accent: #FF4081;
+    /* Cores principais - esquema azul */
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --primary-light: #60a5fa;
+    --secondary: #4f46e5;
+    --secondary-dark: #4338ca;
+    --accent: #3b82f6;
     
     /* Cores neutras */
-    --light-bg: #F5F8FA;
+    --light-bg: #f9fafb;
     --white: #FFFFFF;
-    --text: #263238;
-    --text-light: #607D8B;
-    --text-muted: #90A4AE;
+    --text: #1e3a8a;
+    --text-light: #3b82f6;
+    --text-muted: #64748b;
     
     /* Cores de borda e estado */
-    --border: #E1E8ED;
-    --border-active: #B0BEC5;
-    --success: #4CAF50;
-    --success-light: #C8E6C9;
-    --error: #F44336;
-    --error-light: #FFCDD2;
-    --warning: #FFC107;
-    --info: #2196F3;
+    --border: #e2e8f0;
+    --border-active: #cbd5e1;
+    --success: #10b981;
+    --success-light: #d1fae5;
+    --error: #ef4444;
+    --error-light: #fee2e2;
+    --warning: #f59e0b;
+    --info: #3b82f6;
     
     /* Sombras */
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-    --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 15px 25px rgba(0, 0, 0, 0.12);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
     
     /* Transições e efeitos */
-    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition: all 0.2s ease;
     --radius-sm: 6px;
-    --radius: 12px;
-    --radius-lg: 16px;
+    --radius: 8px;
+    --radius-lg: 12px;
 }
 
 * {
@@ -66,13 +66,11 @@ body {
 
 /* Cabeçalho */
 header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    background: linear-gradient(90deg, #3b82f6 0%, #4f46e5 100%);
     color: var(--white);
-    padding: 20px 0;
-    box-shadow: var(--shadow-md);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    padding: 16px 0;
+    box-shadow: var(--shadow);
+    position: relative;
 }
 
 header .container {
@@ -87,49 +85,32 @@ header .container {
 }
 
 .logo img {
-    height: 40px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    height: 50px;
 }
 
 /* Conteúdo principal */
 .main-content {
-    padding: 60px 0;
+    padding: 50px 0;
     flex: 1;
     position: relative;
-}
-
-.main-content::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 240px;
-    background: linear-gradient(180deg, rgba(0, 188, 212, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
-    z-index: -1;
 }
 
 /* Títulos e textos */
 .page-title {
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
 }
 
 .page-title h2 {
-    font-size: 36px;
-    margin-bottom: 16px;
+    font-size: 32px;
+    margin-bottom: 12px;
     font-weight: 700;
-    background: linear-gradient(to right, var(--primary-dark), var(--secondary));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
-    letter-spacing: -0.5px;
+    color: var(--text-light);
 }
 
 .page-title p {
-    font-size: 18px;
-    color: var(--text-light);
+    font-size: 16px;
+    color: var(--text-muted);
     max-width: 600px;
     margin: 0 auto;
     line-height: 1.5;
@@ -137,7 +118,7 @@ header .container {
 
 /* Barra de progresso */
 .progress-bar {
-    margin-bottom: 60px;
+    margin-bottom: 40px;
     display: flex;
     justify-content: space-between;
     position: relative;
@@ -152,15 +133,9 @@ header .container {
     top: 15px;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(to right, 
-        var(--success) 0%, 
-        var(--success) calc((100% / (var(--total-steps) - 1)) * (var(--current-step) - 1)), 
-        var(--border) calc((100% / (var(--total-steps) - 1)) * (var(--current-step) - 1)), 
-        var(--border) 100%);
+    height: 2px;
+    background: var(--border);
     z-index: 1;
-    border-radius: 4px;
-    transition: var(--transition);
 }
 
 .progress-step {
@@ -174,24 +149,24 @@ header .container {
 }
 
 .step-number {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background-color: var(--white);
-    border: 3px solid var(--border);
+    border: 2px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
     font-weight: 600;
-    color: var(--text-light);
+    color: var(--text-muted);
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
 }
 
 .step-title {
     font-size: 14px;
-    color: var(--text-light);
+    color: var(--text-muted);
     text-align: center;
     font-weight: 500;
     letter-spacing: 0.3px;
@@ -200,11 +175,9 @@ header .container {
 }
 
 .progress-step.active .step-number {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    background-color: var(--primary);
     color: var(--white);
-    border-color: transparent;
-    transform: scale(1.1);
-    box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.2);
+    border-color: var(--primary);
 }
 
 .progress-step.active .step-title {
@@ -215,7 +188,7 @@ header .container {
 .progress-step.completed .step-number {
     background-color: var(--success);
     color: var(--white);
-    border-color: transparent;
+    border-color: var(--success);
 }
 
 .progress-step[style*="width: 100%"] {
@@ -224,32 +197,29 @@ header .container {
 }
 
 .progress-step[style*="width: 100%"] .step-number {
-    margin-bottom: 14px;
-    transform: scale(1.2);
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    margin-bottom: 10px;
+    background-color: var(--primary);
     color: var(--white);
-    border-color: transparent;
-    box-shadow: 0 0 0 5px rgba(0, 188, 212, 0.15);
+    border-color: var(--primary);
 }
 
 .progress-step[style*="width: 100%"] .step-title {
     font-weight: 600;
-    font-size: 18px;
+    font-size: 16px;
     color: var(--primary);
-    letter-spacing: 0.5px;
 }
 
 /* Container de formulário */
 .form-container {
     display: flex;
     margin-bottom: 60px;
-    gap: 40px;
+    gap: 30px;
 }
 
 .form-section {
     background-color: var(--white);
     border-radius: var(--radius);
-    padding: 40px;
+    padding: 30px;
     box-shadow: var(--shadow-md);
     flex: 1;
     position: relative;
@@ -258,28 +228,18 @@ header .container {
     border: 1px solid var(--border);
 }
 
-.form-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background: linear-gradient(to right, var(--primary), var(--secondary));
-}
-
 .help-section {
     width: 350px;
 }
 
 /* Grupos de formulário */
 .form-group {
-    margin-bottom: 32px;
+    margin-bottom: 25px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-weight: 600;
     font-size: 14px;
     color: var(--text);
@@ -288,8 +248,8 @@ header .container {
 
 .form-control {
     width: 100%;
-    padding: 15px 16px;
-    border: 2px solid var(--border);
+    padding: 12px 16px;
+    border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     font-size: 15px;
     transition: var(--transition);
@@ -300,7 +260,7 @@ header .container {
 .form-control:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
     background-color: var(--white);
 }
 
@@ -322,7 +282,7 @@ header .container {
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
-    color: var(--text-light);
+    color: var(--text-muted);
     transition: var(--transition);
 }
 
@@ -335,7 +295,7 @@ header .container {
 .upload-area {
     border: 2px dashed var(--border);
     border-radius: var(--radius);
-    padding: 40px 30px;
+    padding: 30px;
     text-align: center;
     cursor: pointer;
     transition: var(--transition);
@@ -346,7 +306,7 @@ header .container {
 
 .upload-area:hover {
     border-color: var(--primary);
-    background-color: rgba(0, 188, 212, 0.05);
+    background-color: rgba(59, 130, 246, 0.05);
     transform: translateY(-2px);
 }
 
@@ -355,55 +315,56 @@ header .container {
 }
 
 .upload-icon {
-    font-size: 48px;
+    font-size: 40px;
     color: var(--primary);
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     transition: var(--transition);
 }
 
 .upload-text {
-    font-size: 18px;
+    font-size: 16px;
     color: var(--text);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-weight: 500;
 }
 
 .upload-help {
     font-size: 14px;
-    color: var(--text-light);
-    margin-bottom: 20px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
 }
 
 .upload-btn {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    background-color: var(--primary);
     color: white;
-    padding: 14px 28px;
+    padding: 10px 20px;
     border-radius: var(--radius-sm);
     margin: 10px auto;
     display: inline-block;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
     position: relative;
     letter-spacing: 0.3px;
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-sm);
 }
 
 .upload-btn:hover {
-    box-shadow: var(--shadow-md);
+    background-color: var(--primary-dark);
+    box-shadow: var(--shadow);
     transform: translateY(-2px);
 }
 
 .upload-btn:active {
     transform: translateY(0);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Seção de ajuda */
 .help-box {
     background-color: var(--white);
     border-radius: var(--radius);
-    padding: 30px;
+    padding: 25px;
     box-shadow: var(--shadow-md);
     margin-bottom: 24px;
     position: relative;
@@ -411,19 +372,9 @@ header .container {
     border: 1px solid var(--border);
 }
 
-.help-box::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 5px;
-    height: 100%;
-    background: linear-gradient(to bottom, var(--primary), var(--secondary));
-}
-
 .help-title {
-    font-size: 18px;
-    margin-bottom: 24px;
+    font-size: 16px;
+    margin-bottom: 20px;
     color: var(--text);
     font-weight: 600;
     display: flex;
@@ -432,15 +383,15 @@ header .container {
 }
 
 .help-title i {
-    margin-right: 12px;
+    margin-right: 10px;
     color: var(--primary);
 }
 
 .help-links a {
     display: flex;
     align-items: center;
-    padding: 16px 20px;
-    margin-bottom: 12px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
     background-color: var(--light-bg);
     border-radius: var(--radius-sm);
     color: var(--text);
@@ -450,7 +401,7 @@ header .container {
 }
 
 .help-links a:hover {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    background-color: var(--primary);
     color: var(--white);
     transform: translateY(-2px);
     box-shadow: var(--shadow);
@@ -462,14 +413,14 @@ header .container {
 }
 
 .help-links a i {
-    margin-right: 12px;
-    font-size: 18px;
+    margin-right: 10px;
+    font-size: 16px;
 }
 
 .portal-btn {
     display: block;
-    padding: 16px;
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
+    padding: 14px;
+    background-color: var(--primary);
     color: var(--white);
     text-align: center;
     border-radius: var(--radius-sm);
@@ -482,6 +433,7 @@ header .container {
 }
 
 .portal-btn:hover {
+    background-color: var(--primary-dark);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
@@ -499,14 +451,14 @@ header .container {
 .navigation {
     display: flex;
     justify-content: space-between;
-    margin-top: 40px;
+    margin-top: 30px;
 }
 
 .btn {
-    padding: 14px 28px;
+    padding: 12px 24px;
     border-radius: var(--radius-sm);
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
     border: none;
@@ -516,30 +468,31 @@ header .container {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    background-color: var(--primary);
     color: var(--white);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover {
+    background-color: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow);
 }
 
 .btn-primary:active {
     transform: translateY(0);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-outline {
     background-color: transparent;
     color: var(--primary);
-    border: 2px solid var(--primary);
+    border: 1px solid var(--primary);
     box-shadow: var(--shadow-sm);
 }
 
 .btn-outline:hover {
-    background-color: rgba(0, 188, 212, 0.1);
+    background-color: rgba(59, 130, 246, 0.1);
     transform: translateY(-2px);
     box-shadow: var(--shadow);
 }
@@ -550,24 +503,25 @@ header .container {
 }
 
 .btn-success {
-    background: linear-gradient(135deg, var(--success) 0%, var(--primary) 100%);
+    background-color: var(--success);
     color: var(--white);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-success:hover {
+    background-color: #0ca678;
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow);
 }
 
 .btn-success:active {
     transform: translateY(0);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn i {
     margin-right: 10px;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .btn-next i {
@@ -583,16 +537,16 @@ header .container {
     left: 0;
     width: 100%;
     background-color: var(--white);
-    border: 2px solid var(--border-active);
+    border: 1px solid var(--border-active);
     border-top: none;
     border-radius: 0 0 var(--radius-sm) var(--radius-sm);
     z-index: 10;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow);
     overflow: hidden;
 }
 
 .select-option {
-    padding: 15px 16px;
+    padding: 12px 16px;
     cursor: pointer;
     transition: var(--transition);
     font-weight: 500;
@@ -620,14 +574,14 @@ header .container {
 
 /* Informações do arquivo */
 .file-info {
-    margin-top: 24px;
-    padding: 18px;
+    margin-top: 20px;
+    padding: 15px;
     background-color: var(--light-bg);
     border-radius: var(--radius-sm);
     font-size: 14px;
     display: none;
     transition: var(--transition);
-    border-left: 4px solid var(--primary);
+    border-left: 3px solid var(--primary);
 }
 
 .file-info.show {
@@ -641,10 +595,10 @@ header .container {
 }
 
 .status {
-    margin-top: 16px;
+    margin-top: 12px;
     font-size: 14px;
     display: none;
-    padding: 10px 0;
+    padding: 8px 0;
     font-weight: 500;
 }
 
@@ -662,13 +616,13 @@ header .container {
 
 .status i {
     margin-right: 8px;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 /* Confirmação */
 .confirmation-container {
     text-align: center;
-    padding: 48px 40px;
+    padding: 35px 30px;
     background-color: var(--light-bg);
     border-radius: var(--radius);
     margin: 20px 0;
@@ -676,23 +630,23 @@ header .container {
 }
 
 .confirmation-icon {
-    font-size: 80px;
+    font-size: 70px;
     color: var(--success);
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     animation: scaleIn 0.5s ease;
 }
 
 .confirmation-container h3 {
-    font-size: 28px;
-    margin-bottom: 16px;
+    font-size: 24px;
+    margin-bottom: 14px;
     color: var(--text);
     font-weight: 700;
 }
 
 .confirmation-container p {
-    font-size: 16px;
-    color: var(--text-light);
-    margin-bottom: 30px;
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 25px;
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
@@ -701,8 +655,8 @@ header .container {
 .confirmation-files {
     background-color: var(--white);
     border-radius: var(--radius-sm);
-    padding: 24px;
-    margin-bottom: 36px;
+    padding: 20px;
+    margin-bottom: 30px;
     text-align: left;
     max-height: 250px;
     overflow-y: auto;
@@ -712,7 +666,7 @@ header .container {
 .confirmation-file {
     display: flex;
     align-items: center;
-    padding: 14px;
+    padding: 12px;
     border-bottom: 1px solid var(--border);
     transition: var(--transition);
 }
@@ -726,8 +680,8 @@ header .container {
 }
 
 .confirmation-file i {
-    font-size: 22px;
-    margin-right: 14px;
+    font-size: 18px;
+    margin-right: 12px;
     color: var(--primary);
 }
 
@@ -740,28 +694,28 @@ header .container {
 .confirmation-file .file-type {
     margin-left: auto;
     font-size: 12px;
-    color: var(--text-light);
+    color: var(--text-muted);
     background-color: var(--light-bg);
-    padding: 4px 12px;
-    border-radius: 20px;
+    padding: 4px 10px;
+    border-radius: 15px;
     font-weight: 500;
 }
 
 .btn-confirm {
-    padding: 16px 36px;
-    font-size: 16px;
-    min-width: 220px;
+    padding: 14px 30px;
+    font-size: 15px;
+    min-width: 200px;
 }
 
 /* Rodapé */
 footer {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
+    background-color: var(--primary);
     color: var(--white);
-    padding: 30px 0;
+    padding: 20px 0;
     text-align: center;
     margin-top: auto;
     font-size: 14px;
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow);
 }
 
 /* Animações */
@@ -791,17 +745,17 @@ footer {
     }
     
     .form-section {
-        padding: 30px;
+        padding: 25px;
     }
     
     .page-title h2 {
-        font-size: 32px;
+        font-size: 28px;
     }
 }
 
 @media (max-width: 768px) {
     .page-title h2 {
-        font-size: 28px;
+        font-size: 26px;
     }
     
     .progress-bar::before {
@@ -823,27 +777,27 @@ footer {
     }
     
     .step-number {
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
         font-size: 12px;
     }
     
     .form-section {
-        padding: 24px;
+        padding: 20px;
     }
     
     .btn {
-        padding: 12px 20px;
+        padding: 10px 18px;
         font-size: 14px;
     }
     
     .upload-btn {
-        padding: 12px 20px;
+        padding: 10px 18px;
         font-size: 14px;
     }
     
     .logo img {
-        height: 32px;
+        height: 40px;
     }
 }
 
