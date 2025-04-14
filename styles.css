@@ -71,6 +71,9 @@ header {
     padding: 15px 0;
     box-shadow: var(--shadow-md);
     position: relative;
+    height: 60px;
+    display: flex;
+    align-items: center;
 }
 
 header .container {
@@ -83,10 +86,11 @@ header .container {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100%;
 }
 
 .logo img {
-    height: 60px;
+    height: 45px;
     max-width: 100%;
 }
 
