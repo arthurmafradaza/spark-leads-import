@@ -48,8 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     // Abrir/fechar dropdown de seleção
-    importTypeWrapper.addEventListener('click', function() {
+    importTypeWrapper.addEventListener('click', function(e) {
         this.classList.toggle('open');
+        e.stopPropagation();
     });
     
     // Clicar fora para fechar dropdown
@@ -59,35 +60,65 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Selecionar opção
+    // Função para avançar para a próxima etapa com base no tipo de importação
+    function goToNextStep() {
+        if (!selectedImportType) {
+            alert('Por favor, selecione um tipo de importação.');
+            return;
+        }
+        
+        // Configurar próxima etapa com base no tipo de importação
+        if (selectedImportType === 'multiple-policies') {
+            // Mostrar etapa de apólices e clientes
+            policiesStep.style.display = 'block';
+            importTypeWrapper.parentElement.style.display = 'none';
+            clientsUploadGroup.style.display = 'block';
+            updateStep(2);
+        } else if (selectedImportType === 'multiple-agents') {
+            // Mostrar etapa de agentes
+            agentsStep.style.display = 'block';
+            importTypeWrapper.parentElement.style.display = 'none';
+            updateStep(2);
+            // Mudar o texto do botão próximo
+            nextBtn.innerHTML = 'Finalizar <i class="fas fa-check"></i>';
+        } else if (selectedImportType === 'import-both') {
+            // Mostrar etapa de apólices e clientes
+            policiesStep.style.display = 'block';
+            importTypeWrapper.parentElement.style.display = 'none';
+            clientsUploadGroup.style.display = 'block';
+            updateStep(2);
+        }
+    }
+    
+    // Selecionar opção e avançar automaticamente
     selectOptions.forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation(); // Impedir que o evento de click se propague para o wrapper
             if (!this.hasAttribute('disabled')) {
                 selectedImportType = this.getAttribute('data-value');
                 importType.value = this.textContent;
                 importTypeWrapper.classList.remove('open');
+                
+                // Avançar automaticamente para a próxima etapa
+                setTimeout(goToNextStep, 300); // Pequeno delay para mostrar a seleção antes de avançar
             }
         });
     });
     
-    // Upload areas click
-    policiesUploadArea.addEventListener('click', function(e) {
-        // Prevenir que o click em elementos filhos ative o input file
-        if (e.target === this || e.target.closest('.upload-btn')) {
-            policiesUpload.click();
-        }
+    // Upload areas click - Corrigindo para que o evento funcione corretamente
+    policiesUploadArea.querySelector('.upload-btn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        policiesUpload.click();
     });
     
-    clientsUploadArea.addEventListener('click', function(e) {
-        if (e.target === this || e.target.closest('.upload-btn')) {
-            clientsUpload.click();
-        }
+    clientsUploadArea.querySelector('.upload-btn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        clientsUpload.click();
     });
     
-    agentsUploadArea.addEventListener('click', function(e) {
-        if (e.target === this || e.target.closest('.upload-btn')) {
-            agentsUpload.click();
-        }
+    agentsUploadArea.querySelector('.upload-btn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        agentsUpload.click();
     });
     
     // Função para converter arquivo XLSX para CSV usando SheetJS
@@ -281,33 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
     nextBtn.addEventListener('click', function() {
         // Verificar etapa atual
         if (currentStep === 1) {
-            // Verificar se tipo de importação foi selecionado
-            if (!selectedImportType) {
-                alert('Por favor, selecione um tipo de importação.');
-                return;
-            }
-            
-            // Configurar próxima etapa com base no tipo de importação
-            if (selectedImportType === 'multiple-policies') {
-                // Mostrar etapa de apólices e clientes
-                policiesStep.style.display = 'block';
-                importTypeWrapper.parentElement.style.display = 'none';
-                clientsUploadGroup.style.display = 'block';
-                updateStep(2);
-            } else if (selectedImportType === 'multiple-agents') {
-                // Mostrar etapa de agentes
-                agentsStep.style.display = 'block';
-                importTypeWrapper.parentElement.style.display = 'none';
-                updateStep(2);
-                // Mudar o texto do botão próximo
-                nextBtn.innerHTML = 'Finalizar <i class="fas fa-check"></i>';
-            } else if (selectedImportType === 'import-both') {
-                // Mostrar etapa de apólices e clientes
-                policiesStep.style.display = 'block';
-                importTypeWrapper.parentElement.style.display = 'none';
-                clientsUploadGroup.style.display = 'block';
-                updateStep(2);
-            }
+            goToNextStep();
         } else if (currentStep === 2) {
             if (selectedImportType === 'multiple-policies') {
                 // Verificar se arquivos de apólices e clientes foram carregados

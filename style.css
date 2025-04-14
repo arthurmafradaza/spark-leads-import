@@ -1,0 +1,73 @@
+/* Upload Area Styling */
+.upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.upload-area:hover {
+    border-color: var(--primary);
+}
+
+.upload-icon {
+    font-size: 48px;
+    color: var(--light-text);
+    margin-bottom: 10px;
+}
+
+.upload-text {
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 5px;
+}
+
+.upload-subtext {
+    font-size: 12px;
+    color: var(--light-text);
+}
+
+.file-info {
+    background: var(--light-bg);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    display: none;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.file-info.show {
+    display: block;
+}
+
+/* Botão de Upload */
+.upload-btn {
+    background-color: var(--primary);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin: 10px auto;
+    display: inline-block;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    position: relative;
+    z-index: 10;
+}
+
+.upload-btn:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Status Styling */
+.status {
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 14px;
+} 
