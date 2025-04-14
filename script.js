@@ -176,6 +176,68 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.removeChild(link);
     }
     
+    // Resetar área de upload de arquivo
+    function resetFileUpload(uploadArea, fileInput, fileInfo, statusElement) {
+        // Limpar input de arquivo
+        fileInput.value = '';
+        
+        // Resetar texto da área de upload
+        uploadArea.querySelector('.upload-text').textContent = 'Inserir arquivo aqui';
+        
+        // Limpar e esconder info do arquivo
+        fileInfo.innerHTML = '';
+        fileInfo.classList.remove('show');
+        
+        // Resetar status
+        statusElement.innerHTML = '';
+        statusElement.className = 'status';
+        
+        // Resetar estilo da área de upload
+        uploadArea.style.borderColor = 'var(--border)';
+    }
+    
+    // Limpar todos os uploads de acordo com o tipo de importação
+    function resetUploads(type) {
+        if (type === 'policies' || type === 'all') {
+            resetFileUpload(policiesUploadArea, policiesUpload, policiesFileInfo, policiesStatus);
+            uploadedFiles.policies = null;
+        }
+        
+        if (type === 'clients' || type === 'all') {
+            resetFileUpload(clientsUploadArea, clientsUpload, clientsFileInfo, clientsStatus);
+            uploadedFiles.clients = null;
+        }
+        
+        if (type === 'agents' || type === 'all') {
+            resetFileUpload(agentsUploadArea, agentsUpload, agentsFileInfo, agentsStatus);
+            uploadedFiles.agents = null;
+            uploadedFiles.agentsCSV = null;
+        }
+    }
+    
+    // Resetar todo o formulário
+    function resetForm() {
+        // Resetar todos os uploads
+        resetUploads('all');
+        
+        // Resetar tipo de importação
+        selectedImportType = null;
+        importType.value = '';
+        
+        // Voltar para a primeira etapa
+        policiesStep.style.display = 'none';
+        agentsStep.style.display = 'none';
+        confirmationStep.style.display = 'none';
+        importTypeWrapper.parentElement.style.display = 'block';
+        
+        // Resetar texto do botão próximo
+        nextBtn.innerHTML = 'Próximo <i class="fas fa-arrow-right"></i>';
+        nextBtn.style.display = 'flex';
+        
+        // Atualizar indicadores de progresso
+        updateStep(1);
+    }
+    
     // Processar upload de políticas (CSV)
     policiesUpload.addEventListener('change', function() {
         if (this.files && this.files[0]) {
@@ -344,8 +406,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Importação concluída com sucesso!');
                 console.log('Dados importados:', uploadedFiles);
                 
-                // Aqui você pode enviar os dados para o servidor
-                // ou redirecionar para outra página
+                // Resetar formulário após conclusão
+                resetForm();
             } else if (selectedImportType === 'import-both') {
                 // Verificar se arquivos de apólices e clientes foram carregados
                 if (!uploadedFiles.policies) {
@@ -385,10 +447,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Voltar para etapa anterior
     prevBtn.addEventListener('click', function() {
         if (currentStep === 2) {
-            // Voltar para etapa 1
             if (selectedImportType === 'multiple-policies' || selectedImportType === 'import-both') {
+                // Limpar uploads de apólices e clientes
+                resetUploads('policies');
+                resetUploads('clients');
+                
+                // Voltar para etapa 1
                 policiesStep.style.display = 'none';
             } else if (selectedImportType === 'multiple-agents') {
+                // Limpar upload de agentes
+                resetUploads('agents');
+                
+                // Voltar para etapa 1
                 agentsStep.style.display = 'none';
                 nextBtn.innerHTML = 'Próximo <i class="fas fa-arrow-right"></i>';
             }
@@ -403,6 +473,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 nextBtn.style.display = 'flex';
                 updateStep(2);
             } else if (selectedImportType === 'import-both') {
+                // Limpar upload de agentes
+                resetUploads('agents');
+                
                 // Voltar para etapa 2 (apólices)
                 agentsStep.style.display = 'none';
                 policiesStep.style.display = 'block';
@@ -425,7 +498,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Importação concluída com sucesso!');
         console.log('Dados importados:', uploadedFiles);
         
-        // Aqui você pode enviar os dados para o servidor
-        // ou redirecionar para outra página
+        // Resetar o formulário após o envio
+        resetForm();
     });
 }); 
