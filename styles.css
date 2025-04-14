@@ -68,13 +68,14 @@ body {
 header {
     background: #FFFFFF;
     color: var(--text);
-    padding: 20px 0;
+    padding: 0;
     box-shadow: var(--shadow-md);
     position: relative;
-    height: 260px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: visible;
 }
 
 header .container {
@@ -90,15 +91,17 @@ header .container {
     justify-content: center;
     height: 100%;
     background-color: transparent;
-    padding: 10px;
+    padding: 0;
     border-radius: 8px;
+    position: relative;
+    z-index: 10;
 }
 
 .logo-container {
     background-color: transparent;
     border-radius: 8px;
-    padding: 5px;
-    overflow: hidden;
+    padding: 0;
+    overflow: visible;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -106,10 +109,12 @@ header .container {
 }
 
 .logo img {
-    height: 220px;
+    height: 200px;
     max-width: 100%;
     background-color: transparent;
     transition: transform 0.3s ease;
+    position: relative;
+    top: 50px;
 }
 
 .logo img:hover {
@@ -118,7 +123,7 @@ header .container {
 
 /* Conteúdo principal */
 .main-content {
-    padding: 50px 0;
+    padding: 80px 0 50px;
     flex: 1;
     position: relative;
 }
@@ -795,15 +800,16 @@ footer {
     }
     
     .main-content {
-        padding: 40px 0;
+        padding: 60px 0 40px;
     }
     
     header {
-        height: 200px;
+        height: 80px;
     }
     
     .logo img {
         height: 160px;
+        top: 40px;
     }
 }
 
@@ -833,11 +839,16 @@ footer {
     }
     
     .logo img {
-        height: 140px;
+        height: 120px;
+        top: 30px;
     }
     
     header {
-        height: 180px;
+        height: 70px;
+    }
+    
+    .main-content {
+        padding: 50px 0 40px;
     }
 }
 
