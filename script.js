@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Exibir modal de sucesso
     function showSuccessModal(message) {
         if (message) {
-            successModal.querySelector('.modal-message').textContent = message;
+            successModal.querySelector('.modal-message').innerHTML = message;
         } else {
             successModal.querySelector('.modal-message').textContent = 'Operação realizada com sucesso!';
         }
@@ -785,7 +785,15 @@ document.addEventListener('DOMContentLoaded', function() {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result); // Mantém o prefixo data:...;base64, como uma URL válida
+            reader.onload = () => {
+                // Verificar tamanho do arquivo Base64
+                const base64String = reader.result;
+                const sizeInMB = (base64String.length * 0.75) / (1024*1024);
+                console.log(`Arquivo ${file.name} convertido para Base64: ${sizeInMB.toFixed(2)}MB`);
+                
+                // Retornar o resultado Base64
+                resolve(base64String);
+            };
             reader.onerror = error => reject(error);
         });
     }
@@ -797,6 +805,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const locationId = getUrlParameter('client_location_id') || '';
             
             console.log('Preparando arquivos para envio via webhook...');
+            console.log('Nota: Os arquivos serão enviados diretamente como dados binários ou Base64, não como URLs para download.');
             
             // Garantir que estamos usando HTTPS
             const webhookUrl = 'https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/192eb679-a7d7-4bf0-aebc-93b2d7faa735';
@@ -816,17 +825,27 @@ document.addEventListener('DOMContentLoaded', function() {
             // Adicionar os arquivos com os nomes esperados pelo webhook
             if (files.policies) {
                 formData.append('police_file', files.policies, files.policies.name);
+                console.log(`Adicionando arquivo de políticas: ${files.policies.name} (${(files.policies.size/1024).toFixed(2)} KB)`);
             }
             
             if (files.clients) {
                 formData.append('cliente_file', files.clients, files.clients.name);
+                console.log(`Adicionando arquivo de clientes: ${files.clients.name} (${(files.clients.size/1024).toFixed(2)} KB)`);
             }
             
             if (files.agents) {
                 formData.append('agent_file', files.agents, files.agents.name);
+                console.log(`Adicionando arquivo de agentes: ${files.agents.name} (${(files.agents.size/1024).toFixed(2)} KB)`);
+                
+                // Se temos o CSV convertido, adicionar como um blob separado
+                if (files.agentsCSV) {
+                    const csvBlob = new Blob([files.agentsCSV], { type: 'text/csv' });
+                    formData.append('agent_csv_file', csvBlob, files.agents.name.replace(/\.[^/.]+$/, ".csv"));
+                    console.log(`Adicionando CSV convertido: ${files.agents.name.replace(/\.[^/.]+$/, ".csv")} (${(csvBlob.size/1024).toFixed(2)} KB)`);
+                }
             }
             
-            console.log('Enviando arquivos para o webhook...');
+            console.log('Enviando arquivos para o webhook via FormData...');
             
             // Enviar os arquivos diretamente via FormData (multipart/form-data)
             const response = await fetch(webhookUrl, {
@@ -835,22 +854,107 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: formData
             });
             
-            console.log('Resposta do webhook:', response.status);
+            console.log('Resposta do webhook (FormData):', response.status);
             
             if (response.ok) {
-                console.log('Webhook enviado com sucesso');
+                console.log('Webhook enviado com sucesso via FormData');
                 return true;
             }
             
-            // Se falhar, tentar com outro método - JSON simples com apenas os nomes dos arquivos
-            console.log('Método FormData falhou, tentando com JSON...');
+            // Se falhar, tentar com outro método - JSON com arquivos em Base64
+            console.log('Método FormData falhou, tentando com JSON e Base64...');
             
+            // Converter arquivos para Base64
             const requestData = {
-                location_id: locationId,
-                police_file: files.policies ? files.policies.name : '',
-                cliente_file: files.clients ? files.clients.name : '',
-                agent_file: files.agents ? files.agents.name : ''
+                location_id: locationId
             };
+            
+            // Limite máximo de tamanho para arquivos (em MB)
+            const MAX_FILE_SIZE_MB = 5;
+            let arquivosMuitoGrandes = false;
+            
+            // Adicionar arquivos como Base64, verificando tamanho
+            if (files.policies) {
+                const policiesBase64 = await fileToBase64(files.policies);
+                const sizeMB = (policiesBase64.length * 0.75) / (1024*1024);
+                
+                if (sizeMB > MAX_FILE_SIZE_MB) {
+                    console.warn(`Arquivo de políticas muito grande: ${sizeMB.toFixed(2)}MB`);
+                    arquivosMuitoGrandes = true;
+                    requestData.police_file = {
+                        name: files.policies.name,
+                        size: files.policies.size,
+                        type: files.policies.type,
+                        too_large: true
+                    };
+                } else {
+                    requestData.police_file = {
+                        name: files.policies.name,
+                        content: policiesBase64,
+                        type: files.policies.type
+                    };
+                }
+            }
+            
+            if (files.clients) {
+                const clientsBase64 = await fileToBase64(files.clients);
+                const sizeMB = (clientsBase64.length * 0.75) / (1024*1024);
+                
+                if (sizeMB > MAX_FILE_SIZE_MB) {
+                    console.warn(`Arquivo de clientes muito grande: ${sizeMB.toFixed(2)}MB`);
+                    arquivosMuitoGrandes = true;
+                    requestData.cliente_file = {
+                        name: files.clients.name,
+                        size: files.clients.size,
+                        type: files.clients.type,
+                        too_large: true
+                    };
+                } else {
+                    requestData.cliente_file = {
+                        name: files.clients.name,
+                        content: clientsBase64,
+                        type: files.clients.type
+                    };
+                }
+            }
+            
+            if (files.agents) {
+                const agentsBase64 = await fileToBase64(files.agents);
+                const sizeMB = (agentsBase64.length * 0.75) / (1024*1024);
+                
+                if (sizeMB > MAX_FILE_SIZE_MB) {
+                    console.warn(`Arquivo de agentes muito grande: ${sizeMB.toFixed(2)}MB`);
+                    arquivosMuitoGrandes = true;
+                    requestData.agent_file = {
+                        name: files.agents.name,
+                        size: files.agents.size,
+                        type: files.agents.type,
+                        too_large: true
+                    };
+                } else {
+                    requestData.agent_file = {
+                        name: files.agents.name,
+                        content: agentsBase64,
+                        type: files.agents.type
+                    };
+                }
+                
+                // Adicionar os dados CSV do agente, se disponível
+                if (files.agentsCSV) {
+                    requestData.agent_csv = {
+                        name: files.agents.name.replace(/\.[^/.]+$/, ".csv"),
+                        content: files.agentsCSV,
+                        type: 'text/csv'
+                    };
+                }
+            }
+            
+            // Verificar se temos arquivos grandes demais
+            if (arquivosMuitoGrandes) {
+                console.log('Alguns arquivos são muito grandes para envio direto. Enviando apenas metadados...');
+            }
+            
+            console.log('Enviando dados para o webhook via JSON...');
             
             const jsonResponse = await fetch(webhookUrl, {
                 method: 'POST',
@@ -864,7 +968,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Resposta do webhook (JSON):', jsonResponse.status);
             
             if (jsonResponse.ok) {
-                console.log('Webhook enviado com sucesso');
+                console.log('Webhook enviado com sucesso via JSON');
                 return true;
             }
             
@@ -892,9 +996,33 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Mostrar modal de sucesso ou erro baseado na resposta do webhook
         if (webhookSuccess) {
-            showSuccessModal('Importação concluída com sucesso!');
+            // Verificar se o tamanho de algum arquivo excede o limite
+            let mensagemAdicional = '';
+            const MAX_SIZE_MB = 5;
+            let temArquivosGrandes = false;
+            
+            // Verificar tamanhos dos arquivos
+            if (uploadedFiles.policies && uploadedFiles.policies.size > MAX_SIZE_MB * 1024 * 1024) {
+                temArquivosGrandes = true;
+            } else if (uploadedFiles.clients && uploadedFiles.clients.size > MAX_SIZE_MB * 1024 * 1024) {
+                temArquivosGrandes = true;
+            } else if (uploadedFiles.agents && uploadedFiles.agents.size > MAX_SIZE_MB * 1024 * 1024) {
+                temArquivosGrandes = true;
+            }
+            
+            if (temArquivosGrandes) {
+                mensagemAdicional = '<br><br><strong>Atenção:</strong> Alguns arquivos são muito grandes. ' +
+                                   'Os dados foram enviados, mas você pode precisar enviar os arquivos originais por e-mail para garantir o processamento completo.';
+            }
+            
+            // Verificar se o agente foi enviado com CSV
+            if (uploadedFiles.agents && uploadedFiles.agentsCSV) {
+                mensagemAdicional += '<br><br>O arquivo de agentes XLSX foi automaticamente convertido para CSV e enviado com sucesso.';
+            }
+            
+            showSuccessModal('Importação concluída com sucesso!' + mensagemAdicional);
         } else {
-            showErrorModal('Ocorreu um erro ao processar os arquivos. Por favor, tente novamente.');
+            showErrorModal('Ocorreu um erro ao processar os arquivos. Por favor, tente novamente ou entre em contato com o suporte.');
         }
         
         // Resetar o formulário após o envio
