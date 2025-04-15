@@ -819,10 +819,78 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
 
+            // Função auxiliar para ler um arquivo como texto
+            const readFileAsText = (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(e);
+                    reader.readAsText(file);
+                });
+            };
+
+            // Ler o conteúdo dos arquivos como texto, quando aplicável
+            let policiesText = null;
+            let clientsText = null;
+            
+            if (files.policies && files.policies.type === 'text/csv') {
+                try {
+                    policiesText = await readFileAsText(files.policies);
+                    console.log("Conteúdo texto do arquivo de políticas obtido");
+                } catch (e) {
+                    console.error("Erro ao ler arquivo de políticas como texto:", e);
+                }
+            }
+            
+            if (files.clients && files.clients.type === 'text/csv') {
+                try {
+                    clientsText = await readFileAsText(files.clients);
+                    console.log("Conteúdo texto do arquivo de clientes obtido");
+                } catch (e) {
+                    console.error("Erro ao ler arquivo de clientes como texto:", e);
+                }
+            }
+            
             // Converter arquivos para Base64
             const requestData = {
-                location_id: locationId
+                location_id: locationId,
+                parse_options: {
+                    has_headers: true,
+                    delimiter: ',',
+                    first_row_as_header: true
+                }
             };
+            
+            // Adicionar arrays de cabeçalhos para ajudar o Make a interpretar os CSVs corretamente
+            requestData.policies_headers = [
+                "Number", "Status", "Clients", "Owner's Email", "Owner's Phone",
+                "Carrier", "Product", "Product Type", "Product Category", "State",
+                "Annual Premium", "Submitted Date", "Issued Date", "Effective Date",
+                "Agents", "Upline Agents"
+            ];
+            
+            requestData.clients_headers = [
+                "Number", "First Name", "Last Name", "Email", "Phone",
+                "Address", "City", "State", "Zip", "Country"
+            ];
+            
+            requestData.agents_headers = [
+                "Name", "Email", "Address", "Phone", "Status", 
+                "Upline Agent", "Compensation", "Start Date"
+            ];
+            
+            // Adicionar conteúdo de texto quando disponível
+            if (policiesText) {
+                requestData.policies_csv_text = policiesText;
+            }
+            
+            if (clientsText) {
+                requestData.clients_csv_text = clientsText;
+            }
+            
+            if (files.agentsCSV) {
+                requestData.agents_csv_text = files.agentsCSV;
+            }
             
             // Adicionar arquivos como Base64
             if (files.policies) {
@@ -835,9 +903,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     is_base64: true,
                     extension: getFileExtension(files.policies.name),
                     has_headers: true,
+                    headers_array: requestData.policies_headers,
                     csv_options: {
                         delimiter: ',',
-                        first_row_as_header: true
+                        first_row_as_header: true,
+                        columns: requestData.policies_headers
                     }
                 };
                 console.log(`Arquivo de políticas codificado: ${files.policies.name}`);
@@ -853,9 +923,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     is_base64: true,
                     extension: getFileExtension(files.clients.name),
                     has_headers: true,
+                    headers_array: requestData.clients_headers,
                     csv_options: {
                         delimiter: ',',
-                        first_row_as_header: true
+                        first_row_as_header: true,
+                        columns: requestData.clients_headers
                     }
                 };
                 console.log(`Arquivo de clientes codificado: ${files.clients.name}`);
@@ -869,12 +941,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     type: files.agents.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     mime_type: files.agents.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     is_base64: true,
-                    extension: getFileExtension(files.agents.name)
+                    extension: getFileExtension(files.agents.name),
+                    headers_array: requestData.agents_headers
                 };
                 console.log(`Arquivo de agentes codificado: ${files.agents.name}`);
                 
                 // Adicionar os dados CSV do agente, se disponível
                 if (files.agentsCSV) {
+                    // Enviar também como string no JSON principal para que o Make tenha acesso direto
+                    requestData.agent_csv_content = files.agentsCSV;
+                    
                     // Criar um Blob e converter para Base64
                     const csvBlob = new Blob([files.agentsCSV], { type: 'text/csv;charset=utf-8' });
                     const csvBase64 = await blobToBase64(csvBlob);
@@ -887,9 +963,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         is_base64: true,
                         extension: 'csv',
                         has_headers: true,
+                        headers_array: requestData.agents_headers,
                         csv_options: {
                             delimiter: ',',
-                            first_row_as_header: true
+                            first_row_as_header: true,
+                            columns: requestData.agents_headers
                         }
                     };
                     console.log(`CSV de agentes codificado: ${files.agents.name.replace(/\.[^/.]+$/, ".csv")}`);
@@ -912,6 +990,24 @@ document.addEventListener('DOMContentLoaded', function() {
             if (debugData.agent_csv && debugData.agent_csv.content) {
                 debugData.agent_csv.content = `[Base64 String - ${debugData.agent_csv.content.length} chars]`;
             }
+            
+            // Mostrar partes iniciais dos conteúdos CSV e headers
+            if (debugData.policies_csv_text) {
+                const preview = debugData.policies_csv_text.substring(0, 100) + '...';
+                debugData.policies_csv_text = `[CSV Text: ${preview}]`;
+                console.log(`Cabeçalhos de Políticas: ${JSON.stringify(debugData.policies_headers)}`);
+            }
+            if (debugData.clients_csv_text) {
+                const preview = debugData.clients_csv_text.substring(0, 100) + '...';
+                debugData.clients_csv_text = `[CSV Text: ${preview}]`;
+                console.log(`Cabeçalhos de Clientes: ${JSON.stringify(debugData.clients_headers)}`);
+            }
+            if (debugData.agent_csv_content) {
+                const preview = debugData.agent_csv_content.substring(0, 100) + '...';
+                debugData.agent_csv_content = `[CSV Text: ${preview}]`;
+                console.log(`Cabeçalhos de Agentes: ${JSON.stringify(debugData.agents_headers)}`);
+            }
+            
             console.log('Estrutura dos dados enviados:', debugData);
             
             const jsonResponse = await fetch(webhookUrl, {
