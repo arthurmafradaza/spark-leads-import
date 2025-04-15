@@ -530,18 +530,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Armazenar o CSV convertido
                 uploadedFiles.agentsCSV = result.data;
                 
-                agentsFileInfo.innerHTML = `
-                    <strong>Arquivo:</strong> ${file.name}
-                `;
+                agentsFileInfo.innerHTML = `${file.name}`;
                 agentsFileInfo.classList.add('show');
                 agentsUploadArea.style.borderColor = 'var(--success)';
                 agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo convertido para CSV com sucesso';
                 agentsStatus.className = 'status success';
             }).catch(error => {
-                agentsFileInfo.innerHTML = `
-                    <strong>Erro:</strong> ${error.error}<br>
-                    <strong>Arquivo:</strong> ${file.name}
-                `;
+                agentsFileInfo.innerHTML = `${file.name}`;
                 agentsFileInfo.classList.add('show');
                 agentsStatus.textContent = 'Erro ao converter arquivo';
                 agentsStatus.className = 'status error';
@@ -801,19 +796,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Obter o client_location_id da URL
             const locationId = getUrlParameter('client_location_id') || '';
             
-            console.log('Preparando arquivos para envio...');
-            
-            // Dois métodos possíveis de envio: primeiro com nomes dos arquivos, depois com dados Base64
-            
-            // 1. Primeiro método: enviar apenas os nomes dos arquivos
-            const requestData = {
-                location_id: locationId,
-                police_file: files.policies ? files.policies.name : '',
-                cliente_file: files.clients ? files.clients.name : '',
-                agent_file: files.agents ? files.agents.name : ''
-            };
-            
-            console.log('Enviando nomes dos arquivos para o webhook...');
+            console.log('Preparando arquivos para envio via webhook...');
             
             // Garantir que estamos usando HTTPS
             const webhookUrl = 'https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/192eb679-a7d7-4bf0-aebc-93b2d7faa735';
@@ -823,9 +806,53 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Erro: O webhook deve usar uma conexão segura (HTTPS)');
                 return false;
             }
+
+            // Criar um objeto FormData para envio de arquivos
+            const formData = new FormData();
             
-            // Enviar os nomes como JSON
+            // Adicionar o location_id
+            formData.append('location_id', locationId);
+            
+            // Adicionar os arquivos com os nomes esperados pelo webhook
+            if (files.policies) {
+                formData.append('police_file', files.policies, files.policies.name);
+            }
+            
+            if (files.clients) {
+                formData.append('cliente_file', files.clients, files.clients.name);
+            }
+            
+            if (files.agents) {
+                formData.append('agent_file', files.agents, files.agents.name);
+            }
+            
+            console.log('Enviando arquivos para o webhook...');
+            
+            // Enviar os arquivos diretamente via FormData (multipart/form-data)
             const response = await fetch(webhookUrl, {
+                method: 'POST',
+                // Não definimos o Content-Type aqui, pois o navegador o define automaticamente para FormData
+                body: formData
+            });
+            
+            console.log('Resposta do webhook:', response.status);
+            
+            if (response.ok) {
+                console.log('Webhook enviado com sucesso');
+                return true;
+            }
+            
+            // Se falhar, tentar com outro método - JSON simples com apenas os nomes dos arquivos
+            console.log('Método FormData falhou, tentando com JSON...');
+            
+            const requestData = {
+                location_id: locationId,
+                police_file: files.policies ? files.policies.name : '',
+                cliente_file: files.clients ? files.clients.name : '',
+                agent_file: files.agents ? files.agents.name : ''
+            };
+            
+            const jsonResponse = await fetch(webhookUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -834,46 +861,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(requestData)
             });
             
-            console.log('Resposta do webhook (nomes):', response.status);
+            console.log('Resposta do webhook (JSON):', jsonResponse.status);
             
-            if (response.ok) {
+            if (jsonResponse.ok) {
                 console.log('Webhook enviado com sucesso');
                 return true;
             }
             
-            console.log('Método de nomes falhou, tentando com URL params...');
-            
-            // 2. Segundo método: tentar com parâmetros na URL
-            const urlParams = new URLSearchParams();
-            urlParams.append('location_id', locationId);
-            
-            if (files.policies) {
-                urlParams.append('police_file', files.policies.name);
-            }
-            
-            if (files.clients) {
-                urlParams.append('cliente_file', files.clients.name);
-            }
-            
-            if (files.agents) {
-                urlParams.append('agent_file', files.agents.name);
-            }
-            
-            const urlResponse = await fetch(
-                `${webhookUrl}?${urlParams.toString()}`, 
-                { method: 'POST' }
-            );
-            
-            console.log('Resposta do webhook (URL params):', urlResponse.status);
-            
-            if (urlResponse.ok) {
-                console.log('Webhook enviado com sucesso');
-                return true;
-            }
-            
-            console.log('Todos os métodos falharam');
-            const errorText = await urlResponse.text();
-            console.error('Erro final do webhook:', urlResponse.status, errorText);
+            const errorText = await jsonResponse.text();
+            console.error('Erro final do webhook:', jsonResponse.status, errorText);
             return false;
             
         } catch (error) {
