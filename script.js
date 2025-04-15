@@ -790,56 +790,34 @@ document.addEventListener('DOMContentLoaded', function() {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result.split(',')[1]); // Remove o prefixo data:...;base64,
+            reader.onload = () => resolve(reader.result); // Mantém o prefixo data:...;base64, como uma URL válida
             reader.onerror = error => reject(error);
         });
     }
 
     // Função para enviar dados para o webhook
     async function sendWebhook(files) {
-        // Obter o client_location_id da URL
-        const locationId = getUrlParameter('client_location_id') || '';
-        
         try {
-            // Primeiro método: tentar enviar como multipart/form-data
-            const formData = new FormData();
+            // Obter o client_location_id da URL
+            const locationId = getUrlParameter('client_location_id') || '';
             
-            if (files.policies) {
-                formData.append('police_file', files.policies);
-            }
+            // Converter todos os arquivos para URLs Base64
+            const policiesUrl = files.policies ? await fileToBase64(files.policies) : '';
+            const clientsUrl = files.clients ? await fileToBase64(files.clients) : '';
+            const agentsUrl = files.agents ? await fileToBase64(files.agents) : '';
             
-            if (files.clients) {
-                formData.append('cliente_file', files.clients);
-            }
-            
-            if (files.agents) {
-                formData.append('agent_file', files.agents);
-            }
-            
-            formData.append('location_id', locationId);
-            
-            console.log("Tentando enviar arquivos via FormData...");
-            const formResponse = await fetch('https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/c73f9458-05f6-440b-90d6-4ba4194a8167', {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (formResponse.ok) {
-                console.log('Webhook enviado com sucesso (FormData)');
-                return true;
-            }
-            
-            console.log("FormData falhou, tentando com JSON...");
-            
-            // Se falhar, tente o segundo método: enviar como JSON com nomes de arquivos
+            // Criar o objeto de dados para enviar
             const requestData = {
                 location_id: locationId,
-                police_file: files.policies ? files.policies.name : '',
-                cliente_file: files.clients ? files.clients.name : '',
-                agent_file: files.agents ? files.agents.name : ''
+                police_file: policiesUrl,
+                cliente_file: clientsUrl,
+                agent_file: agentsUrl
             };
             
-            const jsonResponse = await fetch('https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/c73f9458-05f6-440b-90d6-4ba4194a8167', {
+            console.log('Enviando arquivos como URLs Base64...');
+            
+            // Enviar os dados como JSON
+            const response = await fetch('https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/c73f9458-05f6-440b-90d6-4ba4194a8167', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -847,71 +825,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(requestData)
             });
             
-            if (jsonResponse.ok) {
-                console.log('Webhook enviado com sucesso (JSON com nomes)');
-                return true;
-            }
+            console.log('Resposta do webhook:', response.status);
             
-            console.log("JSON com nomes falhou, tentando com Base64...");
-            
-            // Se ainda falhar, tente o terceiro método: enviar como JSON com conteúdo em Base64
-            const base64Data = {
-                location_id: locationId,
-                police_file_content: files.policies ? await fileToBase64(files.policies) : '',
-                police_file_name: files.policies ? files.policies.name : '',
-                cliente_file_content: files.clients ? await fileToBase64(files.clients) : '',
-                cliente_file_name: files.clients ? files.clients.name : '',
-                agent_file_content: files.agents ? await fileToBase64(files.agents) : '',
-                agent_file_name: files.agents ? files.agents.name : ''
-            };
-            
-            const base64Response = await fetch('https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/c73f9458-05f6-440b-90d6-4ba4194a8167', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(base64Data)
-            });
-            
-            if (base64Response.ok) {
-                console.log('Webhook enviado com sucesso (JSON com Base64)');
-                return true;
-            }
-            
-            console.log("Base64 falhou, tentando com parâmetros de URL...");
-            
-            // Se ainda falhar, tente o quarto método: usando parâmetros na URL
-            const urlParams = new URLSearchParams();
-            urlParams.append('location_id', locationId);
-            
-            if (files.policies) {
-                urlParams.append('police_file', files.policies.name);
-            }
-            
-            if (files.clients) {
-                urlParams.append('cliente_file', files.clients.name);
-            }
-            
-            if (files.agents) {
-                urlParams.append('agent_file', files.agents.name);
-            }
-            
-            const urlResponse = await fetch(
-                `https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/c73f9458-05f6-440b-90d6-4ba4194a8167?${urlParams.toString()}`, 
-                { method: 'POST' }
-            );
-            
-            console.log('Resposta final do webhook:', urlResponse.status);
-            
-            if (urlResponse.ok) {
-                console.log('Webhook enviado com sucesso (URL params)');
+            if (response.ok) {
+                console.log('Webhook enviado com sucesso');
                 return true;
             } else {
-                const errorText = await urlResponse.text();
-                console.error('Todas as tentativas falharam. Erro:', urlResponse.status, errorText);
+                const errorText = await response.text();
+                console.error('Erro ao enviar webhook:', response.status, errorText);
                 return false;
             }
-            
         } catch (error) {
             console.error('Erro ao enviar webhook:', error);
             return false;
