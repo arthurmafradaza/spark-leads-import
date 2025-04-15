@@ -491,8 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             policiesUploadArea.querySelector('.upload-text').textContent = file.name;
             policiesFileInfo.innerHTML = `
-                <strong>Arquivo:</strong> ${file.name}<br>
-                <strong>Tipo:</strong> CSV
+                <strong>Arquivo:</strong> ${file.name}
             `;
             policiesFileInfo.classList.add('show');
             policiesUploadArea.style.borderColor = 'var(--success)';
@@ -509,8 +508,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             clientsUploadArea.querySelector('.upload-text').textContent = file.name;
             clientsFileInfo.innerHTML = `
-                <strong>Arquivo:</strong> ${file.name}<br>
-                <strong>Tipo:</strong> CSV
+                <strong>Arquivo:</strong> ${file.name}
             `;
             clientsFileInfo.classList.add('show');
             clientsUploadArea.style.borderColor = 'var(--success)';
@@ -533,10 +531,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 uploadedFiles.agentsCSV = result.data;
                 
                 agentsFileInfo.innerHTML = `
-                    <strong>Arquivo:</strong> ${file.name}<br>
-                    <strong>Linhas:</strong> ${result.rows}<br>
-                    <strong>Colunas:</strong> ${result.columns}<br>
-                    <strong>Status:</strong> <span style="color: var(--success)">Convertido para CSV</span>
+                    <strong>Arquivo:</strong> ${file.name}
                 `;
                 agentsFileInfo.classList.add('show');
                 agentsUploadArea.style.borderColor = 'var(--success)';
@@ -621,7 +616,6 @@ document.addEventListener('DOMContentLoaded', function() {
             div.innerHTML = `
                 <i class="fas fa-file-csv"></i>
                 <span class="file-name">${uploadedFiles.policies.name}</span>
-                <span class="file-type">CSV</span>
             `;
             confirmationFiles.appendChild(div);
         }
@@ -632,7 +626,6 @@ document.addEventListener('DOMContentLoaded', function() {
             div.innerHTML = `
                 <i class="fas fa-file-csv"></i>
                 <span class="file-name">${uploadedFiles.clients.name}</span>
-                <span class="file-type">CSV</span>
             `;
             confirmationFiles.appendChild(div);
         }
@@ -643,7 +636,6 @@ document.addEventListener('DOMContentLoaded', function() {
             div.innerHTML = `
                 <i class="fas fa-file-excel"></i>
                 <span class="file-name">${uploadedFiles.agents.name}</span>
-                <span class="file-type">XLSX → CSV</span>
             `;
             confirmationFiles.appendChild(div);
         }
@@ -809,4 +801,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar a barra de progresso com apenas o primeiro passo
     initSingleStepProgressBar();
-}); 
+});
