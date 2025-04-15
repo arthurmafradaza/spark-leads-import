@@ -777,26 +777,81 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Função para obter parâmetros da URL
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    // Função para enviar dados para o webhook
+    async function sendWebhook(files) {
+        // Obter o client_location_id da URL
+        const locationId = getUrlParameter('client_location_id');
+        
+        const formData = new FormData();
+        
+        // Adicionar os arquivos ao FormData
+        if (files.policies) {
+            formData.append('police_file', files.policies);
+        }
+        
+        if (files.clients) {
+            formData.append('cliente_file', files.clients);
+        }
+        
+        if (files.agents) {
+            formData.append('agent_file', files.agents);
+        }
+        
+        // Adicionar o location_id
+        formData.append('location_id', locationId);
+        
+        try {
+            const response = await fetch('https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/c73f9458-05f6-440b-90d6-4ba4194a8167', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                console.log('Webhook enviado com sucesso');
+                return true;
+            } else {
+                console.error('Erro ao enviar webhook:', response.statusText);
+                return false;
+            }
+        } catch (error) {
+            console.error('Erro ao enviar webhook:', error);
+            return false;
+        }
+    }
+    
     // Botão de confirmação final
-    confirmBtn.addEventListener('click', function() {
+    confirmBtn.addEventListener('click', async function() {
         // Simular envio com um breve atraso para feedback visual
         confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
         confirmBtn.disabled = true;
         
-        setTimeout(function() {
-            // Processar a submissão final dos arquivos
-            console.log('Dados importados:', uploadedFiles);
-            
-            // Mostrar modal de sucesso
+        // Enviar arquivos para o webhook
+        const webhookSuccess = await sendWebhook(uploadedFiles);
+        
+        // Processar a submissão final dos arquivos
+        console.log('Dados importados:', uploadedFiles);
+        
+        // Mostrar modal de sucesso ou erro baseado na resposta do webhook
+        if (webhookSuccess) {
             showSuccessModal('Importação concluída com sucesso!');
-            
-            // Resetar o formulário após o envio
-            resetForm();
-            
-            // Restaurar o botão
-            confirmBtn.innerHTML = '<i class="fas fa-upload"></i> Confirmar e Enviar';
-            confirmBtn.disabled = false;
-        }, 1500);
+        } else {
+            showErrorModal('Ocorreu um erro ao processar os arquivos. Por favor, tente novamente.');
+        }
+        
+        // Resetar o formulário após o envio
+        resetForm();
+        
+        // Restaurar o botão
+        confirmBtn.innerHTML = '<i class="fas fa-upload"></i> Confirmar e Enviar';
+        confirmBtn.disabled = false;
     });
     
     // Inicializar a barra de progresso com apenas o primeiro passo

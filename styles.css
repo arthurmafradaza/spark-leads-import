@@ -186,7 +186,7 @@ header .container {
 
 /* Conteúdo principal */
 .main-content {
-    padding: 40px 0 50px;
+    padding: 20px 0 30px;
     flex: 1;
     position: relative;
 }
@@ -194,12 +194,12 @@ header .container {
 /* Títulos e textos */
 .page-title {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .page-title h2 {
-    font-size: 32px;
-    margin-bottom: 12px;
+    font-size: 28px;
+    margin-bottom: 8px;
     font-weight: 700;
     color: var(--text-light);
 }
@@ -214,7 +214,7 @@ header .container {
 
 /* Barra de progresso */
 .progress-bar {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     position: relative;
@@ -315,7 +315,7 @@ header .container {
 .form-section {
     background-color: var(--white);
     border-radius: var(--radius);
-    padding: 30px;
+    padding: 20px;
     box-shadow: var(--shadow-md);
     flex: 1;
     position: relative;
@@ -330,7 +330,7 @@ header .container {
 
 /* Grupos de formulário */
 .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 15px;
 }
 
 .form-group label {
@@ -391,7 +391,7 @@ header .container {
 .upload-area {
     border: 2px dashed var(--border);
     border-radius: var(--radius);
-    padding: 30px;
+    padding: 15px;
     text-align: center;
     cursor: pointer;
     transition: var(--transition);
@@ -417,9 +417,9 @@ header .container {
 }
 
 .upload-icon {
-    font-size: 40px;
+    font-size: 32px;
     color: var(--primary);
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     transition: var(--transition);
 }
 
@@ -1154,7 +1154,7 @@ footer::before {
 .upload-area {
     border: 2px dashed var(--border);
     border-radius: var(--radius);
-    padding: 30px;
+    padding: 15px;
     text-align: center;
     cursor: pointer;
     transition: var(--transition);
