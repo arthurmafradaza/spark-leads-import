@@ -833,7 +833,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     type: files.policies.type || 'text/csv',
                     mime_type: files.policies.type || 'text/csv',
                     is_base64: true,
-                    extension: getFileExtension(files.policies.name)
+                    extension: getFileExtension(files.policies.name),
+                    has_headers: true,
+                    csv_options: {
+                        delimiter: ',',
+                        first_row_as_header: true
+                    }
                 };
                 console.log(`Arquivo de políticas codificado: ${files.policies.name}`);
             }
@@ -846,7 +851,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     type: files.clients.type || 'text/csv',
                     mime_type: files.clients.type || 'text/csv',
                     is_base64: true,
-                    extension: getFileExtension(files.clients.name)
+                    extension: getFileExtension(files.clients.name),
+                    has_headers: true,
+                    csv_options: {
+                        delimiter: ',',
+                        first_row_as_header: true
+                    }
                 };
                 console.log(`Arquivo de clientes codificado: ${files.clients.name}`);
             }
@@ -866,16 +876,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Adicionar os dados CSV do agente, se disponível
                 if (files.agentsCSV) {
                     // Criar um Blob e converter para Base64
-                    const csvBlob = new Blob([files.agentsCSV], { type: 'text/csv' });
+                    const csvBlob = new Blob([files.agentsCSV], { type: 'text/csv;charset=utf-8' });
                     const csvBase64 = await blobToBase64(csvBlob);
                     
                     requestData.agent_csv = {
                         name: files.agents.name.replace(/\.[^/.]+$/, ".csv"),
                         content: csvBase64,
                         type: 'text/csv',
-                        mime_type: 'text/csv',
+                        mime_type: 'text/csv;charset=utf-8',
                         is_base64: true,
-                        extension: 'csv'
+                        extension: 'csv',
+                        has_headers: true,
+                        csv_options: {
+                            delimiter: ',',
+                            first_row_as_header: true
+                        }
                     };
                     console.log(`CSV de agentes codificado: ${files.agents.name.replace(/\.[^/.]+$/, ".csv")}`);
                 }
