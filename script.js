@@ -814,15 +814,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 agent_file: agentsUrl
             };
             
-            console.log('Enviando arquivos como URLs Base64...');
+            console.log('Enviando arquivos como URLs Base64 via HTTPS...');
+            
+            // Garantir que estamos usando HTTPS
+            const webhookUrl = 'https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/c73f9458-05f6-440b-90d6-4ba4194a8167';
+            
+            // Verificar se o URL começa com https://
+            if (!webhookUrl.startsWith('https://')) {
+                console.error('Erro: O webhook deve usar uma conexão segura (HTTPS)');
+                return false;
+            }
             
             // Enviar os dados como JSON
-            const response = await fetch('https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/c73f9458-05f6-440b-90d6-4ba4194a8167', {
+            const response = await fetch(webhookUrl, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
                 },
-                body: JSON.stringify(requestData)
+                body: JSON.stringify(requestData),
+                mode: 'cors',
+                credentials: 'same-origin',
+                redirect: 'follow'
             });
             
             console.log('Resposta do webhook:', response.status);
