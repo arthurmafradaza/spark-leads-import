@@ -791,8 +791,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const sizeInMB = (base64String.length * 0.75) / (1024*1024);
                 console.log(`Arquivo ${file.name} convertido para Base64: ${sizeInMB.toFixed(2)}MB`);
                 
-                // Retornar o resultado Base64
-                resolve(base64String);
+                // Remover o prefixo data:tipo;base64, para obter apenas os dados Base64
+                const base64Data = base64String.split(',')[1];
+                
+                // Retornar apenas a parte Base64 pura
+                resolve(base64Data);
             };
             reader.onerror = error => reject(error);
         });
@@ -827,7 +830,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 requestData.police_file = {
                     name: files.policies.name,
                     content: policiesBase64,
-                    type: files.policies.type
+                    type: files.policies.type || 'text/csv',
+                    mime_type: files.policies.type || 'text/csv',
+                    is_base64: true,
+                    extension: getFileExtension(files.policies.name)
                 };
                 console.log(`Arquivo de políticas codificado: ${files.policies.name}`);
             }
@@ -837,7 +843,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 requestData.cliente_file = {
                     name: files.clients.name,
                     content: clientsBase64,
-                    type: files.clients.type
+                    type: files.clients.type || 'text/csv',
+                    mime_type: files.clients.type || 'text/csv',
+                    is_base64: true,
+                    extension: getFileExtension(files.clients.name)
                 };
                 console.log(`Arquivo de clientes codificado: ${files.clients.name}`);
             }
@@ -847,7 +856,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 requestData.agent_file = {
                     name: files.agents.name,
                     content: agentsBase64,
-                    type: files.agents.type
+                    type: files.agents.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    mime_type: files.agents.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    is_base64: true,
+                    extension: getFileExtension(files.agents.name)
                 };
                 console.log(`Arquivo de agentes codificado: ${files.agents.name}`);
                 
@@ -860,13 +872,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     requestData.agent_csv = {
                         name: files.agents.name.replace(/\.[^/.]+$/, ".csv"),
                         content: csvBase64,
-                        type: 'text/csv'
+                        type: 'text/csv',
+                        mime_type: 'text/csv',
+                        is_base64: true,
+                        extension: 'csv'
                     };
                     console.log(`CSV de agentes codificado: ${files.agents.name.replace(/\.[^/.]+$/, ".csv")}`);
                 }
             }
             
             console.log('Enviando dados para o webhook Make via JSON/Base64...');
+            
+            // Log para diagnóstico - mostra a estrutura do objeto enviado (sem os conteúdos reais do Base64)
+            const debugData = JSON.parse(JSON.stringify(requestData));
+            if (debugData.police_file && debugData.police_file.content) {
+                debugData.police_file.content = `[Base64 String - ${debugData.police_file.content.length} chars]`;
+            }
+            if (debugData.cliente_file && debugData.cliente_file.content) {
+                debugData.cliente_file.content = `[Base64 String - ${debugData.cliente_file.content.length} chars]`;
+            }
+            if (debugData.agent_file && debugData.agent_file.content) {
+                debugData.agent_file.content = `[Base64 String - ${debugData.agent_file.content.length} chars]`;
+            }
+            if (debugData.agent_csv && debugData.agent_csv.content) {
+                debugData.agent_csv.content = `[Base64 String - ${debugData.agent_csv.content.length} chars]`;
+            }
+            console.log('Estrutura dos dados enviados:', debugData);
             
             const jsonResponse = await fetch(webhookUrl, {
                 method: 'POST',
@@ -948,10 +979,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const reader = new FileReader();
             reader.readAsDataURL(blob);
             reader.onload = () => {
-                resolve(reader.result);
+                // Remover o prefixo data:tipo;base64, para obter apenas os dados Base64
+                const base64String = reader.result;
+                const base64Data = base64String.split(',')[1];
+                
+                // Retornar apenas a parte Base64 pura
+                resolve(base64Data);
             };
             reader.onerror = error => reject(error);
         });
+    }
+    
+    // Função para obter a extensão de um arquivo
+    function getFileExtension(filename) {
+        return filename.split('.').pop().toLowerCase();
     }
     
     // Botão de confirmação final
