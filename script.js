@@ -804,11 +804,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Obter o client_location_id da URL
             const locationId = getUrlParameter('client_location_id') || '';
             
-            console.log('Preparando arquivos para envio via webhook...');
-            console.log('Nota: Os arquivos serão enviados diretamente como dados binários ou Base64, não como URLs para download.');
+            console.log('Preparando arquivos para envio via webhook Make...');
+            console.log('Codificando arquivos em Base64 para envio...');
             
             // Garantir que estamos usando HTTPS
-            const webhookUrl = 'https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/192eb679-a7d7-4bf0-aebc-93b2d7faa735';
+            const webhookUrl = 'https://hook.us1.make.com/gerqw9zrak7lhliutaj0196c75ldn9u4';
             
             // Verificar se o URL começa com https://
             if (!webhookUrl.startsWith('https://')) {
@@ -816,6 +816,77 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
 
+            // Converter arquivos para Base64
+            const requestData = {
+                location_id: locationId
+            };
+            
+            // Adicionar arquivos como Base64
+            if (files.policies) {
+                const policiesBase64 = await fileToBase64(files.policies);
+                requestData.police_file = {
+                    name: files.policies.name,
+                    content: policiesBase64,
+                    type: files.policies.type
+                };
+                console.log(`Arquivo de políticas codificado: ${files.policies.name}`);
+            }
+            
+            if (files.clients) {
+                const clientsBase64 = await fileToBase64(files.clients);
+                requestData.cliente_file = {
+                    name: files.clients.name,
+                    content: clientsBase64,
+                    type: files.clients.type
+                };
+                console.log(`Arquivo de clientes codificado: ${files.clients.name}`);
+            }
+            
+            if (files.agents) {
+                const agentsBase64 = await fileToBase64(files.agents);
+                requestData.agent_file = {
+                    name: files.agents.name,
+                    content: agentsBase64,
+                    type: files.agents.type
+                };
+                console.log(`Arquivo de agentes codificado: ${files.agents.name}`);
+                
+                // Adicionar os dados CSV do agente, se disponível
+                if (files.agentsCSV) {
+                    // Criar um Blob e converter para Base64
+                    const csvBlob = new Blob([files.agentsCSV], { type: 'text/csv' });
+                    const csvBase64 = await blobToBase64(csvBlob);
+                    
+                    requestData.agent_csv = {
+                        name: files.agents.name.replace(/\.[^/.]+$/, ".csv"),
+                        content: csvBase64,
+                        type: 'text/csv'
+                    };
+                    console.log(`CSV de agentes codificado: ${files.agents.name.replace(/\.[^/.]+$/, ".csv")}`);
+                }
+            }
+            
+            console.log('Enviando dados para o webhook Make via JSON/Base64...');
+            
+            const jsonResponse = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            console.log('Resposta do webhook Make:', jsonResponse.status);
+            
+            if (jsonResponse.ok) {
+                console.log('Webhook enviado com sucesso para o Make');
+                return true;
+            }
+            
+            // Se falhar, tentar com FormData como fallback
+            console.log('Método JSON falhou, tentando com FormData...');
+            
             // Criar um objeto FormData para envio de arquivos
             const formData = new FormData();
             
@@ -861,125 +932,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 return true;
             }
             
-            // Se falhar, tentar com outro método - JSON com arquivos em Base64
-            console.log('Método FormData falhou, tentando com JSON e Base64...');
-            
-            // Converter arquivos para Base64
-            const requestData = {
-                location_id: locationId
-            };
-            
-            // Limite máximo de tamanho para arquivos (em MB)
-            const MAX_FILE_SIZE_MB = 5;
-            let arquivosMuitoGrandes = false;
-            
-            // Adicionar arquivos como Base64, verificando tamanho
-            if (files.policies) {
-                const policiesBase64 = await fileToBase64(files.policies);
-                const sizeMB = (policiesBase64.length * 0.75) / (1024*1024);
-                
-                if (sizeMB > MAX_FILE_SIZE_MB) {
-                    console.warn(`Arquivo de políticas muito grande: ${sizeMB.toFixed(2)}MB`);
-                    arquivosMuitoGrandes = true;
-                    requestData.police_file = {
-                        name: files.policies.name,
-                        size: files.policies.size,
-                        type: files.policies.type,
-                        too_large: true
-                    };
-                } else {
-                    requestData.police_file = {
-                        name: files.policies.name,
-                        content: policiesBase64,
-                        type: files.policies.type
-                    };
-                }
-            }
-            
-            if (files.clients) {
-                const clientsBase64 = await fileToBase64(files.clients);
-                const sizeMB = (clientsBase64.length * 0.75) / (1024*1024);
-                
-                if (sizeMB > MAX_FILE_SIZE_MB) {
-                    console.warn(`Arquivo de clientes muito grande: ${sizeMB.toFixed(2)}MB`);
-                    arquivosMuitoGrandes = true;
-                    requestData.cliente_file = {
-                        name: files.clients.name,
-                        size: files.clients.size,
-                        type: files.clients.type,
-                        too_large: true
-                    };
-                } else {
-                    requestData.cliente_file = {
-                        name: files.clients.name,
-                        content: clientsBase64,
-                        type: files.clients.type
-                    };
-                }
-            }
-            
-            if (files.agents) {
-                const agentsBase64 = await fileToBase64(files.agents);
-                const sizeMB = (agentsBase64.length * 0.75) / (1024*1024);
-                
-                if (sizeMB > MAX_FILE_SIZE_MB) {
-                    console.warn(`Arquivo de agentes muito grande: ${sizeMB.toFixed(2)}MB`);
-                    arquivosMuitoGrandes = true;
-                    requestData.agent_file = {
-                        name: files.agents.name,
-                        size: files.agents.size,
-                        type: files.agents.type,
-                        too_large: true
-                    };
-                } else {
-                    requestData.agent_file = {
-                        name: files.agents.name,
-                        content: agentsBase64,
-                        type: files.agents.type
-                    };
-                }
-                
-                // Adicionar os dados CSV do agente, se disponível
-                if (files.agentsCSV) {
-                    requestData.agent_csv = {
-                        name: files.agents.name.replace(/\.[^/.]+$/, ".csv"),
-                        content: files.agentsCSV,
-                        type: 'text/csv'
-                    };
-                }
-            }
-            
-            // Verificar se temos arquivos grandes demais
-            if (arquivosMuitoGrandes) {
-                console.log('Alguns arquivos são muito grandes para envio direto. Enviando apenas metadados...');
-            }
-            
-            console.log('Enviando dados para o webhook via JSON...');
-            
-            const jsonResponse = await fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            });
-            
-            console.log('Resposta do webhook (JSON):', jsonResponse.status);
-            
-            if (jsonResponse.ok) {
-                console.log('Webhook enviado com sucesso via JSON');
-                return true;
-            }
-            
-            const errorText = await jsonResponse.text();
-            console.error('Erro final do webhook:', jsonResponse.status, errorText);
+            const errorText = await response.text();
+            console.error('Erro final do webhook:', response.status, errorText);
             return false;
             
         } catch (error) {
             console.error('Erro ao enviar webhook:', error);
             return false;
         }
+    }
+    
+    // Função auxiliar para converter Blob para Base64
+    function blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onload = () => {
+                resolve(reader.result);
+            };
+            reader.onerror = error => reject(error);
+        });
     }
     
     // Botão de confirmação final
