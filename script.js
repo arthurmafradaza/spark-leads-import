@@ -785,74 +785,35 @@ document.addEventListener('DOMContentLoaded', function() {
         return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
     }
 
+    // Função para converter arquivo para Base64
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result); // Mantém o prefixo data:...;base64, como uma URL válida
+            reader.onerror = error => reject(error);
+        });
+    }
+
     // Função para enviar dados para o webhook
     async function sendWebhook(files) {
         try {
             // Obter o client_location_id da URL
             const locationId = getUrlParameter('client_location_id') || '';
             
-            console.log('Preparando arquivos para envio via URLs de download...');
+            console.log('Preparando arquivos para envio...');
             
-            /* 
-            IMPORTANTE: Esta implementação assume que você tem um endpoint de upload de arquivos 
-            no GoHighLevel que retorna URLs de download no formato correto:
-            https://services.leadconnectorhq.com/documents/download/ID_DO_ARQUIVO
+            // Dois métodos possíveis de envio: primeiro com nomes dos arquivos, depois com dados Base64
             
-            Se você não tiver esse endpoint configurado, você precisará:
-            1. Criar um fluxo no Make.com ou similar para receber os arquivos 
-            2. Salvar os arquivos e gerar URLs de download
-            3. Enviar essas URLs para o webhook final
-            */
-            
-            // Primeiro precisamos enviar os arquivos para o servidor para obter URLs de download
-            const urls = {};
-            
-            // Função para fazer upload de um arquivo e obter a URL de download
-            async function uploadFileAndGetUrl(file, fileType) {
-                if (!file) return null;
-                
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('type', fileType);
-                formData.append('location_id', locationId);
-                
-                try {
-                    // Esta é a URL do seu endpoint de upload de arquivos no servidor
-                    // que deverá processar o arquivo e retornar uma URL de download
-                    const uploadResponse = await fetch('https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/file-upload/192eb679-a7d7-4bf0-aebc-93b2d7faa735', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    if (uploadResponse.ok) {
-                        const data = await uploadResponse.json();
-                        return data.downloadUrl; // Assumindo que o servidor retorna a URL de download
-                    } else {
-                        console.error(`Erro ao fazer upload do arquivo ${fileType}:`, uploadResponse.status);
-                        return null;
-                    }
-                } catch (error) {
-                    console.error(`Erro ao fazer upload do arquivo ${fileType}:`, error);
-                    return null;
-                }
-            }
-            
-            // Fazer upload de todos os arquivos em paralelo
-            const [policiesUrl, clientsUrl, agentsUrl] = await Promise.all([
-                files.policies ? uploadFileAndGetUrl(files.policies, 'police_file') : Promise.resolve(null),
-                files.clients ? uploadFileAndGetUrl(files.clients, 'cliente_file') : Promise.resolve(null),
-                files.agents ? uploadFileAndGetUrl(files.agents, 'agent_file') : Promise.resolve(null)
-            ]);
-            
-            // Criar o objeto de dados para enviar com as URLs obtidas
+            // 1. Primeiro método: enviar apenas os nomes dos arquivos
             const requestData = {
                 location_id: locationId,
-                police_file: policiesUrl,
-                cliente_file: clientsUrl,
-                agent_file: agentsUrl
+                police_file: files.policies ? files.policies.name : '',
+                cliente_file: files.clients ? files.clients.name : '',
+                agent_file: files.agents ? files.agents.name : ''
             };
             
-            console.log('Enviando URLs de download para o webhook...');
+            console.log('Enviando nomes dos arquivos para o webhook...');
             
             // Garantir que estamos usando HTTPS
             const webhookUrl = 'https://services.leadconnectorhq.com/hooks/efZEjK6PqtPGDHqB2vV6/webhook-trigger/192eb679-a7d7-4bf0-aebc-93b2d7faa735';
@@ -863,31 +824,58 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
             
-            // Enviar as URLs como JSON
+            // Enviar os nomes como JSON
             const response = await fetch(webhookUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache'
+                    'Accept': 'application/json'
                 },
-                body: JSON.stringify(requestData),
-                mode: 'cors',
-                credentials: 'same-origin',
-                redirect: 'follow'
+                body: JSON.stringify(requestData)
             });
             
-            console.log('Resposta do webhook:', response.status);
+            console.log('Resposta do webhook (nomes):', response.status);
             
             if (response.ok) {
                 console.log('Webhook enviado com sucesso');
                 return true;
-            } else {
-                const errorText = await response.text();
-                console.error('Erro ao enviar webhook:', response.status, errorText);
-                return false;
             }
+            
+            console.log('Método de nomes falhou, tentando com URL params...');
+            
+            // 2. Segundo método: tentar com parâmetros na URL
+            const urlParams = new URLSearchParams();
+            urlParams.append('location_id', locationId);
+            
+            if (files.policies) {
+                urlParams.append('police_file', files.policies.name);
+            }
+            
+            if (files.clients) {
+                urlParams.append('cliente_file', files.clients.name);
+            }
+            
+            if (files.agents) {
+                urlParams.append('agent_file', files.agents.name);
+            }
+            
+            const urlResponse = await fetch(
+                `${webhookUrl}?${urlParams.toString()}`, 
+                { method: 'POST' }
+            );
+            
+            console.log('Resposta do webhook (URL params):', urlResponse.status);
+            
+            if (urlResponse.ok) {
+                console.log('Webhook enviado com sucesso');
+                return true;
+            }
+            
+            console.log('Todos os métodos falharam');
+            const errorText = await urlResponse.text();
+            console.error('Erro final do webhook:', urlResponse.status, errorText);
+            return false;
+            
         } catch (error) {
             console.error('Erro ao enviar webhook:', error);
             return false;
