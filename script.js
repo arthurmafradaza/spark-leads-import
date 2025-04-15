@@ -530,19 +530,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Armazenar o CSV convertido
                 uploadedFiles.agentsCSV = result.data;
                 
-                agentsFileInfo.innerHTML = `
-                    <strong>Arquivo:</strong> ${file.name}<br>
-                    <strong>Convertido:</strong> CSV (${result.rows} linhas, ${result.columns} colunas)
-                `;
+                agentsFileInfo.innerHTML = `${file.name}`;
                 agentsFileInfo.classList.add('show');
                 agentsUploadArea.style.borderColor = 'var(--success)';
                 agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo convertido para CSV com sucesso';
                 agentsStatus.className = 'status success';
             }).catch(error => {
-                agentsFileInfo.innerHTML = `
-                    <strong>Arquivo:</strong> ${file.name}<br>
-                    <strong>Erro:</strong> Não foi possível converter para CSV
-                `;
+                agentsFileInfo.innerHTML = `${file.name}`;
                 agentsFileInfo.classList.add('show');
                 agentsStatus.textContent = 'Erro ao converter arquivo';
                 agentsStatus.className = 'status error';
