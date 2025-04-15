@@ -15,6 +15,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressBar = document.querySelector('.progress-bar');
     const progressInfo = document.querySelector('.progress-info');
     
+    // Elementos do modal
+    const modalOverlay = document.getElementById('modalOverlay');
+    const successModal = document.getElementById('successModal');
+    const errorModal = document.getElementById('errorModal');
+    const modalOkButton = document.getElementById('modalOkButton');
+    const errorModalButton = document.getElementById('errorModalButton');
+    const errorMessage = document.getElementById('errorMessage');
+    
     // Upload areas
     const policiesUploadArea = document.getElementById('policiesUploadArea');
     const clientsUploadArea = document.getElementById('clientsUploadArea');
@@ -49,6 +57,9 @@ document.addEventListener('DOMContentLoaded', function() {
         clients: null,
         agents: null
     };
+    
+    // Inicializar funções de modal
+    initModals();
     
     // Configuração de tooltips
     setupTooltips();
@@ -89,6 +100,62 @@ document.addEventListener('DOMContentLoaded', function() {
             importTypeWrapper.classList.remove('open');
         }
     });
+    
+    // Inicializar funções de modal
+    function initModals() {
+        // Configurar botões para fechar os modais
+        modalOkButton.addEventListener('click', closeModals);
+        errorModalButton.addEventListener('click', closeModals);
+        
+        // Fechar modal ao clicar fora (overlay)
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                closeModals();
+            }
+        });
+        
+        // Suporte a teclado para modais (ESC para fechar)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+                closeModals();
+            }
+        });
+    }
+    
+    // Exibir modal de sucesso
+    function showSuccessModal(message) {
+        if (message) {
+            successModal.querySelector('.modal-message').textContent = message;
+        } else {
+            successModal.querySelector('.modal-message').textContent = 'Operação realizada com sucesso!';
+        }
+        
+        modalOverlay.classList.add('active');
+        successModal.classList.add('active');
+        errorModal.classList.remove('active');
+        
+        // Foco no botão OK para acessibilidade
+        setTimeout(() => modalOkButton.focus(), 100);
+    }
+    
+    // Exibir modal de erro
+    function showErrorModal(message) {
+        errorMessage.textContent = message || 'Ocorreu um erro.';
+        
+        modalOverlay.classList.add('active');
+        errorModal.classList.add('active');
+        successModal.classList.remove('active');
+        
+        // Foco no botão OK para acessibilidade
+        setTimeout(() => errorModalButton.focus(), 100);
+    }
+    
+    // Fechar todos os modais
+    function closeModals() {
+        modalOverlay.classList.remove('active');
+        successModal.classList.remove('active');
+        errorModal.classList.remove('active');
+    }
     
     // Função para criar tooltips
     function setupTooltips() {
@@ -235,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Função para avançar para a próxima etapa com base no tipo de importação
     function goToNextStep() {
         if (!selectedImportType) {
-            alert('Por favor, selecione um tipo de importação.');
+            showErrorModal('Por favor, selecione um tipo de importação.');
             return;
         }
         
@@ -591,11 +658,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedImportType === 'multiple-policies') {
                 // Verificar se arquivos de apólices e clientes foram carregados
                 if (!uploadedFiles.policies) {
-                    alert('Por favor, carregue um arquivo de apólices.');
+                    showErrorModal('Por favor, carregue um arquivo de apólices.');
                     return;
                 }
                 if (!uploadedFiles.clients) {
-                    alert('Por favor, carregue um arquivo de clientes.');
+                    showErrorModal('Por favor, carregue um arquivo de clientes.');
                     return;
                 }
                 
@@ -610,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (selectedImportType === 'multiple-agents') {
                 // Verificar se arquivo de agentes foi carregado
                 if (!uploadedFiles.agents) {
-                    alert('Por favor, carregue um arquivo de agentes.');
+                    showErrorModal('Por favor, carregue um arquivo de agentes.');
                     return;
                 }
                 
@@ -625,11 +692,11 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (selectedImportType === 'import-both') {
                 // Verificar se arquivos de apólices e clientes foram carregados
                 if (!uploadedFiles.policies) {
-                    alert('Por favor, carregue um arquivo de apólices.');
+                    showErrorModal('Por favor, carregue um arquivo de apólices.');
                     return;
                 }
                 if (!uploadedFiles.clients) {
-                    alert('Por favor, carregue um arquivo de clientes.');
+                    showErrorModal('Por favor, carregue um arquivo de clientes.');
                     return;
                 }
                 
@@ -642,7 +709,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedImportType === 'import-both') {
                 // Verificar se arquivo de agentes foi carregado
                 if (!uploadedFiles.agents) {
-                    alert('Por favor, carregue um arquivo de agentes.');
+                    showErrorModal('Por favor, carregue um arquivo de agentes.');
                     return;
                 }
                 
@@ -720,12 +787,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Botão de confirmação final
     confirmBtn.addEventListener('click', function() {
-        // Processar a submissão final dos arquivos
-        alert('Importação concluída com sucesso!');
-        console.log('Dados importados:', uploadedFiles);
+        // Simular envio com um breve atraso para feedback visual
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+        confirmBtn.disabled = true;
         
-        // Resetar o formulário após o envio
-        resetForm();
+        setTimeout(function() {
+            // Processar a submissão final dos arquivos
+            console.log('Dados importados:', uploadedFiles);
+            
+            // Mostrar modal de sucesso
+            showSuccessModal('Importação concluída com sucesso!');
+            
+            // Resetar o formulário após o envio
+            resetForm();
+            
+            // Restaurar o botão
+            confirmBtn.innerHTML = '<i class="fas fa-upload"></i> Confirmar e Enviar';
+            confirmBtn.disabled = false;
+        }, 1500);
     });
     
     // Inicializar a barra de progresso com apenas o primeiro passo
