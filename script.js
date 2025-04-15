@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressSteps = document.querySelectorAll('.progress-step');
     const clientsUploadGroup = document.getElementById('clientsUploadGroup');
     const progressBar = document.querySelector('.progress-bar');
+    const progressInfo = document.querySelector('.progress-info');
     
     // Upload areas
     const policiesUploadArea = document.getElementById('policiesUploadArea');
@@ -49,10 +50,37 @@ document.addEventListener('DOMContentLoaded', function() {
         agents: null
     };
     
+    // Configuração de tooltips
+    setupTooltips();
+    
+    // Configuração de acessibilidade para upload areas
+    setupAccessibleUploads();
+    
     // Abrir/fechar dropdown de seleção
     importTypeWrapper.addEventListener('click', function(e) {
         this.classList.toggle('open');
         e.stopPropagation();
+    });
+    
+    // Suporte a teclado para dropdown
+    importType.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            importTypeWrapper.classList.add('open');
+        }
+    });
+    
+    // Suporte a teclado para opções de dropdown
+    selectOptions.forEach(option => {
+        option.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+        
+        // Adicionar tabindex para navegação por teclado
+        option.setAttribute('tabindex', '0');
     });
     
     // Clicar fora para fechar dropdown
@@ -61,6 +89,56 @@ document.addEventListener('DOMContentLoaded', function() {
             importTypeWrapper.classList.remove('open');
         }
     });
+    
+    // Função para criar tooltips
+    function setupTooltips() {
+        const tooltipTriggers = document.querySelectorAll('.tooltip-trigger');
+        
+        tooltipTriggers.forEach(trigger => {
+            // Adicionar suporte a teclado
+            trigger.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const tooltip = this.nextElementSibling;
+                    tooltip.style.display = tooltip.style.display === 'block' ? 'none' : 'block';
+                }
+            });
+            
+            // Fechar tooltip ao clicar fora
+            document.addEventListener('click', function(e) {
+                if (!trigger.contains(e.target)) {
+                    trigger.nextElementSibling.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    // Função para configurar acessibilidade nas áreas de upload
+    function setupAccessibleUploads() {
+        const uploadAreas = document.querySelectorAll('.upload-area');
+        
+        uploadAreas.forEach(area => {
+            // Permitir ativação via teclado (Enter ou Space)
+            area.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    // Clicar no input de arquivo
+                    this.querySelector('input[type="file"]').click();
+                }
+            });
+            
+            // Melhorar feedback visual para estado de foco
+            area.addEventListener('focus', function() {
+                this.style.borderColor = 'var(--primary)';
+                this.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.3)';
+            });
+            
+            area.addEventListener('blur', function() {
+                this.style.borderColor = '';
+                this.style.boxShadow = '';
+            });
+        });
+    }
     
     // Inicializar apenas o passo 1 centralizado
     function initSingleStepProgressBar() {
@@ -85,6 +163,11 @@ document.addEventListener('DOMContentLoaded', function() {
         stepDiv.appendChild(stepTitle);
         
         progressBar.appendChild(stepDiv);
+        
+        // Atualizar texto de progresso
+        if (progressInfo) {
+            progressInfo.innerHTML = '<span class="current-step">Etapa 1 de 1:</span> Tipo de Importação';
+        }
     }
     
     // Ajustar a barra de progresso com base no tipo de importação
@@ -142,6 +225,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             progressBar.appendChild(stepDiv);
         });
+        
+        // Atualizar texto de progresso
+        if (progressInfo) {
+            progressInfo.innerHTML = `<span class="current-step">Etapa 1 de ${totalSteps}:</span> Tipo de Importação`;
+        }
     }
     
     // Função para avançar para a próxima etapa com base no tipo de importação
@@ -403,17 +491,50 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateStep(step) {
         currentStep = step;
         
-        // Atualizar indicadores de progresso
-        const progressSteps = document.querySelectorAll('.progress-step');
-        progressSteps.forEach((stepElement, index) => {
-            stepElement.classList.remove('active', 'completed');
-            
+        // Atualizar as classes dos passos
+        document.querySelectorAll('.progress-step').forEach((stepElement, index) => {
             if (index + 1 < currentStep) {
+                stepElement.classList.remove('active');
                 stepElement.classList.add('completed');
             } else if (index + 1 === currentStep) {
                 stepElement.classList.add('active');
+                stepElement.classList.remove('completed');
+            } else {
+                stepElement.classList.remove('active', 'completed');
             }
         });
+        
+        // Atualizar o texto de progresso
+        if (progressInfo) {
+            let stepTitle = '';
+            if (currentStep === 1) stepTitle = 'Tipo de Importação';
+            else if (currentStep === 2) {
+                if (selectedImportType === 'multiple-policies' || selectedImportType === 'import-both') {
+                    stepTitle = 'Apólices/Clientes';
+                } else {
+                    stepTitle = 'Agentes';
+                }
+            }
+            else if (currentStep === 3) {
+                if (selectedImportType === 'import-both') {
+                    stepTitle = 'Agentes';
+                } else {
+                    stepTitle = 'Confirmação';
+                }
+            }
+            else if (currentStep === 4) stepTitle = 'Confirmação';
+            
+            progressInfo.innerHTML = `<span class="current-step">Etapa ${currentStep} de ${totalSteps}:</span> ${stepTitle}`;
+            
+            // Anunciar para leitores de tela
+            progressInfo.setAttribute('aria-live', 'polite');
+        }
+        
+        // Adicionar class .current no passo atual
+        const currentStepElement = document.querySelector(`.progress-step:nth-child(${currentStep})`);
+        if (currentStepElement) {
+            currentStepElement.classList.add('current');
+        }
         
         // Mostrar/esconder botão anterior
         if (currentStep > 1) {

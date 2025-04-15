@@ -400,10 +400,16 @@ header .container {
     overflow: hidden;
 }
 
-.upload-area:hover {
+.upload-area:hover,
+.upload-area:focus {
     border-color: var(--primary);
     background-color: rgba(59, 130, 246, 0.05);
     transform: translateY(-2px);
+    outline: none;
+}
+
+.upload-area:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
 .upload-area:active {
@@ -954,4 +960,278 @@ footer::before {
 .progress-bar {
     --total-steps: 4;
     --current-step: 1;
+}
+
+/* Link de acessibilidade para pular navegação */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--primary);
+    color: white;
+    padding: 8px;
+    z-index: 1000;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Melhorias de acessibilidade */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Estilos de indicação visual para campos obrigatórios */
+.required {
+    color: #e74c3c;
+    margin-left: 2px;
+}
+
+/* Tooltips de ajuda */
+.tooltip-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.tooltip-trigger {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    padding: 0;
+    margin-left: 8px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tooltip-trigger:hover, 
+.tooltip-trigger:focus {
+    color: var(--primary-dark);
+}
+
+.tooltip-content {
+    display: none;
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 15px;
+    width: 280px;
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+    font-size: 14px;
+}
+
+.tooltip-container:hover .tooltip-content,
+.tooltip-trigger:focus + .tooltip-content {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+.tooltip-content p {
+    margin: 0 0 8px;
+    line-height: 1.4;
+}
+
+.tooltip-content ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.tooltip-content li {
+    margin-bottom: 5px;
+}
+
+.tooltip-link {
+    display: inline-block;
+    margin-top: 8px;
+    color: var(--primary);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.tooltip-link:hover,
+.tooltip-link:focus {
+    text-decoration: underline;
+}
+
+/* Contêiner da barra de progresso com informações textuais */
+.progress-container {
+    margin-bottom: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.progress-info {
+    text-align: center;
+    margin-bottom: 15px;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.current-step {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Estilização melhorada para links de ajuda */
+.help-link {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    background-color: var(--light-bg);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.help-link-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 400;
+}
+
+.help-link:hover {
+    background-color: var(--primary);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.help-link:hover .help-link-desc {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.help-link i {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.help-contact {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 14px;
+}
+
+.help-contact a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.help-contact a:hover {
+    text-decoration: underline;
+}
+
+/* Upload area com melhor feedback de interação */
+.upload-area {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    background-color: var(--light-bg);
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-area:hover,
+.upload-area:focus {
+    border-color: var(--primary);
+    background-color: rgba(59, 130, 246, 0.05);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.upload-area:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.upload-area:active {
+    transform: translateY(0);
+}
+
+/* Footer com links úteis */
+.footer-links {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+/* Cabeçalho principal estilizado para h1 */
+.page-title h1 {
+    font-size: 32px;
+    margin-bottom: 12px;
+    font-weight: 700;
+    color: var(--text-light);
+}
+
+/* Estilos responsivos adicionais */
+@media (max-width: 768px) {
+    .tooltip-content {
+        width: 260px;
+    }
+    
+    .page-title h1 {
+        font-size: 28px;
+    }
+    
+    .tooltip-container {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 576px) {
+    .tooltip-content {
+        width: 100%;
+        left: 0;
+        right: 0;
+    }
+    
+    .page-title h1 {
+        font-size: 24px;
+    }
+    
+    .footer-links {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
 } 
