@@ -800,6 +800,33 @@ document.addEventListener('DOMContentLoaded', function() {
             reader.onerror = error => reject(error);
         });
     }
+    
+    // Função auxiliar para converter Blob para Base64
+    function blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onload = () => {
+                // Remover o prefixo data:tipo;base64, para obter apenas os dados Base64
+                const base64String = reader.result;
+                const base64Data = base64String.split(',')[1];
+                
+                // Retornar apenas a parte Base64 pura
+                resolve(base64Data);
+            };
+            reader.onerror = error => reject(error);
+        });
+    }
+    
+    // Função auxiliar para ler um arquivo como texto
+    const readFileAsText = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = (e) => reject(e);
+            reader.readAsText(file);
+        });
+    };
 
     // Função para enviar dados para o webhook
     async function sendWebhook(files) {
@@ -818,16 +845,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Erro: O webhook deve usar uma conexão segura (HTTPS)');
                 return false;
             }
-
-            // Função auxiliar para ler um arquivo como texto
-            const readFileAsText = (file) => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.onerror = (e) => reject(e);
-                    reader.readAsText(file);
-                });
-            };
 
             // Ler o conteúdo dos arquivos como texto, quando aplicável
             let policiesText = null;
@@ -861,23 +878,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             };
             
-            // Adicionar arrays de cabeçalhos para ajudar o Make a interpretar os CSVs corretamente
-            requestData.policies_headers = [
+            // Definir cabeçalhos (apenas para informação, sem modificar o CSV)
+            const policiesHeaders = [
                 "Number", "Status", "Clients", "Owner's Email", "Owner's Phone",
                 "Carrier", "Product", "Product Type", "Product Category", "State",
                 "Annual Premium", "Submitted Date", "Issued Date", "Effective Date",
                 "Agents", "Upline Agents"
             ];
             
-            requestData.clients_headers = [
+            const clientsHeaders = [
                 "Number", "First Name", "Last Name", "Email", "Phone",
                 "Address", "City", "State", "Zip", "Country"
             ];
             
-            requestData.agents_headers = [
+            const agentsHeaders = [
                 "Name", "Email", "Address", "Phone", "Status", 
                 "Upline Agent", "Compensation", "Start Date"
             ];
+            
+            // Adicionar arrays de cabeçalhos
+            requestData.policies_headers = policiesHeaders;
+            requestData.clients_headers = clientsHeaders;
+            requestData.agents_headers = agentsHeaders;
             
             // Adicionar conteúdo de texto quando disponível
             if (policiesText) {
@@ -903,11 +925,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     is_base64: true,
                     extension: getFileExtension(files.policies.name),
                     has_headers: true,
-                    headers_array: requestData.policies_headers,
                     csv_options: {
                         delimiter: ',',
-                        first_row_as_header: true,
-                        columns: requestData.policies_headers
+                        first_row_as_header: true
                     }
                 };
                 console.log(`Arquivo de políticas codificado: ${files.policies.name}`);
@@ -923,11 +943,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     is_base64: true,
                     extension: getFileExtension(files.clients.name),
                     has_headers: true,
-                    headers_array: requestData.clients_headers,
                     csv_options: {
                         delimiter: ',',
-                        first_row_as_header: true,
-                        columns: requestData.clients_headers
+                        first_row_as_header: true
                     }
                 };
                 console.log(`Arquivo de clientes codificado: ${files.clients.name}`);
@@ -941,16 +959,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     type: files.agents.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     mime_type: files.agents.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     is_base64: true,
-                    extension: getFileExtension(files.agents.name),
-                    headers_array: requestData.agents_headers
+                    extension: getFileExtension(files.agents.name)
                 };
                 console.log(`Arquivo de agentes codificado: ${files.agents.name}`);
                 
                 // Adicionar os dados CSV do agente, se disponível
                 if (files.agentsCSV) {
-                    // Enviar também como string no JSON principal para que o Make tenha acesso direto
-                    requestData.agent_csv_content = files.agentsCSV;
-                    
                     // Criar um Blob e converter para Base64
                     const csvBlob = new Blob([files.agentsCSV], { type: 'text/csv;charset=utf-8' });
                     const csvBase64 = await blobToBase64(csvBlob);
@@ -963,11 +977,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         is_base64: true,
                         extension: 'csv',
                         has_headers: true,
-                        headers_array: requestData.agents_headers,
                         csv_options: {
                             delimiter: ',',
-                            first_row_as_header: true,
-                            columns: requestData.agents_headers
+                            first_row_as_header: true
                         }
                     };
                     console.log(`CSV de agentes codificado: ${files.agents.name.replace(/\.[^/.]+$/, ".csv")}`);
@@ -1082,23 +1094,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Erro ao enviar webhook:', error);
             return false;
         }
-    }
-    
-    // Função auxiliar para converter Blob para Base64
-    function blobToBase64(blob) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onload = () => {
-                // Remover o prefixo data:tipo;base64, para obter apenas os dados Base64
-                const base64String = reader.result;
-                const base64Data = base64String.split(',')[1];
-                
-                // Retornar apenas a parte Base64 pura
-                resolve(base64Data);
-            };
-            reader.onerror = error => reject(error);
-        });
     }
     
     // Função para obter a extensão de um arquivo
