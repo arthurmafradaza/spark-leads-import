@@ -1453,7 +1453,12 @@ document.addEventListener('DOMContentLoaded', function() {
             errorMessage += '<li>Ausência de colunas obrigatórias no arquivo</li>';
             errorMessage += '<li>Os arquivos foram trocados (ex: colocou clientes no campo de apólices)</li>';
             errorMessage += '</ul>';
-            errorMessage += '<p style="margin: 10px 0 0;">Para mais orientações, confira os vídeos em <strong>"Artigos Úteis Para Você"</strong> na lateral da página.</p>';
+            
+            // Destaque especial para a dica sobre artigos úteis
+            errorMessage += '<div class="help-tip-highlight">';
+            errorMessage += 'Para mais orientações, confira os vídeos em <a href="#" onclick="document.getElementById(\'modalOverlay\').classList.remove(\'active\'); return false;">"Artigos Úteis Para Você"</a> na lateral da página.';
+            errorMessage += '</div>';
+            
             errorMessage += '</div>';
             
             showErrorModal(errorMessage);

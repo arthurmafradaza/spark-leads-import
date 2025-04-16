@@ -1339,11 +1339,11 @@ footer::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 1100;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
@@ -1358,13 +1358,19 @@ footer::before {
     position: relative;
     max-width: 90%;
     width: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    margin: 0 auto;
+    transform: translateY(0);
 }
 
 .modal {
     background-color: white;
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 35px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
     text-align: center;
     transform: translateY(20px);
     opacity: 0;
@@ -1374,6 +1380,8 @@ footer::before {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    position: relative;
 }
 
 .modal.active {
@@ -1676,4 +1684,74 @@ footer::before {
     .validation-list {
         padding: 8px 8px 8px 25px;
     }
+}
+
+/* Destaque especial para a dica sobre Artigos Úteis */
+.validation-help a,
+.validation-help em {
+    color: #1565c0;
+    font-weight: 700;
+    text-decoration: underline;
+    position: relative;
+    padding: 0 2px;
+    z-index: 1;
+}
+
+.validation-help a:hover,
+.validation-help em:hover {
+    color: #0D47A1;
+    text-decoration: none;
+}
+
+/* Bloco especial para a dica sobre Artigos Úteis */
+.help-tip-highlight {
+    margin-top: 18px;
+    background-color: #e8f5ff;
+    padding: 15px 18px;
+    border-radius: 10px;
+    border-left: 5px solid #2196F3;
+    font-weight: 600;
+    position: relative;
+    box-shadow: 0 5px 12px rgba(33, 150, 243, 0.2);
+    color: #0D47A1;
+    animation: pulse-border 2.5s infinite;
+    line-height: 1.5;
+    text-align: left;
+    letter-spacing: 0.2px;
+    transition: all 0.3s ease;
+}
+
+.help-tip-highlight:hover {
+    background-color: #dff1ff;
+    box-shadow: 0 7px 15px rgba(33, 150, 243, 0.25);
+    transform: translateY(-2px);
+}
+
+.help-tip-highlight a {
+    font-weight: 700;
+    color: #1565c0;
+    text-decoration: underline;
+    transition: all 0.2s ease;
+}
+
+.help-tip-highlight a:hover {
+    color: #0D47A1;
+    text-decoration: none;
+    background-color: rgba(33, 150, 243, 0.1);
+    padding: 2px 4px;
+    margin: 0 -4px;
+    border-radius: 4px;
+}
+
+@keyframes pulse-border {
+    0% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(33, 150, 243, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0); }
+}
+
+.help-tip-highlight:before {
+    content: "💡";
+    margin-right: 10px;
+    font-size: 18px;
+    vertical-align: middle;
 } 
