@@ -1405,6 +1405,26 @@ footer::before {
     line-height: 1.5;
 }
 
+.modal-message ul {
+    text-align: left;
+    margin: 15px 0;
+    padding-left: 20px;
+}
+
+.modal-message li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+#errorModal .modal-content {
+    max-width: 100%;
+}
+
+#errorModal .modal-message {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
 .modal-button {
     background-color: var(--primary);
     color: white;

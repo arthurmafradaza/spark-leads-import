@@ -848,6 +848,46 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
+    // Função para verificar número de colunas nos arquivos CSV
+    function validateColumnCount(csvText, expectedColumnCount) {
+        if (!csvText) return false;
+        
+        // Pegar a primeira linha (cabeçalhos) e contar as colunas
+        const firstLine = csvText.split('\n')[0];
+        const columns = firstLine.split(',');
+        
+        return columns.length === expectedColumnCount;
+    }
+    
+    // Função para verificar o arquivo CSV
+    async function validateCSVFile(file, expectedColumnCount) {
+        return new Promise((resolve, reject) => {
+            if (!file) {
+                resolve({ valid: false, message: 'Arquivo não encontrado.' });
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csvText = e.target.result;
+                const isValid = validateColumnCount(csvText, expectedColumnCount);
+                
+                if (isValid) {
+                    resolve({ valid: true });
+                } else {
+                    const message = `O arquivo deve conter exatamente ${expectedColumnCount} colunas. Por favor, verifique o arquivo.`;
+                    resolve({ valid: false, message: message });
+                }
+            };
+            
+            reader.onerror = function() {
+                resolve({ valid: false, message: 'Erro ao ler o arquivo.' });
+            };
+            
+            reader.readAsText(file);
+        });
+    }
+
     // Função para enviar dados para o webhook
     async function sendWebhook(files) {
         try {
@@ -1127,7 +1167,53 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
         confirmBtn.disabled = true;
         
-        // Enviar arquivos para o webhook
+        // Verificar número de colunas nos arquivos antes de enviar
+        let validationErrors = [];
+        
+        // Validar Policies (16 colunas)
+        if (uploadedFiles.policies) {
+            const policiesValidation = await validateCSVFile(uploadedFiles.policies, 16);
+            if (!policiesValidation.valid) {
+                validationErrors.push(`Arquivo de Apólices: ${policiesValidation.message}`);
+            }
+        }
+        
+        // Validar Clients (14 colunas)
+        if (uploadedFiles.clients) {
+            const clientsValidation = await validateCSVFile(uploadedFiles.clients, 14);
+            if (!clientsValidation.valid) {
+                validationErrors.push(`Arquivo de Clientes: ${clientsValidation.message}`);
+            }
+        }
+        
+        // Validar Agents (10 colunas)
+        if (uploadedFiles.agents && uploadedFiles.agentsCSV) {
+            // Para agentes, validamos o CSV convertido
+            const isValid = validateColumnCount(uploadedFiles.agentsCSV, 10);
+            if (!isValid) {
+                validationErrors.push('Arquivo de Agentes: O arquivo deve conter exatamente 10 colunas. Por favor, verifique o arquivo.');
+            }
+        }
+        
+        // Se houver erros de validação, mostrar mensagem e não prosseguir
+        if (validationErrors.length > 0) {
+            let errorMessage = 'Os seguintes problemas foram encontrados:<br><br><ul>';
+            
+            validationErrors.forEach(error => {
+                errorMessage += `<li>${error}</li>`;
+            });
+            
+            errorMessage += '</ul><br>Recomendamos assistir aos vídeos em "Artigos Úteis Para Você" para orientações sobre o formato correto dos arquivos.';
+            
+            showErrorModal(errorMessage);
+            
+            // Restaurar o botão
+            confirmBtn.innerHTML = '<i class="fas fa-upload"></i> Confirmar e Enviar';
+            confirmBtn.disabled = false;
+            return;
+        }
+        
+        // Se todos os arquivos foram validados, prosseguir com o envio
         const webhookSuccess = await sendWebhook(uploadedFiles);
         
         // Processar a submissão final dos arquivos
