@@ -490,9 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
             uploadedFiles.policies = file;
             
             policiesUploadArea.querySelector('.upload-text').textContent = file.name;
-            policiesFileInfo.innerHTML = `
-                <strong>Arquivo:</strong> ${file.name}
-            `;
+            policiesFileInfo.innerHTML = `${file.name}`;
             policiesFileInfo.classList.add('show');
             policiesUploadArea.style.borderColor = 'var(--success)';
             policiesStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo adicionado com sucesso';
@@ -507,9 +505,7 @@ document.addEventListener('DOMContentLoaded', function() {
             uploadedFiles.clients = file;
             
             clientsUploadArea.querySelector('.upload-text').textContent = file.name;
-            clientsFileInfo.innerHTML = `
-                <strong>Arquivo:</strong> ${file.name}
-            `;
+            clientsFileInfo.innerHTML = `${file.name}`;
             clientsFileInfo.classList.add('show');
             clientsUploadArea.style.borderColor = 'var(--success)';
             clientsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo adicionado com sucesso';
