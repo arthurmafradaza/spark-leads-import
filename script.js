@@ -1439,9 +1439,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Se houver erros de validação, mostrar mensagem e não prosseguir
         if (validationErrors.length > 0) {
-            let errorMessage = '<div class="validation-header"><i class="fas fa-exclamation-circle"></i> Atenção</div>';
+            let errorMessage = '';
             
-            errorMessage += '<p style="margin: 0 0 10px; display: flex; align-items: center;"><i class="fas fa-exclamation-triangle" style="color: #e74c3c; margin-right: 8px;"></i> <span style="color: #e74c3c; font-weight: 600;">Ops! Encontramos um problema com seus arquivos</span></p>';
+            errorMessage += '<p style="margin: 5px 0 15px; display: flex; align-items: center;"><i class="fas fa-exclamation-triangle" style="color: #e74c3c; margin-right: 8px;"></i> <span style="color: #e74c3c; font-weight: 600;">Ops! Encontramos um problema com seus arquivos</span></p>';
             
             errorMessage += '<p style="margin: 0 0 10px;">Não foi possível processar os seguintes arquivos:</p>';
             
