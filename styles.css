@@ -1460,7 +1460,7 @@ footer::before {
 
 .policies-note {
     color: var(--text-muted);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: normal;
     font-style: italic;
     margin-left: 5px;
@@ -1471,5 +1471,6 @@ footer::before {
         display: block;
         margin-left: 0;
         margin-top: 3px;
+        font-size: 15px;
     }
 } 
