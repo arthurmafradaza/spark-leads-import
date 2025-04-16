@@ -320,9 +320,10 @@ header .container {
     box-shadow: var(--shadow-md);
     flex: 0.65;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     transition: var(--transition);
     border: 1px solid var(--border);
+    z-index: 30;
 }
 
 .help-section {
@@ -331,6 +332,7 @@ header .container {
     position: sticky;
     top: 20px;
     align-self: flex-start;
+    z-index: 20;
 }
 
 /* Grupos de formulário */
@@ -372,6 +374,7 @@ header .container {
 /* Menu de seleção */
 .select-wrapper {
     position: relative;
+    z-index: 40;
 }
 
 .select-wrapper::after {
@@ -390,6 +393,20 @@ header .container {
 .select-wrapper.open::after {
     transform: translateY(-50%) rotate(180deg);
     color: var(--primary);
+}
+
+.select-wrapper.open {
+    z-index: 50;
+}
+
+.select-wrapper.open .form-control {
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    border-color: var(--primary);
+}
+
+.select-wrapper.open .select-options {
+    display: block;
+    animation: fadeIn 0.2s ease;
 }
 
 /* Upload area com melhor feedback de interação */
@@ -731,7 +748,7 @@ header .container {
     border: 1px solid var(--border-active);
     border-top: none;
     border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-    z-index: 10;
+    z-index: 50;
     box-shadow: var(--shadow);
     overflow: hidden;
 }
@@ -751,16 +768,6 @@ header .container {
 .select-option[disabled] {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-.select-wrapper.open .form-control {
-    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    border-color: var(--primary);
-}
-
-.select-wrapper.open .select-options {
-    display: block;
-    animation: fadeIn 0.2s ease;
 }
 
 /* Informações do arquivo */
