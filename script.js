@@ -153,19 +153,21 @@ document.addEventListener('DOMContentLoaded', function() {
         errorModal.classList.add('active');
         successModal.classList.remove('active');
         
-        // Ajustar altura com base no conteúdo
-        const possiveisCausas = errorMessage.querySelector('.validation-help');
-        if (possiveisCausas) {
-            // Se tivermos poucas causas, removemos a rolagem da lista
-            const causasList = possiveisCausas.querySelectorAll('ul li');
-            if (causasList.length <= 3) {
-                const messageContent = errorMessage.querySelector('.validation-list');
-                if (messageContent) {
-                    messageContent.style.maxHeight = 'none';
-                    messageContent.style.overflow = 'visible';
-                }
+        // Centralizar o modal na tela
+        setTimeout(() => {
+            // Posicionar o modal no centro da janela
+            const viewportHeight = window.innerHeight;
+            const modalHeight = errorModal.offsetHeight;
+            
+            // Ajustar posição vertical se necessário
+            if (modalHeight > viewportHeight * 0.8) {
+                errorModal.style.maxHeight = (viewportHeight * 0.8) + 'px';
+                errorModal.style.overflowY = 'auto';
+            } else {
+                errorModal.style.maxHeight = '';
+                errorModal.style.overflowY = '';
             }
-        }
+        }, 10);
         
         // Foco no botão OK para acessibilidade
         setTimeout(() => errorModalButton.focus(), 100);
@@ -748,7 +750,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         createUplineAgentDropdown(uplineAgents);
                     }
                     
-                    agentsFileInfo.innerHTML = `${file.name}`;
+                    agentsFileInfo.innerHTML = `<strong>Arquivo:</strong> ${file.name}`;
                     agentsFileInfo.classList.add('show');
                     agentsUploadArea.style.borderColor = 'var(--success)';
                     agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo CSV adicionado com sucesso';
@@ -756,7 +758,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 
                 reader.onerror = function() {
-                    agentsFileInfo.innerHTML = `${file.name}`;
+                    agentsFileInfo.innerHTML = `<strong>Arquivo:</strong> ${file.name}`;
                     agentsFileInfo.classList.add('show');
                     agentsStatus.textContent = 'Erro ao ler arquivo CSV';
                     agentsStatus.className = 'status error';
@@ -765,10 +767,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.readAsText(file);
             } else {
                 // Se for XLSX ou XLS, converter para CSV
-            convertToCSV(file).then(result => {
-                // Armazenar o CSV convertido
-                uploadedFiles.agentsCSV = result.data;
-                
+                convertToCSV(file).then(result => {
+                    // Armazenar o CSV convertido
+                    uploadedFiles.agentsCSV = result.data;
+                    
                     // Extrair nomes de upline do CSV
                     uplineAgents = extractUplineAgents(result.data);
                     
@@ -777,17 +779,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         createUplineAgentDropdown(uplineAgents);
                     }
                     
-                    agentsFileInfo.innerHTML = `${file.name}`;
-                agentsFileInfo.classList.add('show');
-                agentsUploadArea.style.borderColor = 'var(--success)';
-                agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo convertido para CSV com sucesso';
-                agentsStatus.className = 'status success';
-            }).catch(error => {
-                    agentsFileInfo.innerHTML = `${file.name}`;
-                agentsFileInfo.classList.add('show');
-                agentsStatus.textContent = 'Erro ao converter arquivo';
-                agentsStatus.className = 'status error';
-            });
+                    agentsFileInfo.innerHTML = `<strong>Arquivo:</strong> ${file.name}`;
+                    agentsFileInfo.classList.add('show');
+                    agentsUploadArea.style.borderColor = 'var(--success)';
+                    agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo convertido para CSV com sucesso';
+                    agentsStatus.className = 'status success';
+                }).catch(error => {
+                    agentsFileInfo.innerHTML = `<strong>Arquivo:</strong> ${file.name}`;
+                    agentsFileInfo.classList.add('show');
+                    agentsStatus.textContent = 'Erro ao converter arquivo';
+                    agentsStatus.className = 'status error';
+                });
             }
         }
     });
@@ -1439,7 +1441,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (validationErrors.length > 0) {
             let errorMessage = '<div class="validation-header"><i class="fas fa-exclamation-triangle"></i> Ops! Encontramos um problema com seus arquivos</div>';
             
-            errorMessage += '<p style="margin: 0 0 12px;">Não foi possível processar os seguintes arquivos:</p>';
+            errorMessage += '<p style="margin: 0 0 10px;">Não foi possível processar os seguintes arquivos:</p>';
             
             errorMessage += '<ul class="validation-list" style="margin: 0 0 15px;">';
             validationErrors.forEach(error => {

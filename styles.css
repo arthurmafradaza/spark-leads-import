@@ -1337,183 +1337,73 @@ footer::before {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     z-index: 1100;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
+    display: none;
 }
 
 .modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .modal-container {
+    width: 500px;
     position: relative;
-    max-width: 90%;
-    width: 600px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: auto;
     margin: 0 auto;
-    transform: translateY(0);
 }
 
 .modal {
-    background-color: white;
-    border-radius: 16px;
-    padding: 35px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-    text-align: center;
-    transform: translateY(20px);
-    opacity: 0;
-    transition: all 0.3s ease;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     display: none;
-    max-height: 85vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    position: relative;
 }
 
 .modal.active {
-    transform: translateY(0);
-    opacity: 1;
-    display: flex;
+    display: block;
 }
 
-/* Permitir rolagem dentro do conteúdo do modal, não no modal inteiro */
-.modal-content {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+/* Estilo para o modal de erro */
+.error-modal {
+    text-align: center;
 }
 
-.modal-icon {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    margin: 0 auto 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-}
-
-.modal-icon.success {
-    background-color: #e9f7ef;
-    color: #2ecc71;
-}
-
-.modal-icon.error {
-    background-color: #fdedec;
+.error-modal h3 {
     color: #e74c3c;
-    font-size: 35px;
-}
-
-.modal-title {
-    font-size: 24px;
-    font-weight: 700;
     margin-bottom: 15px;
-    color: var(--text);
+    font-size: 20px;
 }
 
-.modal-message {
-    font-size: 16px;
-    color: var(--text-muted);
-    margin-bottom: 25px;
-    line-height: 1.5;
+.error-modal p {
+    margin: 10px 0;
+    color: #333;
 }
 
-.modal-message ul {
-    text-align: left;
-    margin: 15px 0;
-    padding-left: 20px;
-}
-
-.modal-message li {
-    margin-bottom: 8px;
-    line-height: 1.4;
-}
-
-#errorModal .modal-content {
-    max-width: 100%;
-}
-
-/* Aumentar o tamanho máximo da área de rolagem do modal de erro */
-#errorModal .modal-message {
-    max-height: calc(60vh - 180px);
+.error-message {
+    max-height: 400px;
     overflow-y: auto;
-    text-align: left;
-    padding-right: 10px;
-    padding-left: 5px;
-    margin-right: -5px;
-    flex: 1;
+    margin-bottom: 15px;
 }
 
-/* Garantir que o botão fique fixo na parte inferior */
+/* Botão do modal */
 .modal-button {
-    margin-top: 25px;
-    background-color: var(--primary);
+    background-color: #3e8ed0;
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 14px 40px;
-    font-size: 16px;
-    font-weight: 600;
+    padding: 10px 25px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    align-self: center;
+    font-size: 16px;
+    margin-top: 15px;
 }
 
 .modal-button:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.modal-button:active {
-    transform: translateY(0);
-}
-
-@keyframes modalIn {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes modalOut {
-    0% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(20px); }
-}
-
-/* Media queries para o modal */
-@media (max-width: 576px) {
-    .modal-container {
-        width: 90%;
-    }
-    
-    .modal {
-        padding: 25px 20px;
-    }
-    
-    .modal-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 28px;
-    }
-    
-    .modal-title {
-        font-size: 20px;
-    }
+    background-color: #367cb8;
 }
 
 .policies-note {
@@ -1705,53 +1595,34 @@ footer::before {
 
 /* Bloco especial para a dica sobre Artigos Úteis */
 .help-tip-highlight {
-    margin-top: 18px;
+    margin-top: 10px;
     background-color: #e8f5ff;
-    padding: 15px 18px;
-    border-radius: 10px;
-    border-left: 5px solid #2196F3;
-    font-weight: 600;
+    padding: 12px 15px;
+    border-radius: 6px;
+    border-left: 4px solid #2196F3;
+    font-weight: 500;
     position: relative;
-    box-shadow: 0 5px 12px rgba(33, 150, 243, 0.2);
+    box-shadow: 0 3px 8px rgba(33, 150, 243, 0.15);
     color: #0D47A1;
-    animation: pulse-border 2.5s infinite;
     line-height: 1.5;
     text-align: left;
-    letter-spacing: 0.2px;
-    transition: all 0.3s ease;
-}
-
-.help-tip-highlight:hover {
-    background-color: #dff1ff;
-    box-shadow: 0 7px 15px rgba(33, 150, 243, 0.25);
-    transform: translateY(-2px);
+    font-size: 15px;
 }
 
 .help-tip-highlight a {
     font-weight: 700;
     color: #1565c0;
     text-decoration: underline;
-    transition: all 0.2s ease;
 }
 
 .help-tip-highlight a:hover {
     color: #0D47A1;
     text-decoration: none;
-    background-color: rgba(33, 150, 243, 0.1);
-    padding: 2px 4px;
-    margin: 0 -4px;
-    border-radius: 4px;
-}
-
-@keyframes pulse-border {
-    0% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4); }
-    70% { box-shadow: 0 0 0 8px rgba(33, 150, 243, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0); }
 }
 
 .help-tip-highlight:before {
     content: "💡";
-    margin-right: 10px;
-    font-size: 18px;
+    margin-right: 8px;
+    font-size: 16px;
     vertical-align: middle;
 } 
