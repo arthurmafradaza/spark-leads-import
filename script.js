@@ -694,7 +694,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return dropdownWrapper;
     }
 
-    // Processar upload de agentes (XLSX)
+    // Processar upload de agentes (XLSX ou CSV)
     agentsUpload.addEventListener('change', function() {
         if (this.files && this.files[0]) {
             const file = this.files[0];
@@ -702,30 +702,68 @@ document.addEventListener('DOMContentLoaded', function() {
             
             agentsUploadArea.querySelector('.upload-text').textContent = file.name;
             
-            // Converter XLSX para CSV automaticamente
-            convertToCSV(file).then(result => {
-                // Armazenar o CSV convertido
-                uploadedFiles.agentsCSV = result.data;
+            // Verificar extensão do arquivo
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            
+            if (fileExtension === 'csv') {
+                // Se for CSV, ler diretamente
+                const reader = new FileReader();
                 
-                // Extrair nomes de upline do CSV
-                uplineAgents = extractUplineAgents(result.data);
+                reader.onload = function(e) {
+                    const csvText = e.target.result;
+                    
+                    // Armazenar o CSV
+                    uploadedFiles.agentsCSV = csvText;
+                    
+                    // Extrair nomes de upline do CSV
+                    uplineAgents = extractUplineAgents(csvText);
+                    
+                    // Criar dropdown para seleção de agente se houver uplines
+                    if (uplineAgents.length > 0) {
+                        createUplineAgentDropdown(uplineAgents);
+                    }
+                    
+                    agentsFileInfo.innerHTML = `${file.name}`;
+                    agentsFileInfo.classList.add('show');
+                    agentsUploadArea.style.borderColor = 'var(--success)';
+                    agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo CSV adicionado com sucesso';
+                    agentsStatus.className = 'status success';
+                };
                 
-                // Criar dropdown para seleção de agente se houver uplines
-                if (uplineAgents.length > 0) {
-                    createUplineAgentDropdown(uplineAgents);
-                }
+                reader.onerror = function() {
+                    agentsFileInfo.innerHTML = `${file.name}`;
+                    agentsFileInfo.classList.add('show');
+                    agentsStatus.textContent = 'Erro ao ler arquivo CSV';
+                    agentsStatus.className = 'status error';
+                };
                 
-                agentsFileInfo.innerHTML = `${file.name}`;
-                agentsFileInfo.classList.add('show');
-                agentsUploadArea.style.borderColor = 'var(--success)';
-                agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo convertido para CSV com sucesso';
-                agentsStatus.className = 'status success';
-            }).catch(error => {
-                agentsFileInfo.innerHTML = `${file.name}`;
-                agentsFileInfo.classList.add('show');
-                agentsStatus.textContent = 'Erro ao converter arquivo';
-                agentsStatus.className = 'status error';
-            });
+                reader.readAsText(file);
+            } else {
+                // Se for XLSX ou XLS, converter para CSV
+                convertToCSV(file).then(result => {
+                    // Armazenar o CSV convertido
+                    uploadedFiles.agentsCSV = result.data;
+                    
+                    // Extrair nomes de upline do CSV
+                    uplineAgents = extractUplineAgents(result.data);
+                    
+                    // Criar dropdown para seleção de agente se houver uplines
+                    if (uplineAgents.length > 0) {
+                        createUplineAgentDropdown(uplineAgents);
+                    }
+                    
+                    agentsFileInfo.innerHTML = `${file.name}`;
+                    agentsFileInfo.classList.add('show');
+                    agentsUploadArea.style.borderColor = 'var(--success)';
+                    agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo convertido para CSV com sucesso';
+                    agentsStatus.className = 'status success';
+                }).catch(error => {
+                    agentsFileInfo.innerHTML = `${file.name}`;
+                    agentsFileInfo.classList.add('show');
+                    agentsStatus.textContent = 'Erro ao converter arquivo';
+                    agentsStatus.className = 'status error';
+                });
+            }
         }
     });
     
@@ -811,10 +849,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (uploadedFiles.agents) {
+            // Determinar o ícone correto com base na extensão do arquivo
+            const fileExtension = uploadedFiles.agents.name.split('.').pop().toLowerCase();
+            const iconClass = fileExtension === 'csv' ? 'fa-file-csv' : 'fa-file-excel';
+            
             const div = document.createElement('div');
             div.className = 'confirmation-file';
             div.innerHTML = `
-                <i class="fas fa-file-excel"></i>
+                <i class="fas ${iconClass}"></i>
                 <span class="file-name">${uploadedFiles.agents.name}</span>
             `;
             confirmationFiles.appendChild(div);
