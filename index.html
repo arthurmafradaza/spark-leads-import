@@ -53,13 +53,13 @@
                     <!-- Step 2: Policies (Initially Hidden) -->
                     <div id="policiesStep" style="display: none;">
                         <div class="form-group">
-                            <label for="policiesUpload">Apólices * <span class="policies-note">(Apenas apólices "Inforce" serão importadas)</span></label>
+                            <label for="policiesUpload">Apólices * <span class="policies-note">(Apenas apólices "Issued" serão importadas)</span></label>
                             <div class="upload-area" id="policiesUploadArea">
                                 <div class="upload-icon">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                 </div>
                                 <div class="upload-text">Inserir arquivo aqui</div>
-                                <div class="upload-help">Importe seu arquivo de apólices do Five Rings Portal</div>
+                                <div class="upload-help">Importe seu arquivo de apólices do Five Rings Portal. Arraste ou clique para selecionar.</div>
                                 <div class="upload-btn">Escolher arquivo</div>
                                 <input type="file" id="policiesUpload" style="display: none;" accept=".csv">
                                 <div class="file-info" id="policiesFileInfo"></div>
@@ -74,7 +74,7 @@
                                     <i class="fas fa-cloud-upload-alt"></i>
                                 </div>
                                 <div class="upload-text">Inserir arquivo aqui</div>
-                                <div class="upload-help">Importe seu arquivo de clientes do Five Rings Portal</div>
+                                <div class="upload-help">Importe seu arquivo de clientes do Five Rings Portal. Arraste ou clique para selecionar.</div>
                                 <div class="upload-btn">Escolher arquivo</div>
                                 <input type="file" id="clientsUpload" style="display: none;" accept=".csv">
                                 <div class="file-info" id="clientsFileInfo"></div>
@@ -92,9 +92,9 @@
                                     <i class="fas fa-cloud-upload-alt"></i>
                                 </div>
                                 <div class="upload-text">Inserir arquivo aqui</div>
-                                <div class="upload-help">Importe seu arquivo de agentes do Five Rings Portal (.xlsx)</div>
+                                <div class="upload-help">Importe seu arquivo de agentes do Five Rings Portal (.xlsx ou .csv). Arraste ou clique para selecionar.</div>
                                 <div class="upload-btn">Escolher arquivo</div>
-                                <input type="file" id="agentsUpload" style="display: none;" accept=".xlsx,.xls">
+                                <input type="file" id="agentsUpload" style="display: none;" accept=".xlsx,.xls,.csv">
                                 <div class="file-info" id="agentsFileInfo"></div>
                                 <div class="status" id="agentsStatus"></div>
                             </div>

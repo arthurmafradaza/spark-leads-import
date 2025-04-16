@@ -71,6 +71,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configuração de acessibilidade para upload areas
     setupAccessibleUploads();
     
+    // Configurar funcionalidade de arrastar e soltar para áreas de upload
+    setupDragAndDrop();
+    
     // Abrir/fechar dropdown de seleção
     importTypeWrapper.addEventListener('click', function(e) {
         this.classList.toggle('open');
@@ -1477,4 +1480,75 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar a barra de progresso com apenas o primeiro passo
     initSingleStepProgressBar();
+
+    // Configurar funcionalidade de arrastar e soltar para áreas de upload
+    function setupDragAndDrop() {
+        // Configurar cada área de upload
+        setupDragAndDropArea(policiesUploadArea, policiesUpload);
+        setupDragAndDropArea(clientsUploadArea, clientsUpload);
+        setupDragAndDropArea(agentsUploadArea, agentsUpload);
+        
+        function setupDragAndDropArea(dropArea, fileInput) {
+            // Prevenir comportamento padrão para eventos de arrastar
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            // Adicionar/remover classe de destaque durante o arrasto
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropArea.classList.add('drag-highlight');
+            }
+            
+            function unhighlight() {
+                dropArea.classList.remove('drag-highlight');
+            }
+            
+            // Processar o arquivo quando solto na área
+            dropArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                if (!e.dataTransfer.files || !e.dataTransfer.files[0]) return;
+                
+                const file = e.dataTransfer.files[0];
+                
+                // Verificar a extensão do arquivo com base nas restrições do input
+                const allowedExtensions = fileInput.getAttribute('accept').split(',');
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (allowedExtensions.includes(fileExtension)) {
+                    // Simular um evento de mudança no input de arquivo
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fileInput.files = dataTransfer.files;
+                    
+                    // Disparar o evento change para processar o arquivo
+                    const event = new Event('change', { bubbles: true });
+                    fileInput.dispatchEvent(event);
+                } else {
+                    // Mostrar mensagem de erro se o arquivo não for do tipo correto
+                    let fileType = '';
+                    if (fileInput === policiesUpload || fileInput === clientsUpload) {
+                        fileType = 'CSV';
+                    } else if (fileInput === agentsUpload) {
+                        fileType = 'XLSX, XLS ou CSV';
+                    }
+                    
+                    showErrorModal(`Por favor, selecione um arquivo ${fileType} válido.`);
+                }
+            }
+        }
+    }
 }); 

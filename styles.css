@@ -423,6 +423,14 @@ header .container {
     max-width: 100%;
 }
 
+/* Estilo para destacar área durante o drag and drop */
+.upload-area.drag-highlight {
+    border-color: var(--primary);
+    background-color: rgba(59, 130, 246, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.15);
+}
+
 .upload-area:hover,
 .upload-area:focus {
     border-color: var(--primary);
