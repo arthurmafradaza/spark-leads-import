@@ -554,25 +554,59 @@ document.addEventListener('DOMContentLoaded', function() {
             // Obter os cabeçalhos
             const headers = lines[0].split(',');
             
-            // Encontrar o índice da coluna "Upline Agent"
-            const uplineAgentIndex = headers.findIndex(header => 
-                header.trim().toLowerCase() === 'upline agent');
+            // Remover aspas e espaços dos cabeçalhos
+            const cleanHeaders = headers.map(h => h.trim().replace(/"/g, '').toLowerCase());
+            console.log('Cabeçalhos encontrados:', cleanHeaders);
             
-            if (uplineAgentIndex === -1) return [];
+            // Nomes possíveis para a coluna de upline
+            const possibleNames = ['upline agent', 'upline', 'upline agents', 'supervisor', 'manager'];
+            
+            // Encontrar o índice da coluna "Upline Agent" ou similar
+            let uplineAgentIndex = -1;
+            
+            for (const name of possibleNames) {
+                uplineAgentIndex = cleanHeaders.findIndex(header => header === name);
+                if (uplineAgentIndex !== -1) {
+                    console.log(`Coluna encontrada: "${name}" no índice ${uplineAgentIndex}`);
+                    break;
+                }
+            }
+            
+            // Se ainda não encontrou, tenta uma busca mais flexível (contém)
+            if (uplineAgentIndex === -1) {
+                for (const name of possibleNames) {
+                    uplineAgentIndex = cleanHeaders.findIndex(header => header.includes(name));
+                    if (uplineAgentIndex !== -1) {
+                        console.log(`Coluna similar encontrada: "${cleanHeaders[uplineAgentIndex]}" no índice ${uplineAgentIndex}`);
+                        break;
+                    }
+                }
+            }
+            
+            if (uplineAgentIndex === -1) {
+                console.error('Coluna de upline não encontrada. Cabeçalhos:', cleanHeaders);
+                return [];
+            }
+            
+            console.log('Índice da coluna Upline Agent:', uplineAgentIndex);
             
             // Extrair todos os nomes de upline (ignorando a primeira linha de cabeçalhos)
             const uplineNames = [];
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue; // Pular linhas vazias
                 
-                const values = lines[i].split(',');
+                // Dividir a linha em colunas, respeitando aspas
+                const values = parseCSVLine(lines[i]);
+                
                 if (values.length > uplineAgentIndex) {
-                    const uplineName = values[uplineAgentIndex].trim();
+                    const uplineName = values[uplineAgentIndex].trim().replace(/"/g, '');
                     if (uplineName && !uplineNames.includes(uplineName)) {
                         uplineNames.push(uplineName);
                     }
                 }
             }
+            
+            console.log('Nomes de upline extraídos:', uplineNames);
             
             // Ordenar alfabeticamente
             return uplineNames.sort();
@@ -580,6 +614,29 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Erro ao extrair nomes de upline:', error);
             return [];
         }
+    }
+    
+    // Função auxiliar para dividir uma linha CSV, respeitando aspas
+    function parseCSVLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            
+            if (char === '"' && (i === 0 || line[i-1] !== '\\')) {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        
+        result.push(current); // Adicionar o último campo
+        return result;
     }
     
     // Criar o dropdown de seleção de agente upline
