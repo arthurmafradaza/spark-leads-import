@@ -406,6 +406,7 @@ header .container {
     background-color: rgba(59, 130, 246, 0.05);
     transform: translateY(-2px);
     outline: none;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
 }
 
 .upload-area:focus {
@@ -1179,6 +1180,7 @@ footer::before {
     background-color: rgba(59, 130, 246, 0.05);
     transform: translateY(-2px);
     outline: none;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
 }
 
 .upload-area:focus {

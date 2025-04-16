@@ -363,6 +363,19 @@ document.addEventListener('DOMContentLoaded', function() {
         agentsUpload.click();
     });
     
+    // Permitir clique em toda a área de upload para selecionar arquivo
+    policiesUploadArea.addEventListener('click', function() {
+        policiesUpload.click();
+    });
+    
+    clientsUploadArea.addEventListener('click', function() {
+        clientsUpload.click();
+    });
+    
+    agentsUploadArea.addEventListener('click', function() {
+        agentsUpload.click();
+    });
+    
     // Função para converter arquivo XLSX para CSV usando SheetJS
     function convertToCSV(file) {
         return new Promise((resolve, reject) => {
