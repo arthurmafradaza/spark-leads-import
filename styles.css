@@ -1459,18 +1459,20 @@ footer::before {
 }
 
 .policies-note {
-    color: var(--text-muted);
-    font-size: 14px;
-    font-weight: normal;
+    color: #666;
+    font-size: 15px;
+    font-weight: 500;
     font-style: italic;
-    margin-left: 5px;
+    margin-left: 8px;
+    display: inline-block;
 }
 
 @media (max-width: 768px) {
     .policies-note {
         display: block;
         margin-left: 0;
-        margin-top: 3px;
-        font-size: 15px;
+        margin-top: 4px;
+        font-size: 16px;
+        padding: 3px 0;
     }
 } 
