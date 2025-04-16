@@ -1548,4 +1548,51 @@ footer::before {
     color: #1565c0;
     font-weight: 700;
     text-decoration: underline;
+}
+
+/* Dropdown de seleção de agente upline */
+.upline-agent-dropdown {
+    margin-top: 20px;
+    padding: 12px 15px;
+    background-color: #f8f9fa;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.upline-agent-dropdown label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+}
+
+#uplineAgentSelect {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background-color: white;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23616161' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+#uplineAgentSelect:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .upline-agent-dropdown {
+        padding: 10px;
+    }
 } 

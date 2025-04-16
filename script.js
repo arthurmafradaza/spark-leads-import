@@ -58,6 +58,10 @@ document.addEventListener('DOMContentLoaded', function() {
         agents: null
     };
     
+    // Variáveis para o dropdown de agentes upline
+    let uplineAgents = [];
+    let selectedUplineAgent = '';
+    
     // Inicializar funções de modal
     initModals();
     
@@ -467,6 +471,14 @@ document.addEventListener('DOMContentLoaded', function() {
             resetFileUpload(agentsUploadArea, agentsUpload, agentsFileInfo, agentsStatus);
             uploadedFiles.agents = null;
             uploadedFiles.agentsCSV = null;
+            
+            // Remover dropdown de agentes upline
+            const existingDropdown = document.getElementById('uplineAgentDropdown');
+            if (existingDropdown) {
+                existingDropdown.remove();
+            }
+            uplineAgents = [];
+            selectedUplineAgent = '';
         }
     }
     
@@ -531,6 +543,100 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Extrair nomes únicos da coluna "Upline Agent" do CSV
+    function extractUplineAgents(csvText) {
+        if (!csvText) return [];
+        
+        try {
+            // Dividir o CSV em linhas
+            const lines = csvText.split('\n');
+            
+            // Obter os cabeçalhos
+            const headers = lines[0].split(',');
+            
+            // Encontrar o índice da coluna "Upline Agent"
+            const uplineAgentIndex = headers.findIndex(header => 
+                header.trim().toLowerCase() === 'upline agent');
+            
+            if (uplineAgentIndex === -1) return [];
+            
+            // Extrair todos os nomes de upline (ignorando a primeira linha de cabeçalhos)
+            const uplineNames = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue; // Pular linhas vazias
+                
+                const values = lines[i].split(',');
+                if (values.length > uplineAgentIndex) {
+                    const uplineName = values[uplineAgentIndex].trim();
+                    if (uplineName && !uplineNames.includes(uplineName)) {
+                        uplineNames.push(uplineName);
+                    }
+                }
+            }
+            
+            // Ordenar alfabeticamente
+            return uplineNames.sort();
+        } catch (error) {
+            console.error('Erro ao extrair nomes de upline:', error);
+            return [];
+        }
+    }
+    
+    // Criar o dropdown de seleção de agente upline
+    function createUplineAgentDropdown(agents) {
+        // Remover dropdown existente se houver
+        const existingDropdown = document.getElementById('uplineAgentDropdown');
+        if (existingDropdown) {
+            existingDropdown.remove();
+        }
+        
+        if (!agents || agents.length === 0) return;
+        
+        // Criar o wrapper do dropdown
+        const dropdownWrapper = document.createElement('div');
+        dropdownWrapper.id = 'uplineAgentDropdown';
+        dropdownWrapper.className = 'select-wrapper upline-agent-dropdown';
+        
+        // Criar o label
+        const label = document.createElement('label');
+        label.setAttribute('for', 'uplineAgentSelect');
+        label.textContent = 'Selecione seu nome (opcional):';
+        dropdownWrapper.appendChild(label);
+        
+        // Criar o select
+        const select = document.createElement('select');
+        select.id = 'uplineAgentSelect';
+        select.className = 'form-control';
+        
+        // Adicionar opção vazia
+        const emptyOption = document.createElement('option');
+        emptyOption.value = '';
+        emptyOption.textContent = 'Selecione um agente...';
+        select.appendChild(emptyOption);
+        
+        // Adicionar opções para cada agente
+        agents.forEach(agent => {
+            const option = document.createElement('option');
+            option.value = agent;
+            option.textContent = agent;
+            select.appendChild(option);
+        });
+        
+        // Adicionar evento de change
+        select.addEventListener('change', function() {
+            selectedUplineAgent = this.value;
+            console.log('Agente upline selecionado:', selectedUplineAgent);
+        });
+        
+        dropdownWrapper.appendChild(select);
+        
+        // Inserir após os botões de navegação
+        const navigationDiv = document.querySelector('.navigation');
+        navigationDiv.insertAdjacentElement('afterend', dropdownWrapper);
+        
+        return dropdownWrapper;
+    }
+
     // Processar upload de agentes (XLSX)
     agentsUpload.addEventListener('change', function() {
         if (this.files && this.files[0]) {
@@ -543,6 +649,14 @@ document.addEventListener('DOMContentLoaded', function() {
             convertToCSV(file).then(result => {
                 // Armazenar o CSV convertido
                 uploadedFiles.agentsCSV = result.data;
+                
+                // Extrair nomes de upline do CSV
+                uplineAgents = extractUplineAgents(result.data);
+                
+                // Criar dropdown para seleção de agente se houver uplines
+                if (uplineAgents.length > 0) {
+                    createUplineAgentDropdown(uplineAgents);
+                }
                 
                 agentsFileInfo.innerHTML = `${file.name}`;
                 agentsFileInfo.classList.add('show');
@@ -932,6 +1046,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Converter arquivos para Base64
             const requestData = {
                 location_id: locationId,
+                correct_agent: selectedUplineAgent || '',
                 parse_options: {
                     has_headers: true,
                     delimiter: ',',
