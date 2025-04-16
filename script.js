@@ -787,6 +787,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmationStep.style.display = 'none';
                 agentsStep.style.display = 'block';
                 nextBtn.style.display = 'flex';
+                confirmBtn.style.display = 'none';
                 updateStep(3);
             }
         }
