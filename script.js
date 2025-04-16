@@ -1436,12 +1436,10 @@ document.addEventListener('DOMContentLoaded', function() {
             errorMessage += '<div class="validation-help">';
             errorMessage += '<p><strong>Possíveis causas:</strong></p>';
             errorMessage += '<ul style="list-style-type: disc; padding-left: 20px; margin: 10px 0;">';
-            errorMessage += '<li>O arquivo não está no formato correto do Five Rings Portal</li>';
-            errorMessage += '<li>Estão faltando colunas obrigatórias no arquivo</li>';
+            errorMessage += '<li>Ausência de colunas obrigatórias no arquivo</li>';
             errorMessage += '<li>Os arquivos foram trocados (ex: colocou clientes no campo de apólices)</li>';
-            errorMessage += '<li>O arquivo foi modificado manualmente e perdeu sua estrutura original</li>';
             errorMessage += '</ul>';
-            errorMessage += '<p style="margin-top: 10px;">Para mais orientações, confira os vídeos em <strong>"Artigos Úteis Para Você"</strong> na lateral da página.</p>';
+            errorMessage += '<p style="margin-top: 15px;">Para mais orientações, confira os vídeos em <strong>"Artigos Úteis Para Você"</strong> na lateral da página.</p>';
             errorMessage += '</div>';
             
             showErrorModal(errorMessage);
