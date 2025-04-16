@@ -475,6 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Resetar texto do botão próximo
         nextBtn.innerHTML = 'Próximo <i class="fas fa-arrow-right"></i>';
         nextBtn.style.display = 'flex';
+        confirmBtn.style.display = 'none';
         
         // Restaurar barra de progresso inicial com apenas 1 passo
         initSingleStepProgressBar();
@@ -660,6 +661,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 policiesStep.style.display = 'none';
                 confirmationStep.style.display = 'block';
                 nextBtn.style.display = 'none';
+                confirmBtn.style.display = 'flex';
                 updateStep(3);
             } else if (selectedImportType === 'multiple-agents') {
                 // Verificar se arquivo de agentes foi carregado
@@ -675,6 +677,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 agentsStep.style.display = 'none';
                 confirmationStep.style.display = 'block';
                 nextBtn.style.display = 'none';
+                confirmBtn.style.display = 'flex';
                 updateStep(3);
             } else if (selectedImportType === 'import-both') {
                 // Verificar se arquivos de apólices e clientes foram carregados
@@ -707,6 +710,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 agentsStep.style.display = 'none';
                 confirmationStep.style.display = 'block';
                 nextBtn.style.display = 'none';
+                confirmBtn.style.display = 'flex';
                 updateStep(4);
             }
         }
@@ -745,12 +749,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmationStep.style.display = 'none';
                 policiesStep.style.display = 'block';
                 nextBtn.style.display = 'flex';
+                confirmBtn.style.display = 'none';
                 updateStep(2);
             } else if (selectedImportType === 'multiple-agents') {
                 // Voltar para etapa 2
                 confirmationStep.style.display = 'none';
                 agentsStep.style.display = 'block';
                 nextBtn.style.display = 'flex';
+                confirmBtn.style.display = 'none';
                 updateStep(2);
             } else if (selectedImportType === 'import-both') {
                 // Limpar upload de agentes
@@ -759,6 +765,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Voltar para etapa 2 (apólices)
                 agentsStep.style.display = 'none';
                 policiesStep.style.display = 'block';
+                confirmBtn.style.display = 'none';
                 updateStep(2);
             }
         } else if (currentStep === 4) {

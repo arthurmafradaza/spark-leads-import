@@ -557,8 +557,9 @@ header .container {
 /* Botões de navegação */
 .navigation {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     margin-top: 25px;
+    gap: 10px;
 }
 
 .btn {
@@ -612,13 +613,13 @@ header .container {
 .btn-success {
     background-color: var(--success);
     color: var(--white);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
 }
 
 .btn-success:hover {
     background-color: #0ca678;
     transform: translateY(-2px);
-    box-shadow: var(--shadow);
+    box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4);
 }
 
 .btn-success:active {
