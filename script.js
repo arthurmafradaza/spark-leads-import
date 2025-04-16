@@ -1458,7 +1458,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Destaque especial para a dica sobre artigos úteis
             errorMessage += '<div class="help-tip-highlight">';
-            errorMessage += 'Para mais orientações, confira os vídeos em <a href="#" onclick="document.getElementById(\'modalOverlay\').classList.remove(\'active\'); return false;">"Artigos Úteis Para Você"</a> na lateral da página.';
+            errorMessage += '<i class="fas fa-lightbulb"></i> Para mais orientações, confira os vídeos em <a href="#" onclick="document.getElementById(\'modalOverlay\').classList.remove(\'active\'); return false;">"Artigos Úteis Para Você"</a> na lateral da página.';
             errorMessage += '</div>';
             
             errorMessage += '</div>';
