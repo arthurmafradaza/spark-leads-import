@@ -310,6 +310,7 @@ header .container {
     display: flex;
     margin-bottom: 60px;
     gap: 30px;
+    align-items: flex-start;
 }
 
 .form-section {
@@ -327,6 +328,9 @@ header .container {
 .help-section {
     width: 35%;
     flex: 0.35;
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
 }
 
 /* Grupos de formulário */
@@ -477,7 +481,9 @@ header .container {
     position: relative;
     overflow: hidden;
     border: 1px solid var(--border);
-    height: calc(100% - 15px);
+    height: auto;
+    min-height: 300px;
+    max-height: 350px;
     display: flex;
     flex-direction: column;
     border-left: 4px solid var(--primary);
