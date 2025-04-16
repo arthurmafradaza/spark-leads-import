@@ -557,9 +557,17 @@ header .container {
 /* Botões de navegação */
 .navigation {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     margin-top: 25px;
-    gap: 10px;
+}
+
+.navigation .btn-outline {
+    margin-right: auto;
+}
+
+.navigation .btn-primary,
+.navigation .btn-success {
+    margin-left: 10px;
 }
 
 .btn {
