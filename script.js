@@ -652,7 +652,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Criar o wrapper do dropdown
         const dropdownWrapper = document.createElement('div');
         dropdownWrapper.id = 'uplineAgentDropdown';
-        dropdownWrapper.className = 'select-wrapper upline-agent-dropdown';
+        dropdownWrapper.className = 'upline-agent-dropdown';
         
         // Criar o label
         const label = document.createElement('label');
@@ -740,10 +740,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.readAsText(file);
             } else {
                 // Se for XLSX ou XLS, converter para CSV
-                convertToCSV(file).then(result => {
-                    // Armazenar o CSV convertido
-                    uploadedFiles.agentsCSV = result.data;
-                    
+            convertToCSV(file).then(result => {
+                // Armazenar o CSV convertido
+                uploadedFiles.agentsCSV = result.data;
+                
                     // Extrair nomes de upline do CSV
                     uplineAgents = extractUplineAgents(result.data);
                     
@@ -753,16 +753,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     agentsFileInfo.innerHTML = `${file.name}`;
-                    agentsFileInfo.classList.add('show');
-                    agentsUploadArea.style.borderColor = 'var(--success)';
-                    agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo convertido para CSV com sucesso';
-                    agentsStatus.className = 'status success';
-                }).catch(error => {
+                agentsFileInfo.classList.add('show');
+                agentsUploadArea.style.borderColor = 'var(--success)';
+                agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo convertido para CSV com sucesso';
+                agentsStatus.className = 'status success';
+            }).catch(error => {
                     agentsFileInfo.innerHTML = `${file.name}`;
-                    agentsFileInfo.classList.add('show');
-                    agentsStatus.textContent = 'Erro ao converter arquivo';
-                    agentsStatus.className = 'status error';
-                });
+                agentsFileInfo.classList.add('show');
+                agentsStatus.textContent = 'Erro ao converter arquivo';
+                agentsStatus.className = 'status error';
+            });
             }
         }
     });
@@ -1477,4 +1477,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar a barra de progresso com apenas o primeiro passo
     initSingleStepProgressBar();
-});
+}); 

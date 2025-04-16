@@ -1560,6 +1560,11 @@ footer::before {
     box-shadow: var(--shadow-sm);
 }
 
+/* Remover a seta padrão da classe select-wrapper quando usada junto com upline-agent-dropdown */
+.select-wrapper.upline-agent-dropdown::after {
+    display: none;
+}
+
 .upline-agent-dropdown label {
     display: block;
     margin-bottom: 8px;
