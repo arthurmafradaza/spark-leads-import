@@ -593,8 +593,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log('Índice da coluna Upline Agent:', uplineAgentIndex);
             
-            // Extrair todos os nomes de upline (ignorando a primeira linha de cabeçalhos)
-            const uplineNames = [];
+            // Extrair todos os nomes de upline e contar frequência
+            const uplineFrequency = {};
+            
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue; // Pular linhas vazias
                 
@@ -603,16 +604,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (values.length > uplineAgentIndex) {
                     const uplineName = values[uplineAgentIndex].trim().replace(/"/g, '');
-                    if (uplineName && !uplineNames.includes(uplineName)) {
-                        uplineNames.push(uplineName);
+                    if (uplineName) {
+                        // Incrementar contador de frequência
+                        uplineFrequency[uplineName] = (uplineFrequency[uplineName] || 0) + 1;
                     }
                 }
             }
             
-            console.log('Nomes de upline extraídos:', uplineNames);
+            // Converter o objeto de frequência em um array
+            const uplineNames = Object.keys(uplineFrequency);
             
-            // Ordenar alfabeticamente
-            return uplineNames.sort();
+            // Ordenar por frequência (do mais comum para o menos comum)
+            uplineNames.sort((a, b) => uplineFrequency[b] - uplineFrequency[a]);
+            
+            console.log('Nomes de upline extraídos por frequência:', uplineNames);
+            console.log('Frequência de cada upline:', uplineFrequency);
+            
+            return uplineNames;
         } catch (error) {
             console.error('Erro ao extrair nomes de upline:', error);
             return [];
@@ -1392,7 +1400,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (uploadedFiles.policies) {
             const policiesValidation = await validateCSVFile(uploadedFiles.policies, 16);
             if (!policiesValidation.valid) {
-                validationErrors.push(`Arquivo de Apólices: ${policiesValidation.message}`);
+                validationErrors.push(`Arquivo de Apólices`);
             }
         }
         
@@ -1400,7 +1408,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (uploadedFiles.clients) {
             const clientsValidation = await validateCSVFile(uploadedFiles.clients, 14);
             if (!clientsValidation.valid) {
-                validationErrors.push(`Arquivo de Clientes: ${clientsValidation.message}`);
+                validationErrors.push(`Arquivo de Clientes`);
             }
         }
         
@@ -1409,13 +1417,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // Para agentes, validamos o CSV convertido
             const isValid = validateColumnCount(uploadedFiles.agentsCSV, 10);
             if (!isValid) {
-                validationErrors.push('Arquivo de Agentes: O arquivo deve conter exatamente 10 colunas. Por favor, verifique o arquivo.');
+                validationErrors.push('Arquivo de Agentes');
             }
         }
         
         // Se houver erros de validação, mostrar mensagem e não prosseguir
         if (validationErrors.length > 0) {
-            let errorMessage = '<div class="validation-header"><i class="fas fa-exclamation-triangle"></i> Arquivo em formato incorreto!</div>';
+            let errorMessage = '<div class="validation-header"><i class="fas fa-exclamation-triangle"></i> Ops! Encontramos um problema com seus arquivos</div>';
+            
+            errorMessage += '<p style="margin-bottom: 15px;">Não foi possível processar os seguintes arquivos:</p>';
             
             errorMessage += '<ul class="validation-list">';
             validationErrors.forEach(error => {
@@ -1423,7 +1433,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             errorMessage += '</ul>';
             
-            errorMessage += '<div class="validation-help">Recomendamos assistir aos vídeos em <strong>"Artigos Úteis Para Você"</strong> para orientações sobre o formato correto dos arquivos.</div>';
+            errorMessage += '<div class="validation-help">';
+            errorMessage += '<p><strong>Possíveis causas:</strong></p>';
+            errorMessage += '<ul style="list-style-type: disc; padding-left: 20px; margin: 10px 0;">';
+            errorMessage += '<li>O arquivo não está no formato correto do Five Rings Portal</li>';
+            errorMessage += '<li>Estão faltando colunas obrigatórias no arquivo</li>';
+            errorMessage += '<li>Os arquivos foram trocados (ex: colocou clientes no campo de apólices)</li>';
+            errorMessage += '<li>O arquivo foi modificado manualmente e perdeu sua estrutura original</li>';
+            errorMessage += '</ul>';
+            errorMessage += '<p style="margin-top: 10px;">Para mais orientações, confira os vídeos em <strong>"Artigos Úteis Para Você"</strong> na lateral da página.</p>';
+            errorMessage += '</div>';
             
             showErrorModal(errorMessage);
             
