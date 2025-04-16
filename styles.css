@@ -1532,15 +1532,20 @@ footer::before {
 }
 
 .validation-help {
-    background-color: #edf7ff;
-    border-left: 3px solid #3498db;
-    padding: 12px 15px;
+    background-color: #e3f2fd;
+    border-left: 4px solid #1976d2;
+    padding: 15px 15px;
     margin-top: 15px;
     border-radius: 4px;
-    font-size: 14px;
-    line-height: 1.4;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #0d47a1;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .validation-help strong {
-    color: #3498db;
+    color: #1565c0;
+    font-weight: 700;
+    text-decoration: underline;
 } 
