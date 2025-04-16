@@ -1357,25 +1357,37 @@ footer::before {
 .modal-container {
     position: relative;
     max-width: 90%;
-    width: 500px;
+    width: 600px;
 }
 
 .modal {
     background-color: white;
     border-radius: 12px;
-    padding: 30px;
+    padding: 35px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     text-align: center;
     transform: translateY(20px);
     opacity: 0;
     transition: all 0.3s ease;
     display: none;
+    max-height: 85vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal.active {
     transform: translateY(0);
     opacity: 1;
-    display: block;
+    display: flex;
+}
+
+/* Permitir rolagem dentro do conteúdo do modal, não no modal inteiro */
+.modal-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-icon {
@@ -1429,23 +1441,30 @@ footer::before {
     max-width: 100%;
 }
 
+/* Aumentar o tamanho máximo da área de rolagem do modal de erro */
 #errorModal .modal-message {
-    max-height: 350px;
+    max-height: calc(60vh - 180px);
     overflow-y: auto;
     text-align: left;
-    padding-right: 5px;
+    padding-right: 10px;
+    padding-left: 5px;
+    margin-right: -5px;
+    flex: 1;
 }
 
+/* Garantir que o botão fique fixo na parte inferior */
 .modal-button {
+    margin-top: 25px;
     background-color: var(--primary);
     color: white;
     border: none;
     border-radius: 6px;
-    padding: 12px 35px;
+    padding: 14px 40px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+    align-self: center;
 }
 
 .modal-button:hover {
@@ -1518,7 +1537,7 @@ footer::before {
     font-size: 20px;
     font-weight: 600;
     color: #e74c3c;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     display: flex;
     align-items: center;
     line-height: 1.4;
@@ -1532,23 +1551,21 @@ footer::before {
 .validation-list {
     background-color: #f8f9fa;
     border-left: 3px solid #e74c3c;
-    padding: 12px 12px 12px 30px;
-    margin: 10px 0;
+    padding: 8px 12px 8px 30px;
     border-radius: 4px;
     max-height: none;
     overflow: visible;
 }
 
 .validation-list li {
-    padding: 6px 0;
+    padding: 4px 0;
     font-size: 15px;
 }
 
 .validation-help {
     background-color: #e3f2fd;
     border-left: 4px solid #1976d2;
-    padding: 18px 20px;
-    margin-top: 20px;
+    padding: 15px 18px;
     border-radius: 4px;
     font-size: 16px;
     line-height: 1.5;
@@ -1612,5 +1629,51 @@ footer::before {
 @media (max-width: 768px) {
     .upline-agent-dropdown {
         padding: 10px;
+    }
+}
+
+/* Ajuste para modais de validação */
+@media (min-height: 700px) {
+    .modal {
+        max-height: 90vh;
+    }
+    
+    #errorModal .modal-message {
+        max-height: calc(70vh - 180px);
+    }
+}
+
+@media (max-width: 576px) {
+    .modal-container {
+        width: 95%;
+    }
+    
+    .modal {
+        padding: 25px 20px;
+        max-height: 85vh;
+    }
+    
+    .modal-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+    
+    .modal-title {
+        font-size: 20px;
+    }
+    
+    .validation-header {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+    
+    .validation-help {
+        padding: 12px 15px;
+    }
+    
+    .validation-list {
+        padding: 8px 8px 8px 25px;
     }
 } 

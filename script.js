@@ -153,6 +153,20 @@ document.addEventListener('DOMContentLoaded', function() {
         errorModal.classList.add('active');
         successModal.classList.remove('active');
         
+        // Ajustar altura com base no conteúdo
+        const possiveisCausas = errorMessage.querySelector('.validation-help');
+        if (possiveisCausas) {
+            // Se tivermos poucas causas, removemos a rolagem da lista
+            const causasList = possiveisCausas.querySelectorAll('ul li');
+            if (causasList.length <= 3) {
+                const messageContent = errorMessage.querySelector('.validation-list');
+                if (messageContent) {
+                    messageContent.style.maxHeight = 'none';
+                    messageContent.style.overflow = 'visible';
+                }
+            }
+        }
+        
         // Foco no botão OK para acessibilidade
         setTimeout(() => errorModalButton.focus(), 100);
     }
@@ -1425,21 +1439,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (validationErrors.length > 0) {
             let errorMessage = '<div class="validation-header"><i class="fas fa-exclamation-triangle"></i> Ops! Encontramos um problema com seus arquivos</div>';
             
-            errorMessage += '<p style="margin-bottom: 15px;">Não foi possível processar os seguintes arquivos:</p>';
+            errorMessage += '<p style="margin: 0 0 12px;">Não foi possível processar os seguintes arquivos:</p>';
             
-            errorMessage += '<ul class="validation-list">';
+            errorMessage += '<ul class="validation-list" style="margin: 0 0 15px;">';
             validationErrors.forEach(error => {
                 errorMessage += `<li>${error}</li>`;
             });
             errorMessage += '</ul>';
             
-            errorMessage += '<div class="validation-help">';
-            errorMessage += '<p><strong>Possíveis causas:</strong></p>';
-            errorMessage += '<ul style="list-style-type: disc; padding-left: 20px; margin: 10px 0;">';
+            errorMessage += '<div class="validation-help" style="margin-bottom: 0;">';
+            errorMessage += '<p style="margin: 0 0 8px;"><strong>Possíveis causas:</strong></p>';
+            errorMessage += '<ul style="list-style-type: disc; padding-left: 20px; margin: 0 0 10px;">';
             errorMessage += '<li>Ausência de colunas obrigatórias no arquivo</li>';
             errorMessage += '<li>Os arquivos foram trocados (ex: colocou clientes no campo de apólices)</li>';
             errorMessage += '</ul>';
-            errorMessage += '<p style="margin-top: 15px;">Para mais orientações, confira os vídeos em <strong>"Artigos Úteis Para Você"</strong> na lateral da página.</p>';
+            errorMessage += '<p style="margin: 10px 0 0;">Para mais orientações, confira os vídeos em <strong>"Artigos Úteis Para Você"</strong> na lateral da página.</p>';
             errorMessage += '</div>';
             
             showErrorModal(errorMessage);
