@@ -26,27 +26,27 @@
             padding: 25px;
             background: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         
         /* Ajuste para a seção de artigos úteis */
         .helpful-articles-section {
             flex: 0 0 35%;
             max-width: 35%;
-            padding: 15px;
+            padding: 22px;
             background-color: #f8f9fa;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         
         /* Estilo melhorado para o título de Artigos Úteis */
         .helpful-articles-title {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 15px;
-            color: #333;
+            margin-bottom: 20px;
+            color: #2563eb;
             position: relative;
-            padding-left: 10px;
+            padding-left: 12px;
         }
         
         .helpful-articles-title::before {
@@ -56,55 +56,65 @@
             top: 0;
             height: 100%;
             width: 3px;
-            background-color: #1a73e8;
+            background-color: #2563eb;
             border-radius: 3px;
         }
         
         /* Melhorias nos links de artigos úteis */
         .article-link {
-            display: block;
-            padding: 10px;
-            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            padding: 14px;
+            margin-bottom: 12px;
             color: #3c4043;
             text-decoration: none;
-            border-radius: 4px;
-            transition: all 0.2s ease;
+            border-radius: 6px;
+            transition: all 0.3s ease;
             background-color: white;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .article-link:hover {
             background-color: #e8f0fe;
             color: #1a73e8;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
         }
         
         .article-link i {
-            margin-right: 8px;
+            margin-right: 10px;
             color: #1a73e8;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
         }
         
         /* Botão do Portal Five Rings com destaque */
         .portal-button {
-            display: block;
-            padding: 12px;
-            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            margin-top: 24px;
             text-align: center;
             background-color: #1a73e8;
             color: white;
             text-decoration: none;
-            border-radius: 4px;
-            transition: all 0.2s ease;
+            border-radius: 6px;
+            transition: all 0.3s ease;
             font-weight: 500;
+            box-shadow: 0 4px 6px rgba(26, 115, 232, 0.2);
         }
         
         .portal-button:hover {
             background-color: #0d62d1;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 10px rgba(26, 115, 232, 0.3);
+            transform: translateY(-2px);
         }
         
         .portal-button i {
-            margin-right: 8px;
+            margin-right: 10px;
+            font-size: 18px;
         }
         
         /* Updates to existing elements */
@@ -113,26 +123,68 @@
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
         }
         
         .btn-primary {
             background-color: #1a73e8;
             border-color: #1a73e8;
+            min-width: 120px;
+            font-weight: 500;
         }
         
         .btn-primary:hover {
             background-color: #0d62d1;
             border-color: #0d62d1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
         
         .btn-outline {
             color: #1a73e8;
             background-color: transparent;
             border: 1px solid #1a73e8;
+            min-width: 120px;
+            font-weight: 500;
         }
         
         .btn-outline:hover {
             background-color: #e8f0fe;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            margin-top: 30px;
+            border-top: 1px solid #e5e7eb;
+            position: sticky;
+            bottom: 0;
+            background-color: white;
+        }
+        
+        .btn {
+            padding: 10px 16px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        .btn-next i {
+            margin-right: 0;
+            margin-left: 8px;
         }
         
         @media (max-width: 768px) {
@@ -149,6 +201,137 @@
             .helpful-articles-section {
                 margin-top: 20px;
             }
+        }
+        
+        /* Estilos para os campos de seleção e upload */
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 15px;
+        }
+        
+        .select-wrapper {
+            position: relative;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .select-wrapper:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 15px;
+            color: #1e293b;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+        
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+        }
+        
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background-color: #f0f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .upload-icon {
+            font-size: 28px;
+            color: #3b82f6;
+            margin-bottom: 12px;
+        }
+        
+        .upload-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .upload-help {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 16px;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            background-color: #f1f5f9;
+            color: #334155;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid #cbd5e1;
+            margin-top: 5px;
+        }
+        
+        .upload-btn:hover {
+            background-color: #e2e8f0;
+            color: #1e293b;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .file-info {
+            margin-top: 16px;
+            padding: 12px;
+            background-color: #f0f9ff;
+            border-left: 3px solid #0ea5e9;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .file-info.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .status.success {
+            color: #10b981;
+        }
+        
+        .status.error {
+            color: #ef4444;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -275,11 +458,11 @@
                     <h2 class="helpful-articles-title">Artigos Úteis</h2>
                     
                     <a href="https://www.sparkleads.pro/forms-5401" target="_blank" class="article-link">
-                        <i class="far fa-file-alt"></i> Como Importar Agentes
+                        <i class="fas fa-user-plus"></i> Como Importar Agentes
                     </a>
                     
                     <a href="https://www.sparkleads.pro/forms-5401-9228" target="_blank" class="article-link">
-                        <i class="far fa-file-alt"></i> Como Importar Clientes
+                        <i class="fas fa-users"></i> Como Importar Clientes
                     </a>
                     
                     <a href="https://portal.fiveringsfinancial.com/account/login" target="_blank" class="portal-button">
