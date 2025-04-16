@@ -317,7 +317,7 @@ header .container {
     border-radius: var(--radius);
     padding: 15px;
     box-shadow: var(--shadow-md);
-    flex: 1;
+    flex: 0.65;
     position: relative;
     overflow: hidden;
     transition: var(--transition);
@@ -325,7 +325,8 @@ header .container {
 }
 
 .help-section {
-    width: 350px;
+    width: 35%;
+    flex: 0.35;
 }
 
 /* Grupos de formulário */
@@ -387,7 +388,7 @@ header .container {
     color: var(--primary);
 }
 
-/* Área de upload */
+/* Upload area com melhor feedback de interação */
 .upload-area {
     border: 2px dashed var(--border);
     border-radius: var(--radius);
@@ -398,6 +399,7 @@ header .container {
     background-color: var(--light-bg);
     position: relative;
     overflow: hidden;
+    max-width: 100%;
 }
 
 .upload-area:hover,
@@ -429,6 +431,7 @@ header .container {
     color: var(--text);
     margin-bottom: 4px;
     font-weight: 500;
+    word-break: break-word;
 }
 
 .upload-help {
@@ -468,43 +471,89 @@ header .container {
 .help-box {
     background-color: var(--white);
     border-radius: var(--radius);
-    padding: 15px;
+    padding: 20px;
     box-shadow: var(--shadow-md);
     margin-bottom: 15px;
     position: relative;
     overflow: hidden;
     border: 1px solid var(--border);
+    height: calc(100% - 15px);
+    display: flex;
+    flex-direction: column;
+    border-left: 4px solid var(--primary);
+    transition: var(--transition);
 }
 
+.help-box:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Estilos da seção de ajuda */
 .help-title {
-    font-size: 15px;
-    margin-bottom: 12px;
+    font-size: 18px;
+    margin-bottom: 18px;
     color: var(--text);
     font-weight: 600;
     display: flex;
     align-items: center;
     letter-spacing: 0.3px;
+    position: relative;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
 }
 
 .help-title i {
     margin-right: 10px;
     color: var(--primary);
+    font-size: 20px;
+}
+
+.help-title::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 40%;
+    height: 2px;
+    background-color: var(--primary);
+}
+
+.help-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+    margin-bottom: 20px;
 }
 
 .help-links a {
     display: flex;
     align-items: center;
-    padding: 10px 15px;
+    padding: 15px 18px;
     background-color: #f0f7ff;
     border-radius: 10px;
     color: var(--primary);
     text-decoration: none;
     font-weight: 500;
-    font-size: 0.95rem;
+    font-size: 1rem;
     transition: all 0.3s ease;
     border: 1px solid #d0e1ff;
     box-shadow: 0 2px 6px rgba(59, 130, 246, 0.1);
-    margin-bottom: 5px;
+    position: relative;
+    overflow: hidden;
+    padding-left: 22px;
+}
+
+.help-links a::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background-color: var(--primary);
+    opacity: 0.8;
 }
 
 .help-links a:hover {
@@ -520,7 +569,7 @@ header .container {
 
 .help-links a i {
     margin-right: 15px;
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     color: var(--primary);
 }
 
@@ -528,16 +577,35 @@ header .container {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 20px;
+    padding: 15px 20px;
     background-color: var(--primary);
     color: white;
     border-radius: 10px;
     text-decoration: none;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.05rem;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    margin-top: 5px;
+    margin-top: auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.portal-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100px;
+    width: 50px;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.4), rgba(255,255,255,0));
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { left: -100px; }
+    20% { left: 120%; }
+    100% { left: 120%; }
 }
 
 .portal-btn:hover {
@@ -559,7 +627,7 @@ header .container {
 .navigation {
     display: flex;
     justify-content: space-between;
-    margin-top: 25px;
+    margin-top: 20px;
 }
 
 .navigation .btn-outline {
@@ -572,9 +640,9 @@ header .container {
 }
 
 .btn {
-    padding: 12px 30px;
+    padding: 10px 25px;
     border-radius: var(--radius-sm);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
@@ -873,12 +941,23 @@ footer::before {
         flex-direction: column;
     }
     
-    .help-section {
+    .form-section, .help-section {
         width: 100%;
+        flex: 1;
+    }
+    
+    .help-section {
+        order: -1; /* Coloca a seção de ajuda acima do formulário em telas menores */
+        margin-bottom: 20px;
+    }
+    
+    .help-box {
+        height: auto;
+        padding: 25px;
     }
     
     .form-section {
-        padding: 25px;
+        padding: 20px;
     }
     
     .page-title h2 {
@@ -939,8 +1018,18 @@ footer::before {
     }
     
     .btn {
-        padding: 12px 20px;
-        font-size: 15px;
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+    
+    .btn i {
+        margin-right: 6px;
+        font-size: 14px;
+    }
+    
+    .btn-next i {
+        margin-left: 6px;
+        margin-right: 0;
     }
     
     .upload-btn {
@@ -1159,36 +1248,6 @@ footer::before {
 
 .help-contact a:hover {
     text-decoration: underline;
-}
-
-/* Upload area com melhor feedback de interação */
-.upload-area {
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: var(--transition);
-    background-color: var(--light-bg);
-    position: relative;
-    overflow: hidden;
-}
-
-.upload-area:hover,
-.upload-area:focus {
-    border-color: var(--primary);
-    background-color: rgba(59, 130, 246, 0.05);
-    transform: translateY(-2px);
-    outline: none;
-    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
-}
-
-.upload-area:focus {
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-}
-
-.upload-area:active {
-    transform: translateY(0);
 }
 
 /* Footer com links úteis */
