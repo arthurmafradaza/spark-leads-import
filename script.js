@@ -1439,21 +1439,26 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Se houver erros de validação, mostrar mensagem e não prosseguir
         if (validationErrors.length > 0) {
-            let errorMessage = '<div class="validation-header"><i class="fas fa-exclamation-triangle"></i> Ops! Encontramos um problema com seus arquivos</div>';
+            let errorMessage = '<div class="validation-header"><i class="fas fa-exclamation-circle"></i> Atenção</div>';
+            
+            errorMessage += '<p style="margin: 0 0 10px; display: flex; align-items: center;"><i class="fas fa-exclamation-triangle" style="color: #e74c3c; margin-right: 8px;"></i> <span style="color: #e74c3c; font-weight: 600;">Ops! Encontramos um problema com seus arquivos</span></p>';
             
             errorMessage += '<p style="margin: 0 0 10px;">Não foi possível processar os seguintes arquivos:</p>';
             
-            errorMessage += '<ul class="validation-list" style="margin: 0 0 15px;">';
+            errorMessage += '<ul class="validation-list" style="margin: 0 0 15px; list-style-type: none;">';
             validationErrors.forEach(error => {
-                errorMessage += `<li>${error}</li>`;
+                errorMessage += `<li style="padding-left: 8px; position: relative;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background-color: #e74c3c; position: absolute; left: -8px; top: 8px; border-radius: 50%;"></span>
+                    ${error}
+                </li>`;
             });
             errorMessage += '</ul>';
             
             errorMessage += '<div class="validation-help" style="margin-bottom: 0;">';
             errorMessage += '<p style="margin: 0 0 8px;"><strong>Possíveis causas:</strong></p>';
-            errorMessage += '<ul style="list-style-type: disc; padding-left: 20px; margin: 0 0 10px;">';
-            errorMessage += '<li>Ausência de colunas obrigatórias no arquivo</li>';
-            errorMessage += '<li>Os arquivos foram trocados (ex: colocou clientes no campo de apólices)</li>';
+            errorMessage += '<ul style="list-style-type: none; padding-left: 0; margin: 0 0 10px;">';
+            errorMessage += '<li style="margin-bottom: 5px; display: flex; align-items: center;"><span style="display: inline-block; width: 6px; height: 6px; background-color: #2196F3; margin-right: 10px; border-radius: 50%;"></span>Ausência de colunas obrigatórias no arquivo</li>';
+            errorMessage += '<li style="margin-bottom: 5px; display: flex; align-items: center;"><span style="display: inline-block; width: 6px; height: 6px; background-color: #2196F3; margin-right: 10px; border-radius: 50%;"></span>Os arquivos foram trocados (ex: colocou clientes no campo de apólices)</li>';
             errorMessage += '</ul>';
             
             // Destaque especial para a dica sobre artigos úteis
