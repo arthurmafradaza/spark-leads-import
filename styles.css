@@ -1495,4 +1495,52 @@ footer::before {
         font-size: 16px;
         padding: 3px 0;
     }
+}
+
+/* Estilos para mensagem de validação de erro */
+.error-validation-message {
+    text-align: left;
+    color: #333;
+}
+
+.validation-header {
+    font-size: 18px;
+    font-weight: 600;
+    color: #e74c3c;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    line-height: 1.3;
+}
+
+.validation-header i {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.validation-list {
+    background-color: #f8f9fa;
+    border-left: 3px solid #e74c3c;
+    padding: 12px 12px 12px 30px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.validation-list li {
+    padding: 4px 0;
+    font-size: 14px;
+}
+
+.validation-help {
+    background-color: #edf7ff;
+    border-left: 3px solid #3498db;
+    padding: 12px 15px;
+    margin-top: 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.validation-help strong {
+    color: #3498db;
 } 

@@ -1197,13 +1197,25 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Se houver erros de validação, mostrar mensagem e não prosseguir
         if (validationErrors.length > 0) {
-            let errorMessage = 'Os seguintes problemas foram encontrados:<br><br><ul>';
+            let errorMessage = '<div class="error-validation-message">';
             
+            // Adiciona ícone de alerta
+            errorMessage += '<div class="validation-header"><i class="fas fa-exclamation-triangle"></i> Arquivo em formato incorreto!</div>';
+            
+            // Adiciona os detalhes do erro
+            errorMessage += '<ul class="validation-list">';
             validationErrors.forEach(error => {
                 errorMessage += `<li>${error}</li>`;
             });
+            errorMessage += '</ul>';
             
-            errorMessage += '</ul><br>Recomendamos assistir aos vídeos em "Artigos Úteis Para Você" para orientações sobre o formato correto dos arquivos.';
+            // Adiciona recomendação destacada
+            errorMessage += '<div class="validation-help">';
+            errorMessage += 'Recomendamos assistir aos vídeos em <strong>"Artigos Úteis Para Você"</strong> ';
+            errorMessage += 'para orientações sobre o formato correto dos arquivos.';
+            errorMessage += '</div>';
+            
+            errorMessage += '</div>';
             
             showErrorModal(errorMessage);
             
