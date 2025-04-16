@@ -490,7 +490,9 @@ document.addEventListener('DOMContentLoaded', function() {
             uploadedFiles.policies = file;
             
             policiesUploadArea.querySelector('.upload-text').textContent = file.name;
-            policiesFileInfo.innerHTML = `${file.name}`;
+            policiesFileInfo.innerHTML = `
+                <strong>Arquivo:</strong> ${file.name}
+            `;
             policiesFileInfo.classList.add('show');
             policiesUploadArea.style.borderColor = 'var(--success)';
             policiesStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo adicionado com sucesso';
@@ -505,7 +507,9 @@ document.addEventListener('DOMContentLoaded', function() {
             uploadedFiles.clients = file;
             
             clientsUploadArea.querySelector('.upload-text').textContent = file.name;
-            clientsFileInfo.innerHTML = `${file.name}`;
+            clientsFileInfo.innerHTML = `
+                <strong>Arquivo:</strong> ${file.name}
+            `;
             clientsFileInfo.classList.add('show');
             clientsUploadArea.style.borderColor = 'var(--success)';
             clientsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo adicionado com sucesso';
@@ -526,13 +530,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Armazenar o CSV convertido
                 uploadedFiles.agentsCSV = result.data;
                 
-                agentsFileInfo.innerHTML = `${file.name}`;
+                agentsFileInfo.innerHTML = `
+                    <strong>Arquivo:</strong> ${file.name}<br>
+                    <strong>Convertido:</strong> CSV (${result.rows} linhas, ${result.columns} colunas)
+                `;
                 agentsFileInfo.classList.add('show');
                 agentsUploadArea.style.borderColor = 'var(--success)';
                 agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo convertido para CSV com sucesso';
                 agentsStatus.className = 'status success';
             }).catch(error => {
-                agentsFileInfo.innerHTML = `${file.name}`;
+                agentsFileInfo.innerHTML = `
+                    <strong>Arquivo:</strong> ${file.name}<br>
+                    <strong>Erro:</strong> Não foi possível converter para CSV
+                `;
                 agentsFileInfo.classList.add('show');
                 agentsStatus.textContent = 'Erro ao converter arquivo';
                 agentsStatus.className = 'status error';
