@@ -10,8 +10,33 @@
     <!-- Biblioteca SheetJS para conversão de planilhas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos para o widget de tradução */
+        .gtranslate_wrapper {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .gtranslate_wrapper select {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .gtranslate_wrapper select:hover {
+            border-color: #2196F3;
+        }
+    </style>
 </head>
 <body>
+    <div class="gtranslate_wrapper"></div>
+    <script>window.gtranslateSettings = {"default_language":"pt","languages":["pt","es","en"],"wrapper_selector":".gtranslate_wrapper","alt_flags":{"en":"usa","pt":"brazil"}}</script>
+    <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     <header>
         <div class="container">
             <div class="logo">
