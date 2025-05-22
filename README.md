@@ -28,8 +28,8 @@ Sistema de importação de dados para o Spark Leads. Esta aplicação permite im
 
 ## Links Úteis
 
-- [Como Importar Agentes](https://www.sparkleads.pro/forms-5401)
-- [Como Importar Clientes](https://www.sparkleads.pro/forms-5401-9228)
+- [Como Importar Agentes](https://sparkleads.helpkit.so/five-rings-import/4VhtxrqLj2eUjDvEajWrUn/como-importar-agentes-da-five-rings/4MF7scgGKVF82TnFvmemwK)
+- [Como Importar Clientes](https://sparkleads.helpkit.so/five-rings-import/4VhtxrqLj2eUjDvEajWrUn/como-importar-clientes-da-five-rings/4MF7scgGKUQkWdwZMf8Sst)
 - [Acesso ao Five Rings Portal](https://portal.fiveringsfinancial.com/account/login)
 
 ## Desenvolvimento
