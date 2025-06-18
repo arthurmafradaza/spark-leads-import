@@ -1109,7 +1109,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Função para verificar o arquivo CSV
-    async function validateCSVFile(file, expectedColumnCount) {
+    async function validateCSVFile(file, expectedColumnCount, fileType) {
         return new Promise((resolve, reject) => {
             if (!file) {
                 resolve({ valid: false, message: 'Arquivo não encontrado.' });
@@ -1119,12 +1119,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const csvText = e.target.result;
-                const isValid = validateColumnCount(csvText, expectedColumnCount);
+                const isValid = validateColumnCount(csvText, expectedColumnCount, fileType);
                 
                 if (isValid) {
                     resolve({ valid: true });
                 } else {
-                    const message = `O arquivo deve conter exatamente ${expectedColumnCount} colunas. Por favor, verifique o arquivo.`;
+                    const expectedColumns = {
+                        'policies': 16,
+                        'clients': 15,
+                        'agents': 8
+                    };
+                    const expectedCount = expectedColumns[fileType] || expectedColumnCount;
+                    const message = `O arquivo deve conter exatamente ${expectedCount} colunas. Por favor, verifique o arquivo.`;
                     resolve({ valid: false, message: message });
                 }
             };
@@ -1423,24 +1429,24 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Validar Policies (16 colunas)
         if (uploadedFiles.policies) {
-            const policiesValidation = await validateCSVFile(uploadedFiles.policies, 16);
+            const policiesValidation = await validateCSVFile(uploadedFiles.policies, 16, 'policies');
             if (!policiesValidation.valid) {
                 validationErrors.push(`Arquivo de Apólices`);
             }
         }
         
-        // Validar Clients (14 colunas)
+        // Validar Clients (15 colunas)
         if (uploadedFiles.clients) {
-            const clientsValidation = await validateCSVFile(uploadedFiles.clients, 14);
+            const clientsValidation = await validateCSVFile(uploadedFiles.clients, 15, 'clients');
             if (!clientsValidation.valid) {
                 validationErrors.push(`Arquivo de Clientes`);
             }
         }
         
-        // Validar Agents (10 colunas)
+        // Validar Agents (8 colunas)
         if (uploadedFiles.agents && uploadedFiles.agentsCSV) {
             // Para agentes, validamos o CSV convertido
-            const isValid = validateColumnCount(uploadedFiles.agentsCSV, 10);
+            const isValid = validateColumnCount(uploadedFiles.agentsCSV, 8, 'agents');
             if (!isValid) {
                 validationErrors.push('Arquivo de Agentes');
             }
