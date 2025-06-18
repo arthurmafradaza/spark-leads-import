@@ -1090,14 +1090,22 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Função para verificar número de colunas nos arquivos CSV
-    function validateColumnCount(csvText, expectedColumnCount) {
+    function validateColumnCount(csvText, expectedColumnCount, fileType) {
         if (!csvText) return false;
         
         // Pegar a primeira linha (cabeçalhos) e contar as colunas
         const firstLine = csvText.split('\n')[0];
         const columns = firstLine.split(',');
         
-        return columns.length === expectedColumnCount;
+        // Número esperado de colunas por tipo de arquivo
+        const expectedColumns = {
+            'policies': 16,
+            'clients': 15,
+            'agents': 8
+        };
+        
+        const expectedCount = expectedColumns[fileType] || expectedColumnCount;
+        return columns.length === expectedCount;
     }
     
     // Função para verificar o arquivo CSV
@@ -1189,8 +1197,9 @@ document.addEventListener('DOMContentLoaded', function() {
             ];
             
             const clientsHeaders = [
-                "Number", "First Name", "Last Name", "Email", "Phone",
-                "Address", "City", "State", "Zip", "Country"
+                "Name", "Type", "Status", "Latest Policy", "Latest Policy Status",
+                "Policies", "Products", "Product Type", "Product Category",
+                "Email", "Phone", "Address", "Gender", "Birth Date", "Start Date"
             ];
             
             const agentsHeaders = [
