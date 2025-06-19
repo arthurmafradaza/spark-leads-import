@@ -1101,7 +1101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const expectedColumns = {
             'policies': 16,
             'clients': 15,
-            'agents': 8
+            'agents': 10
         };
         
         const expectedCount = expectedColumns[fileType] || expectedColumnCount;
@@ -1127,7 +1127,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const expectedColumns = {
                         'policies': 16,
                         'clients': 15,
-                        'agents': 8
+                        'agents': 10
                     };
                     const expectedCount = expectedColumns[fileType] || expectedColumnCount;
                     const message = `O arquivo deve conter exatamente ${expectedCount} colunas. Por favor, verifique o arquivo.`;
@@ -1209,8 +1209,8 @@ document.addEventListener('DOMContentLoaded', function() {
             ];
             
             const agentsHeaders = [
-                "Name", "Email", "Address", "Phone", "Status", 
-                "Upline Agent", "Compensation", "Start Date"
+                "Name", "Email", "Address", "Phone", "Status",
+                "Upline Agent", "Compensation Level", "Coat Color", "Birth Date", "Start Date"
             ];
             
             // Adicionar arrays de cabeçalhos
@@ -1443,10 +1443,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Validar Agents (8 colunas)
+        // Validar Agents (10 colunas)
         if (uploadedFiles.agents && uploadedFiles.agentsCSV) {
             // Para agentes, validamos o CSV convertido
-            const isValid = validateColumnCount(uploadedFiles.agentsCSV, 8, 'agents');
+            const isValid = validateColumnCount(uploadedFiles.agentsCSV, 10, 'agents');
             if (!isValid) {
                 validationErrors.push('Arquivo de Agentes');
             }
