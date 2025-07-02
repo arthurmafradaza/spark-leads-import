@@ -1,0 +1,28 @@
+{
+  "name": "spark-leads-import",
+  "version": "1.0.0",
+  "description": "Sistema de importação de dados para o Spark Leads. Esta aplicação permite importar apólices, clientes e agentes a partir de arquivos Excel ou CSV do Five Rings Portal.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arthurmafradaza/spark-leads-import.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arthurmafradaza/spark-leads-import/issues"
+  },
+  "homepage": "https://github.com/arthurmafradaza/spark-leads-import#readme",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "serve": "^14.2.4",
+    "xlsx": "^0.18.5"
+  }
+}
