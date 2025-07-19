@@ -767,10 +767,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.readAsText(file);
             } else {
                 // Se for XLSX ou XLS, converter para CSV
-                convertToCSV(file).then(result => {
-                    // Armazenar o CSV convertido
-                    uploadedFiles.agentsCSV = result.data;
-                    
+            convertToCSV(file).then(result => {
+                // Armazenar o CSV convertido
+                uploadedFiles.agentsCSV = result.data;
+                
                     // Extrair nomes de upline do CSV
                     uplineAgents = extractUplineAgents(result.data);
                     
@@ -780,16 +780,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     agentsFileInfo.innerHTML = `<strong>Arquivo:</strong> ${file.name}`;
-                    agentsFileInfo.classList.add('show');
-                    agentsUploadArea.style.borderColor = 'var(--success)';
-                    agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo convertido para CSV com sucesso';
-                    agentsStatus.className = 'status success';
-                }).catch(error => {
+                agentsFileInfo.classList.add('show');
+                agentsUploadArea.style.borderColor = 'var(--success)';
+                agentsStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo convertido para CSV com sucesso';
+                agentsStatus.className = 'status success';
+            }).catch(error => {
                     agentsFileInfo.innerHTML = `<strong>Arquivo:</strong> ${file.name}`;
-                    agentsFileInfo.classList.add('show');
-                    agentsStatus.textContent = 'Erro ao converter arquivo';
-                    agentsStatus.className = 'status error';
-                });
+                agentsFileInfo.classList.add('show');
+                agentsStatus.textContent = 'Erro ao converter arquivo';
+                agentsStatus.className = 'status error';
+            });
             }
         }
     });
@@ -1446,7 +1446,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validar Agents (10 colunas)
         if (uploadedFiles.agents && uploadedFiles.agentsCSV) {
             // Para agentes, validamos o CSV convertido
-            const isValid = validateColumnCount(uploadedFiles.agentsCSV, 10, 'agents');
+            const isValid = validateColumnCount(uploadedFiles.agentsCSV, 11, 'agents');
             if (!isValid) {
                 validationErrors.push('Arquivo de Agentes');
             }
