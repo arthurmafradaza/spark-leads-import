@@ -1101,7 +1101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const expectedColumns = {
             'policies': 16,
             'clients': 15,
-            'agents': 10
+            'agents': 11
         };
         
         const expectedCount = expectedColumns[fileType] || expectedColumnCount;
