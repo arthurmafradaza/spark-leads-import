@@ -1664,6 +1664,12 @@ footer::before {
     margin-left: 10px;
 }
 
+/* Garantir que elementos filhos sejam escondidos quando pai está escondido */
+#policiesStep[style*="display: none"] #clientsUploadGroup,
+#policiesStep[style*="display: none"] .form-group {
+    display: none !important;
+}
+
 /* Responsividade para radio buttons */
 @media (max-width: 576px) {
     .radio-option {
