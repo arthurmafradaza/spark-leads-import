@@ -536,6 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
         agentsStep.style.display = 'none';
         confirmationStep.style.display = 'none';
         policyTypeStep.style.display = 'none';
+        clientsUploadGroup.style.display = 'none'; // Esconder área de clientes
         importTypeGroup.parentElement.style.display = 'block';
         
         // Resetar texto do botão próximo
@@ -1039,6 +1040,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedImportType === 'multiple-policies') {
                 // Voltar da etapa de upload para sub-etapa de tipo de apólice
                 policiesStep.style.display = 'none';
+                clientsUploadGroup.style.display = 'none'; // Esconder área de clientes
                 policyTypeStep.style.display = 'block';
                 resetUploads('policies');
                 resetUploads('clients');
@@ -1046,6 +1048,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (selectedImportType === 'import-both') {
                 // Para "Ambos", voltar direto para seleção inicial
                 policiesStep.style.display = 'none';
+                clientsUploadGroup.style.display = 'none'; // Esconder área de clientes também
                 importTypeGroup.parentElement.style.display = 'block';
                 resetUploads('policies');
                 resetUploads('clients');
