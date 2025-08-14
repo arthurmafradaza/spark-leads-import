@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos do DOM
     const importTypeGroup = document.getElementById('importTypeGroup');
-    const radioOptions = document.querySelectorAll('input[name="importType"]');
+    const checkboxOptions = document.querySelectorAll('input[name="importTypes"]');
     const policyTypeStep = document.getElementById('policyTypeStep');
     const policyTypeOptions = document.querySelectorAll('input[name="policyType"]');
+    const agentTypeStep = document.getElementById('agentTypeStep');
+    const agentTypeOptions = document.querySelectorAll('input[name="agentType"]');
     const policiesStep = document.getElementById('policiesStep');
     const agentsStep = document.getElementById('agentsStep');
     const confirmationStep = document.getElementById('confirmationStep');
@@ -49,9 +51,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Estado atual
     let currentStep = 1;
-    let selectedImportType = null;
+    let selectedImportTypes = []; // Array para múltiplas seleções
     let selectedPolicyType = null;
-    let totalSteps = 4; // Padrão para "Importar Ambos"
+    let selectedAgentType = null;
+    let totalSteps = 4;
     
     // Arquivos carregados
     let uploadedFiles = {
@@ -76,16 +79,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar funcionalidade de arrastar e soltar para áreas de upload
     setupDragAndDrop();
     
-    // Configurar eventos para radio buttons
-    radioOptions.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.checked) {
-                selectedImportType = this.value;
-                // Avançar automaticamente para a próxima etapa
-                setTimeout(goToNextStep, 300);
-            }
+    // Configurar eventos para checkboxes - SISTEMA REVOLUCIONÁRIO!
+    checkboxOptions.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateSelectedImportTypes();
         });
     });
+    
+    // Função para atualizar array de tipos selecionados
+    function updateSelectedImportTypes() {
+        selectedImportTypes = [];
+        checkboxOptions.forEach(checkbox => {
+            if (checkbox.checked) {
+                selectedImportTypes.push(checkbox.value);
+            }
+        });
+        console.log('Tipos selecionados:', selectedImportTypes);
+    }
     
     // Configurar eventos para radio buttons de tipo de apólice
     policyTypeOptions.forEach(radio => {
@@ -98,8 +108,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Configurar eventos para radio buttons de tipo de agente
+    agentTypeOptions.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                selectedAgentType = this.value;
+                // Avançar automaticamente para a próxima etapa
+                setTimeout(goToNextStep, 300);
+            }
+        });
+    });
+    
     // Adicionar evento de clique para toda a área da opção
-    document.querySelectorAll('.radio-option').forEach(option => {
+    document.querySelectorAll('.radio-option, .checkbox-option').forEach(option => {
         option.addEventListener('click', function(e) {
             // Verificar se a opção está desabilitada
             if (this.classList.contains('disabled')) {
@@ -107,13 +128,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Evitar propagação dupla se clicar diretamente no radio button
-            if (e.target.type === 'radio') return;
+            // Evitar propagação dupla se clicar diretamente no input
+            if (e.target.type === 'radio' || e.target.type === 'checkbox') return;
             
-            const radio = this.querySelector('input[type="radio"]');
-            if (radio && !radio.checked && !radio.disabled) {
-                radio.checked = true;
-                radio.dispatchEvent(new Event('change'));
+            const input = this.querySelector('input[type="radio"], input[type="checkbox"]');
+            if (input && !input.disabled) {
+                if (input.type === 'checkbox') {
+                    input.checked = !input.checked;
+                } else if (input.type === 'radio' && !input.checked) {
+                    input.checked = true;
+                }
+                input.dispatchEvent(new Event('change'));
             }
         });
     });
@@ -332,53 +357,67 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Função para avançar para a próxima etapa com base no tipo de importação
+        // Função para avançar para a próxima etapa - SISTEMA REVOLUCIONÁRIO!
     function goToNextStep() {
         if (currentStep === 1) {
-        if (!selectedImportType) {
-                showErrorModal('Por favor, selecione um tipo de importação.');
+            if (selectedImportTypes.length === 0) {
+                showErrorModal('Por favor, selecione pelo menos um tipo de importação.');
             return;
         }
         
-        if (selectedImportType === 'multiple-policies') {
-                // Mostrar sub-etapa de tipo de apólice
+            // Determinar fluxo baseado nas seleções
+            const hasPolicies = selectedImportTypes.includes('policies');
+            const hasAgents = selectedImportTypes.includes('agents');
+            
+            if (hasPolicies && hasAgents) {
+                // AMBOS SELECIONADOS - vai direto para upload
+                selectedPolicyType = 'multiple-policies'; // Auto-definir como múltiplas
+                adjustProgressBar('import-both');
+            policiesStep.style.display = 'block';
+            clientsUploadGroup.style.display = 'block';
+                importTypeGroup.parentElement.style.display = 'none';
+            updateStep(2);
+                return;
+            } else if (hasPolicies) {
+                // SÓ APÓLICES - vai para sub-etapa de apólices
                 policyTypeStep.style.display = 'block';
                 importTypeGroup.parentElement.style.display = 'none';
             updateStep(2);
                 return;
-        } else if (selectedImportType === 'multiple-agents') {
-                // Ajustar a barra de progresso para agentes
-                adjustProgressBar(selectedImportType);
-            // Mostrar etapa de agentes
-            agentsStep.style.display = 'block';
+            } else if (hasAgents) {
+                // SÓ AGENTES - vai para sub-etapa de agentes
+                agentTypeStep.style.display = 'block';
                 importTypeGroup.parentElement.style.display = 'none';
-            updateStep(2);
-                return;
-        } else if (selectedImportType === 'import-both') {
-                // Para "Ambos", ir direto para upload (múltiplas apólices + agentes)
-                selectedPolicyType = 'multiple-policies'; // Definir automaticamente como múltiplas
-                adjustProgressBar(selectedImportType);
-            // Mostrar etapa de apólices e clientes
-            policiesStep.style.display = 'block';
-                importTypeGroup.parentElement.style.display = 'none';
-            clientsUploadGroup.style.display = 'block';
-            updateStep(2);
+                updateStep(2);
                 return;
             }
-        } else if (currentStep === 2 && (selectedImportType === 'multiple-policies' || selectedImportType === 'import-both')) {
-            if (!selectedPolicyType) {
-                showErrorModal('Por favor, selecione o tipo de apólice.');
-                return;
-            }
+        } else if (currentStep === 2) {
+            // Lógica para sub-etapas
+            const hasPolicies = selectedImportTypes.includes('policies');
+            const hasAgents = selectedImportTypes.includes('agents');
             
-            // Ajustar a barra de progresso para o tipo de importação selecionado
-            adjustProgressBar(selectedImportType);
-            
-            // Mostrar etapa de apólices e clientes
+            if (hasPolicies && !hasAgents) {
+                // Sub-etapa de apólices
+                if (!selectedPolicyType) {
+                    showErrorModal('Por favor, selecione o tipo de apólice.');
+                    return;
+                }
+                adjustProgressBar('multiple-policies');
             policiesStep.style.display = 'block';
-            policyTypeStep.style.display = 'none';
             clientsUploadGroup.style.display = 'block';
-            updateStep(3);
+                policyTypeStep.style.display = 'none';
+                updateStep(3);
+            } else if (hasAgents && !hasPolicies) {
+                // Sub-etapa de agentes
+                if (!selectedAgentType) {
+                    showErrorModal('Por favor, selecione o tipo de agente.');
+                    return;
+                }
+                adjustProgressBar('multiple-agents');
+                agentsStep.style.display = 'block';
+                agentTypeStep.style.display = 'none';
+                updateStep(3);
+            }
         }
     }
     
@@ -521,13 +560,17 @@ document.addEventListener('DOMContentLoaded', function() {
         resetUploads('all');
         
         // Resetar tipo de importação
-        selectedImportType = null;
+        selectedImportTypes = [];
         selectedPolicyType = null;
-        // Desmarcar todos os radio buttons
-        radioOptions.forEach(radio => {
-            radio.checked = false;
+        selectedAgentType = null;
+        // Desmarcar todos os checkboxes
+        checkboxOptions.forEach(checkbox => {
+            checkbox.checked = false;
         });
         policyTypeOptions.forEach(radio => {
+            radio.checked = false;
+        });
+        agentTypeOptions.forEach(radio => {
             radio.checked = false;
         });
         
@@ -536,6 +579,8 @@ document.addEventListener('DOMContentLoaded', function() {
         agentsStep.style.display = 'none';
         confirmationStep.style.display = 'none';
         policyTypeStep.style.display = 'none';
+        agentTypeStep.style.display = 'none';
+        clientsUploadGroup.style.display = 'none';
         importTypeGroup.parentElement.style.display = 'block';
         
         // Resetar texto do botão próximo
@@ -914,39 +959,52 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Navegação entre etapas
     nextBtn.addEventListener('click', function() {
+        console.log('NextBtn clicado - Etapa:', currentStep, 'Tipos:', selectedImportTypes);
+        
         // Verificar etapa atual
         if (currentStep === 1) {
             goToNextStep();
         } else if (currentStep === 2) {
-            if (selectedImportType === 'multiple-agents') {
-                // Verificar se arquivo de agentes foi carregado
-                if (!uploadedFiles.agents) {
-                    showErrorModal('Por favor, carregue um arquivo de agentes.');
+            // Determinar baseado nas seleções - SISTEMA ATUALIZADO!
+            const hasPolicies = selectedImportTypes.includes('policies');
+            const hasAgents = selectedImportTypes.includes('agents');
+            
+            if (hasPolicies && hasAgents) {
+                // AMBOS SELECIONADOS - etapa 2 = upload, validar arquivos
+                if (!uploadedFiles.policies) {
+                    showErrorModal('Você deve selecionar o arquivo de apólices para prosseguir.');
+                    return;
+                }
+                if (!uploadedFiles.clients) {
+                    showErrorModal('Você deve selecionar o arquivo de clientes para prosseguir.');
                     return;
                 }
                 
-                // Preparar confirmação
-                prepareConfirmation();
-                
-                // Mostrar etapa de confirmação
-                agentsStep.style.display = 'none';
-                confirmationStep.style.display = 'block';
-                nextBtn.style.display = 'none';
-                confirmBtn.style.display = 'flex';
+                // Se arquivos foram carregados, avançar para etapa de agentes
+                policiesStep.style.display = 'none';
+                clientsUploadGroup.style.display = 'none';
+                agentsStep.style.display = 'block';
                 updateStep(3);
-            } else {
-                // Para apólices e ambos, chamar goToNextStep que irá para a sub-etapa
+            } else if (hasPolicies && !hasAgents) {
+                // SÓ APÓLICES - etapa 2 = sub-etapa, chamar goToNextStep
+                goToNextStep();
+            } else if (hasAgents && !hasPolicies) {
+                // SÓ AGENTES - etapa 2 = sub-etapa, chamar goToNextStep  
                 goToNextStep();
             }
         } else if (currentStep === 3) {
-            if (selectedImportType === 'multiple-policies') {
-                // Verificar se arquivos de apólices e clientes foram carregados
+            // Determinar baseado nas seleções - SISTEMA ATUALIZADO!
+            const hasPolicies = selectedImportTypes.includes('policies');
+            const hasAgents = selectedImportTypes.includes('agents');
+            
+            if (hasPolicies && !hasAgents) {
+                // SÓ APÓLICES - etapa 3 = upload, validar arquivos
                 if (!uploadedFiles.policies) {
-                    showErrorModal('Por favor, carregue um arquivo de apólices.');
+                    showErrorModal('Você deve selecionar o arquivo de apólices para prosseguir.');
                     return;
                 }
                 if (!uploadedFiles.clients) {
-                    showErrorModal('Por favor, carregue um arquivo de clientes.');
+                    showErrorModal('Você deve selecionar o arquivo de clientes para prosseguir.');
                     return;
                 }
                 
@@ -958,11 +1016,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmationStep.style.display = 'block';
                 nextBtn.style.display = 'none';
                 confirmBtn.style.display = 'flex';
-                updateStep(3);
-            } else if (selectedImportType === 'multiple-agents') {
-                // Verificar se arquivo de agentes foi carregado
+                updateStep(4);
+            } else if (hasAgents && !hasPolicies) {
+                // SÓ AGENTES - etapa 3 = upload, validar arquivos
                 if (!uploadedFiles.agents) {
-                    showErrorModal('Por favor, carregue um arquivo de agentes.');
+                    showErrorModal('Você deve selecionar o arquivo de agentes para prosseguir.');
                     return;
                 }
                 
@@ -974,28 +1032,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmationStep.style.display = 'block';
                 nextBtn.style.display = 'none';
                 confirmBtn.style.display = 'flex';
-                updateStep(3);
-            } else if (selectedImportType === 'import-both') {
-                // Verificar se arquivos de apólices e clientes foram carregados
-                if (!uploadedFiles.policies) {
-                    showErrorModal('Por favor, carregue um arquivo de apólices.');
-                    return;
-                }
-                if (!uploadedFiles.clients) {
-                    showErrorModal('Por favor, carregue um arquivo de clientes.');
-                    return;
-                }
-                
-                // Mostrar etapa de agentes
-                policiesStep.style.display = 'none';
-                agentsStep.style.display = 'block';
-                updateStep(3);
-            }
-        } else if (currentStep === 3) {
-            if (selectedImportType === 'import-both') {
-                // Verificar se arquivo de agentes foi carregado
+                updateStep(4);
+            } else if (hasPolicies && hasAgents) {
+                // AMBOS - etapa 3 = agentes, validar arquivo
                 if (!uploadedFiles.agents) {
-                    showErrorModal('Por favor, carregue um arquivo de agentes.');
+                    showErrorModal('Você deve selecionar o arquivo de agentes para prosseguir.');
                     return;
                 }
                 
@@ -1012,11 +1053,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Voltar para etapa anterior
+    // Voltar para etapa anterior - ATUALIZADO PARA CHECKBOXES!
     prevBtn.addEventListener('click', function() {
+        console.log('Botão Anterior clicado! Etapa atual:', currentStep);
+        console.log('Tipos selecionados:', selectedImportTypes);
+        
         if (currentStep === 2) {
-            if (selectedImportType === 'multiple-policies' || selectedImportType === 'import-both') {
-                // Voltar da sub-etapa de tipo de apólice para seleção inicial
+            // Determinar de onde estamos vindo baseado nas seleções
+            const hasPolicies = selectedImportTypes.includes('policies');
+            const hasAgents = selectedImportTypes.includes('agents');
+            
+            if (hasPolicies && hasAgents) {
+                // AMBOS SELECIONADOS - etapa 2 = upload, voltar para inicial
+                policiesStep.style.display = 'none';
+                clientsUploadGroup.style.display = 'none';
+                importTypeGroup.parentElement.style.display = 'block';
+                resetUploads('policies');
+                resetUploads('clients');
+                selectedImportTypes = [];
+                selectedPolicyType = null;
+                checkboxOptions.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                initSingleStepProgressBar();
+                updateStep(1);
+                console.log('Reset para etapa 1 - AMBOS');
+            } else if (hasPolicies) {
+                // SÓ APÓLICES - etapa 2 = sub-etapa de apólices, voltar para inicial
                 policyTypeStep.style.display = 'none';
                 importTypeGroup.parentElement.style.display = 'block';
                 selectedPolicyType = null;
@@ -1024,38 +1087,37 @@ document.addEventListener('DOMContentLoaded', function() {
                     radio.checked = false;
                 });
                 updateStep(1);
-            } else if (selectedImportType === 'multiple-agents') {
-                // Voltar da etapa de agentes para seleção inicial
-                agentsStep.style.display = 'none';
+                console.log('Reset para etapa 1 - SÓ APÓLICES');
+            } else if (hasAgents) {
+                // SÓ AGENTES - etapa 2 = sub-etapa de agentes, voltar para inicial
+                agentTypeStep.style.display = 'none';
                 importTypeGroup.parentElement.style.display = 'block';
-            selectedImportType = null;
-                radioOptions.forEach(radio => {
+                selectedAgentType = null;
+                agentTypeOptions.forEach(radio => {
                     radio.checked = false;
                 });
-                initSingleStepProgressBar();
-            updateStep(1);
+                updateStep(1);
+                console.log('Reset para etapa 1 - SÓ AGENTES');
             }
         } else if (currentStep === 3) {
-            if (selectedImportType === 'multiple-policies') {
-                // Voltar da etapa de upload para sub-etapa de tipo de apólice
+            // Determinar de onde estamos vindo baseado nas seleções
+            const hasPolicies = selectedImportTypes.includes('policies');
+            const hasAgents = selectedImportTypes.includes('agents');
+            
+            if (hasPolicies && !hasAgents) {
+                // SÓ APÓLICES - etapa 3 = upload, voltar para sub-etapa de apólices
                 policiesStep.style.display = 'none';
+                clientsUploadGroup.style.display = 'none';
                 policyTypeStep.style.display = 'block';
                 resetUploads('policies');
                 resetUploads('clients');
                 updateStep(2);
-            } else if (selectedImportType === 'import-both') {
-                // Para "Ambos", voltar direto para seleção inicial
-                policiesStep.style.display = 'none';
-                importTypeGroup.parentElement.style.display = 'block';
-                resetUploads('policies');
-                resetUploads('clients');
-                selectedImportType = null;
-                selectedPolicyType = null;
-                radioOptions.forEach(radio => {
-                    radio.checked = false;
-                });
-                initSingleStepProgressBar();
-                updateStep(1);
+            } else if (hasAgents && !hasPolicies) {
+                // SÓ AGENTES - etapa 3 = upload, voltar para sub-etapa de agentes
+                agentsStep.style.display = 'none';
+                agentTypeStep.style.display = 'block';
+                resetUploads('agents');
+                updateStep(2);
             }
         } else if (currentStep === 4) {
             // Lógica para etapas futuras se necessário
