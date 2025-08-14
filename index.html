@@ -53,13 +53,39 @@
             <div class="form-container">
                 <div class="form-section">
                     <div class="form-group">
-                        <label for="importType">Selecione um tipo de importação *</label>
-                        <div class="select-wrapper" id="importTypeWrapper">
-                            <input type="text" class="form-control" id="importType" placeholder="Clique aqui para selecionar" readonly>
-                            <div class="select-options">
-                                <div class="select-option" data-value="multiple-policies">Múltiplas Apólices (Five Rings)</div>
-                                <div class="select-option" data-value="multiple-agents">Múltiplos Agentes (Five Rings)</div>
-                                <div class="select-option" data-value="import-both">Importar Ambos</div>
+                        <label>O que você deseja importar hoje? *</label>
+                        <div class="radio-group" id="importTypeGroup">
+                            <div class="radio-option">
+                                <input type="radio" id="policies-option" name="importType" value="multiple-policies">
+                                <label for="policies-option">Apólices</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="agents-option" name="importType" value="multiple-agents">
+                                <label for="agents-option">Agentes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="both-option" name="importType" value="import-both">
+                                <label for="both-option">Ambos</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sub-step: Policy Type Selection (Initially Hidden) -->
+                    <div id="policyTypeStep" style="display: none;">
+                        <div class="form-group">
+                            <label>Como você deseja importar suas apólices? *</label>
+                            <div class="radio-group" id="policyTypeGroup">
+                                <div class="radio-option">
+                                    <input type="radio" id="multiple-policies-option" name="policyType" value="multiple-policies">
+                                    <label for="multiple-policies-option">Múltiplas Apólices</label>
+                                </div>
+                                <div class="radio-option disabled">
+                                    <input type="radio" id="single-policy-option" name="policyType" value="single-policy" disabled>
+                                    <label for="single-policy-option">
+                                        Apólice Única
+                                        <span class="coming-soon">EM BREVE</span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>

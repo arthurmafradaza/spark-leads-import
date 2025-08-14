@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos do DOM
-    const importTypeWrapper = document.getElementById('importTypeWrapper');
-    const importType = document.getElementById('importType');
-    const selectOptions = document.querySelectorAll('.select-option');
+    const importTypeGroup = document.getElementById('importTypeGroup');
+    const radioOptions = document.querySelectorAll('input[name="importType"]');
+    const policyTypeStep = document.getElementById('policyTypeStep');
+    const policyTypeOptions = document.querySelectorAll('input[name="policyType"]');
     const policiesStep = document.getElementById('policiesStep');
     const agentsStep = document.getElementById('agentsStep');
     const confirmationStep = document.getElementById('confirmationStep');
@@ -49,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Estado atual
     let currentStep = 1;
     let selectedImportType = null;
+    let selectedPolicyType = null;
     let totalSteps = 4; // Padrão para "Importar Ambos"
     
     // Arquivos carregados
@@ -74,38 +76,46 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar funcionalidade de arrastar e soltar para áreas de upload
     setupDragAndDrop();
     
-    // Abrir/fechar dropdown de seleção
-    importTypeWrapper.addEventListener('click', function(e) {
-        this.classList.toggle('open');
-        e.stopPropagation();
-    });
-    
-    // Suporte a teclado para dropdown
-    importType.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
-            e.preventDefault();
-            importTypeWrapper.classList.add('open');
-        }
-    });
-    
-    // Suporte a teclado para opções de dropdown
-    selectOptions.forEach(option => {
-        option.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.click();
+    // Configurar eventos para radio buttons
+    radioOptions.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                selectedImportType = this.value;
+                // Avançar automaticamente para a próxima etapa
+                setTimeout(goToNextStep, 300);
             }
         });
-        
-        // Adicionar tabindex para navegação por teclado
-        option.setAttribute('tabindex', '0');
     });
     
-    // Clicar fora para fechar dropdown
-    document.addEventListener('click', function(e) {
-        if (!importTypeWrapper.contains(e.target)) {
-            importTypeWrapper.classList.remove('open');
-        }
+    // Configurar eventos para radio buttons de tipo de apólice
+    policyTypeOptions.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                selectedPolicyType = this.value;
+                // Avançar automaticamente para a próxima etapa
+                setTimeout(goToNextStep, 300);
+            }
+        });
+    });
+    
+    // Adicionar evento de clique para toda a área da opção
+    document.querySelectorAll('.radio-option').forEach(option => {
+        option.addEventListener('click', function(e) {
+            // Verificar se a opção está desabilitada
+            if (this.classList.contains('disabled')) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Evitar propagação dupla se clicar diretamente no radio button
+            if (e.target.type === 'radio') return;
+            
+            const radio = this.querySelector('input[type="radio"]');
+            if (radio && !radio.checked && !radio.disabled) {
+                radio.checked = true;
+                radio.dispatchEvent(new Event('change'));
+            }
+        });
     });
     
     // Inicializar funções de modal
@@ -195,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Fechar tooltip ao clicar fora
-            document.addEventListener('click', function(e) {
+    document.addEventListener('click', function(e) {
                 if (!trigger.contains(e.target)) {
                     trigger.nextElementSibling.style.display = 'none';
                 }
@@ -324,51 +334,55 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Função para avançar para a próxima etapa com base no tipo de importação
     function goToNextStep() {
+        if (currentStep === 1) {
         if (!selectedImportType) {
-            showErrorModal('Por favor, selecione um tipo de importação.');
+                showErrorModal('Por favor, selecione um tipo de importação.');
             return;
         }
         
-        // Ajustar a barra de progresso para o tipo de importação selecionado
-        adjustProgressBar(selectedImportType);
-        
-        // Configurar próxima etapa com base no tipo de importação
         if (selectedImportType === 'multiple-policies') {
-            // Mostrar etapa de apólices e clientes
-            policiesStep.style.display = 'block';
-            importTypeWrapper.parentElement.style.display = 'none';
-            clientsUploadGroup.style.display = 'block';
+                // Mostrar sub-etapa de tipo de apólice
+                policyTypeStep.style.display = 'block';
+                importTypeGroup.parentElement.style.display = 'none';
             updateStep(2);
+                return;
         } else if (selectedImportType === 'multiple-agents') {
+                // Ajustar a barra de progresso para agentes
+                adjustProgressBar(selectedImportType);
             // Mostrar etapa de agentes
             agentsStep.style.display = 'block';
-            importTypeWrapper.parentElement.style.display = 'none';
+                importTypeGroup.parentElement.style.display = 'none';
             updateStep(2);
-            // Mudar o texto do botão próximo
-            nextBtn.innerHTML = 'Próximo <i class="fas fa-arrow-right"></i>';
+                return;
         } else if (selectedImportType === 'import-both') {
+                // Para "Ambos", ir direto para upload (múltiplas apólices + agentes)
+                selectedPolicyType = 'multiple-policies'; // Definir automaticamente como múltiplas
+                adjustProgressBar(selectedImportType);
             // Mostrar etapa de apólices e clientes
             policiesStep.style.display = 'block';
-            importTypeWrapper.parentElement.style.display = 'none';
+                importTypeGroup.parentElement.style.display = 'none';
             clientsUploadGroup.style.display = 'block';
             updateStep(2);
+                return;
+            }
+        } else if (currentStep === 2 && (selectedImportType === 'multiple-policies' || selectedImportType === 'import-both')) {
+            if (!selectedPolicyType) {
+                showErrorModal('Por favor, selecione o tipo de apólice.');
+                return;
+            }
+            
+            // Ajustar a barra de progresso para o tipo de importação selecionado
+            adjustProgressBar(selectedImportType);
+            
+            // Mostrar etapa de apólices e clientes
+            policiesStep.style.display = 'block';
+            policyTypeStep.style.display = 'none';
+            clientsUploadGroup.style.display = 'block';
+            updateStep(3);
         }
     }
     
-    // Selecionar opção e avançar automaticamente
-    selectOptions.forEach(option => {
-        option.addEventListener('click', function(e) {
-            e.stopPropagation(); // Impedir que o evento de click se propague para o wrapper
-            if (!this.hasAttribute('disabled')) {
-                selectedImportType = this.getAttribute('data-value');
-                importType.value = this.textContent;
-                importTypeWrapper.classList.remove('open');
-                
-                // Avançar automaticamente para a próxima etapa
-                setTimeout(goToNextStep, 300); // Pequeno delay para mostrar a seleção antes de avançar
-            }
-        });
-    });
+
     
     // Upload areas click - Corrigindo para que o evento funcione corretamente
     policiesUploadArea.querySelector('.upload-btn').addEventListener('click', function(e) {
@@ -508,13 +522,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Resetar tipo de importação
         selectedImportType = null;
-        importType.value = '';
+        selectedPolicyType = null;
+        // Desmarcar todos os radio buttons
+        radioOptions.forEach(radio => {
+            radio.checked = false;
+        });
+        policyTypeOptions.forEach(radio => {
+            radio.checked = false;
+        });
         
         // Voltar para a primeira etapa
         policiesStep.style.display = 'none';
         agentsStep.style.display = 'none';
         confirmationStep.style.display = 'none';
-        importTypeWrapper.parentElement.style.display = 'block';
+        policyTypeStep.style.display = 'none';
+        importTypeGroup.parentElement.style.display = 'block';
         
         // Resetar texto do botão próximo
         nextBtn.innerHTML = 'Próximo <i class="fas fa-arrow-right"></i>';
@@ -896,6 +918,27 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentStep === 1) {
             goToNextStep();
         } else if (currentStep === 2) {
+            if (selectedImportType === 'multiple-agents') {
+                // Verificar se arquivo de agentes foi carregado
+                if (!uploadedFiles.agents) {
+                    showErrorModal('Por favor, carregue um arquivo de agentes.');
+                    return;
+                }
+                
+                // Preparar confirmação
+                prepareConfirmation();
+                
+                // Mostrar etapa de confirmação
+                agentsStep.style.display = 'none';
+                confirmationStep.style.display = 'block';
+                nextBtn.style.display = 'none';
+                confirmBtn.style.display = 'flex';
+                updateStep(3);
+            } else {
+                // Para apólices e ambos, chamar goToNextStep que irá para a sub-etapa
+                goToNextStep();
+            }
+        } else if (currentStep === 3) {
             if (selectedImportType === 'multiple-policies') {
                 // Verificar se arquivos de apólices e clientes foram carregados
                 if (!uploadedFiles.policies) {
@@ -973,63 +1016,49 @@ document.addEventListener('DOMContentLoaded', function() {
     prevBtn.addEventListener('click', function() {
         if (currentStep === 2) {
             if (selectedImportType === 'multiple-policies' || selectedImportType === 'import-both') {
-                // Limpar uploads de apólices e clientes
-                resetUploads('policies');
-                resetUploads('clients');
-                
-                // Voltar para etapa 1
-                policiesStep.style.display = 'none';
+                // Voltar da sub-etapa de tipo de apólice para seleção inicial
+                policyTypeStep.style.display = 'none';
+                importTypeGroup.parentElement.style.display = 'block';
+                selectedPolicyType = null;
+                policyTypeOptions.forEach(radio => {
+                    radio.checked = false;
+                });
+                updateStep(1);
             } else if (selectedImportType === 'multiple-agents') {
-                // Limpar upload de agentes
-                resetUploads('agents');
-                
-                // Voltar para etapa 1
+                // Voltar da etapa de agentes para seleção inicial
                 agentsStep.style.display = 'none';
-                nextBtn.innerHTML = 'Próximo <i class="fas fa-arrow-right"></i>';
-            }
-            
-            // Restaurar a visão inicial da barra de progresso
-            initSingleStepProgressBar();
-            
-            // Restaurar a tela inicial
-            importTypeWrapper.parentElement.style.display = 'block';
+                importTypeGroup.parentElement.style.display = 'block';
             selectedImportType = null;
-            importType.value = '';
+                radioOptions.forEach(radio => {
+                    radio.checked = false;
+                });
+                initSingleStepProgressBar();
             updateStep(1);
+            }
         } else if (currentStep === 3) {
             if (selectedImportType === 'multiple-policies') {
-                // Voltar para etapa 2
-                confirmationStep.style.display = 'none';
-                policiesStep.style.display = 'block';
-                nextBtn.style.display = 'flex';
-                confirmBtn.style.display = 'none';
-                updateStep(2);
-            } else if (selectedImportType === 'multiple-agents') {
-                // Voltar para etapa 2
-                confirmationStep.style.display = 'none';
-                agentsStep.style.display = 'block';
-                nextBtn.style.display = 'flex';
-                confirmBtn.style.display = 'none';
+                // Voltar da etapa de upload para sub-etapa de tipo de apólice
+                policiesStep.style.display = 'none';
+                policyTypeStep.style.display = 'block';
+                resetUploads('policies');
+                resetUploads('clients');
                 updateStep(2);
             } else if (selectedImportType === 'import-both') {
-                // Limpar upload de agentes
-                resetUploads('agents');
-                
-                // Voltar para etapa 2 (apólices)
-                agentsStep.style.display = 'none';
-                policiesStep.style.display = 'block';
-                confirmBtn.style.display = 'none';
-                updateStep(2);
+                // Para "Ambos", voltar direto para seleção inicial
+                policiesStep.style.display = 'none';
+                importTypeGroup.parentElement.style.display = 'block';
+                resetUploads('policies');
+                resetUploads('clients');
+                selectedImportType = null;
+                selectedPolicyType = null;
+                radioOptions.forEach(radio => {
+                    radio.checked = false;
+                });
+                initSingleStepProgressBar();
+                updateStep(1);
             }
         } else if (currentStep === 4) {
-            if (selectedImportType === 'import-both') {
-                // Voltar para etapa 3 (agentes)
-                confirmationStep.style.display = 'none';
-                agentsStep.style.display = 'block';
-                nextBtn.style.display = 'flex';
-                confirmBtn.style.display = 'none';
-                updateStep(3);
-            }
+            // Lógica para etapas futuras se necessário
         }
     });
     
