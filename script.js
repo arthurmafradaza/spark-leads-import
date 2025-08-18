@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const documentsStep = document.getElementById('documentsStep');
     const agentTypeStep = document.getElementById('agentTypeStep');
     const agentTypeOptions = document.querySelectorAll('input[name="agentType"]');
+    const singleAgentStep = document.getElementById('singleAgentStep');
     const policiesStep = document.getElementById('policiesStep');
     const agentsStep = document.getElementById('agentsStep');
     const confirmationStep = document.getElementById('confirmationStep');
@@ -85,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar eventos para checkboxes - SISTEMA REVOLUCIONÁRIO!
     checkboxOptions.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
+            console.log('Checkbox alterado:', this.value, this.checked);
             updateSelectedImportTypes();
         });
     });
@@ -322,6 +324,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 { number: 3, title: 'Confirmação' }
             ];
             totalSteps = 3;
+        } else if (importType === 'single-agent') {
+            steps = [
+                { number: 1, title: 'Tipo de Importação' },
+                { number: 2, title: 'Informações do Agente' },
+                { number: 3, title: 'Confirmação' }
+            ];
+            totalSteps = 3;
         } else if (importType === 'multiple-agents') {
             steps = [
                 { number: 1, title: 'Tipo de Importação' },
@@ -371,11 +380,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // Função para avançar para a próxima etapa - SISTEMA REVOLUCIONÁRIO!
     function goToNextStep() {
+        console.log('goToNextStep chamada - currentStep:', currentStep);
+        console.log('selectedImportTypes.length:', selectedImportTypes.length);
+        
         if (currentStep === 1) {
             if (selectedImportTypes.length === 0) {
+                console.log('Nenhum tipo selecionado - mostrando modal de erro');
                 showErrorModal('Por favor, selecione pelo menos um tipo de importação.');
-            return;
-        }
+                return;
+            }
         
             // Determinar fluxo baseado nas seleções
             const hasPolicies = selectedImportTypes.includes('policies');
@@ -435,10 +448,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     showErrorModal('Por favor, selecione o tipo de agente.');
                     return;
                 }
-                adjustProgressBar('multiple-agents');
-                agentsStep.style.display = 'block';
-                agentTypeStep.style.display = 'none';
-                updateStep(3);
+                
+                if (selectedAgentType === 'single-agent') {
+                    // AGENTE ÚNICO - vai para formulário manual
+                    adjustProgressBar('single-agent');
+                    singleAgentStep.style.display = 'block';
+                    agentTypeStep.style.display = 'none';
+                    updateStep(2); // Formulário do agente é etapa 2
+                } else {
+                    // MÚLTIPLOS AGENTES - vai para upload
+                    adjustProgressBar('multiple-agents');
+                    agentsStep.style.display = 'block';
+                    agentTypeStep.style.display = 'none';
+                    updateStep(3);
+                }
             }
         }
     }
@@ -601,7 +624,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Limpar todos os formulários
-        const allInputs = document.querySelectorAll('#singlePolicyStep input, #policyInfoStep input, #policyInfoStep select');
+        const allInputs = document.querySelectorAll('#singlePolicyStep input, #policyInfoStep input, #policyInfoStep select, #singleAgentStep input, #singleAgentStep select');
         allInputs.forEach(input => {
             input.value = '';
             input.checked = false;
@@ -616,6 +639,7 @@ document.addEventListener('DOMContentLoaded', function() {
         policyInfoStep.style.display = 'none';
         documentsStep.style.display = 'none';
         agentTypeStep.style.display = 'none';
+        singleAgentStep.style.display = 'none';
         clientsUploadGroup.style.display = 'none';
         importTypeGroup.parentElement.style.display = 'block';
         
@@ -642,7 +666,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <strong>Arquivo:</strong> ${file.name}
             `;
             policiesFileInfo.classList.add('show');
-            policiesUploadArea.style.borderColor = 'var(--success)';
             policiesStatus.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo adicionado com sucesso';
             policiesStatus.className = 'status success';
         }
@@ -963,11 +986,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Verificar se é formulário manual ou upload de arquivos
         if (selectedPolicyType === 'single-policy') {
-            // FORMULÁRIO MANUAL - mostrar informações preenchidas
+            // FORMULÁRIO MANUAL DE APÓLICE - mostrar informações preenchidas
             confirmationMessage.textContent = 'Confira antes de enviar:';
             
             const formData = collectFormData();
             const confirmationHtml = generateConfirmationHtml(formData);
+            confirmationContent.innerHTML = confirmationHtml;
+            
+        } else if (selectedAgentType === 'single-agent') {
+            // FORMULÁRIO MANUAL DE AGENTE - mostrar informações preenchidas
+            confirmationMessage.textContent = 'Confira antes de enviar:';
+            
+            const formData = collectAgentFormData();
+            const confirmationHtml = generateAgentConfirmationHtml(formData);
             confirmationContent.innerHTML = confirmationHtml;
             
         } else {
@@ -1129,9 +1160,51 @@ document.addEventListener('DOMContentLoaded', function() {
         return option ? option.textContent : value;
     }
     
+    // Função para coletar dados do formulário de agente manual
+    function collectAgentFormData() {
+        const data = {};
+        
+        // Informações do Agente
+        data.agentName = document.getElementById('agentName')?.value || '';
+        data.agentEmail = document.getElementById('agentEmail')?.value || '';
+        data.agentPhone = document.getElementById('agentPhone')?.value || '';
+        data.agentStartDate = document.getElementById('agentStartDate')?.value || '';
+        data.agentBirthDate = document.getElementById('agentBirthDate')?.value || '';
+        data.agentCompensationLevel = document.getElementById('agentCompensationLevel')?.value || '';
+        
+
+        
+        return data;
+    }
+    
+    // Função para gerar HTML de confirmação do agente
+    function generateAgentConfirmationHtml(data) {
+        const sections = [];
+        
+        // Seção: Informações do Agente
+        const compensationLevelDisplay = getSelectText('agentCompensationLevel', data.agentCompensationLevel);
+        
+        sections.push(`
+            <div class="confirmation-section">
+                <h4><i class="fas fa-user-tie"></i> Informações do Agente</h4>
+                <div class="confirmation-grid">
+                    <div class="confirmation-item"><strong>Nome:</strong> ${data.agentName}</div>
+                    <div class="confirmation-item"><strong>Email:</strong> ${data.agentEmail}</div>
+                    <div class="confirmation-item"><strong>Telefone:</strong> ${data.agentPhone}</div>
+                    <div class="confirmation-item"><strong>Data de Início:</strong> ${formatDate(data.agentStartDate)}</div>
+                    <div class="confirmation-item"><strong>Data de Nascimento:</strong> ${formatDate(data.agentBirthDate)}</div>
+                    <div class="confirmation-item"><strong>Nível de Compensação:</strong> ${compensationLevelDisplay}</div>
+                </div>
+            </div>
+        `);
+        
+        return sections.join('');
+    }
+    
     // Navegação entre etapas
     nextBtn.addEventListener('click', function() {
-
+        console.log('Botão Próximo clicado - currentStep:', currentStep);
+        console.log('selectedImportTypes:', selectedImportTypes);
         
         // Verificar etapa atual
         if (currentStep === 1) {
@@ -1213,8 +1286,46 @@ document.addEventListener('DOMContentLoaded', function() {
                     goToNextStep();
                 }
             } else if (hasAgents && !hasPolicies) {
-                // SÓ AGENTES - etapa 2 = sub-etapa, chamar goToNextStep  
-                goToNextStep();
+                // SÓ AGENTES - verificar se é formulário manual ou upload
+                if (selectedAgentType === 'single-agent') {
+                    // VERIFICAÇÃO EXTRA: só validar se realmente estiver no formulário do agente
+                    const actuallyInAgentForm = singleAgentStep && singleAgentStep.style.display !== 'none';
+                    if (!actuallyInAgentForm) {
+                        console.log('ERRO: Tentando validar agente mas não está na tela do agente!');
+                        resetForm();
+                        return;
+                    }
+                    
+                    // FORMULÁRIO MANUAL - validar campos do agente
+                    const requiredAgentFields = ['agentName', 'agentEmail', 'agentPhone', 'agentStartDate', 'agentBirthDate', 'agentCompensationLevel'];
+                    const emptyAgentFields = [];
+                    
+                    requiredAgentFields.forEach(fieldId => {
+                        const field = document.getElementById(fieldId);
+                        if (!field || !field.value.trim()) {
+                            if (field && field.previousElementSibling) {
+                                emptyAgentFields.push(field.previousElementSibling.textContent.replace(' *', ''));
+                            }
+                        }
+                    });
+                    
+                    if (emptyAgentFields.length > 0) {
+                        showErrorModal(`Por favor, preencha os seguintes campos obrigatórios:<br><br>• ${emptyAgentFields.join('<br>• ')}`);
+                        return;
+                    }
+                    
+                    // Todos os campos do agente preenchidos, avançar para confirmação
+                    singleAgentStep.style.display = 'none';
+                    prepareConfirmation();
+                    confirmationStep.style.display = 'block';
+                    nextBtn.style.display = 'none';
+                    confirmBtn.style.display = 'flex';
+                    updateStep(3); // Confirmação é etapa 3 para agente único
+                    return;
+                } else {
+                    // MÚLTIPLOS AGENTES - etapa 2 = sub-etapa, chamar goToNextStep
+                    goToNextStep();
+                }
             }
         } else if (currentStep === 3) {
             // Etapa 3 - pode ser informações da apólice ou outras validações
@@ -1420,15 +1531,53 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 }
             } else if (hasAgents) {
-                // SÓ AGENTES - etapa 2 = sub-etapa de agentes, voltar para inicial
-                agentTypeStep.style.display = 'none';
-                importTypeGroup.parentElement.style.display = 'block';
-                selectedAgentType = null;
-                agentTypeOptions.forEach(radio => {
-                    radio.checked = false;
-                });
-            updateStep(1);
-
+                // SÓ AGENTES - verificar se estamos no formulário manual ou na sub-etapa
+                const isInAgentForm = singleAgentStep && singleAgentStep.style.display !== 'none';
+                const isInAgentTypeStep = agentTypeStep && agentTypeStep.style.display !== 'none';
+                
+                if (isInAgentForm) {
+                    // Estamos no formulário do agente único, voltar para sub-etapa
+                    singleAgentStep.style.display = 'none';
+                    agentTypeStep.style.display = 'block';
+                    
+                    // Limpar dados do formulário do agente
+                    const agentForm = document.querySelectorAll('#singleAgentStep input, #singleAgentStep select');
+                    agentForm.forEach(input => {
+                        input.value = '';
+                    });
+                    
+                    updateStep(2); // Manter na etapa 2 (sub-etapa de seleção)
+                } else if (isInAgentTypeStep) {
+                    // Estamos na sub-etapa de seleção, voltar para inicial
+                    agentTypeStep.style.display = 'none';
+                    importTypeGroup.parentElement.style.display = 'block';
+                    
+                    // Reset completo de todas as variáveis de estado
+                    selectedAgentType = null;
+                    selectedImportTypes = [];
+                    selectedPolicyType = null;
+                    
+                    // Limpar todas as seleções
+                    checkboxOptions.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    agentTypeOptions.forEach(radio => {
+                        radio.checked = false;
+                    });
+                    policyTypeOptions.forEach(radio => {
+                        radio.checked = false;
+                    });
+                    
+                    // Resetar uploads
+                    resetUploads('all');
+                    
+                    // Resetar a barra de progresso
+                    initSingleStepProgressBar();
+                    updateStep(1);
+                    
+                    // Forçar reset completo do estado
+                    currentStep = 1;
+                }
             }
         } else if (currentStep === 3) {
             // Determinar de onde estamos vindo baseado nas seleções
@@ -1736,6 +1885,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     const errorText = await response.text();
                     console.error('Erro ao enviar formulário manual:', response.status, errorText);
+                    return false;
+                }
+            } else if (selectedAgentType === 'single-agent') {
+                // FORMULÁRIO MANUAL DE AGENTE - webhook específico
+                console.log('Enviando dados do formulário manual de agente...');
+                const formData = collectAgentFormData();
+                
+                const manualData = {
+                    location_id: locationId,
+                    type: 'single-agent',
+                    agent_info: {
+                        name: formData.agentName,
+                        email: formData.agentEmail,
+                        phone: formData.agentPhone,
+                        start_date: formData.agentStartDate,
+                        birth_date: formData.agentBirthDate,
+                        compensation_level: formData.agentCompensationLevel
+                    }
+                };
+                
+                console.log('Dados do formulário de agente preparados:', manualData);
+                
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(manualData)
+                });
+                
+                console.log('Resposta do webhook manual de agente:', response.status);
+                
+                if (response.ok) {
+                    console.log('Formulário manual de agente enviado com sucesso');
+                    return true;
+                } else {
+                    const errorText = await response.text();
+                    console.error('Erro ao enviar formulário manual de agente:', response.status, errorText);
                     return false;
                 }
             }

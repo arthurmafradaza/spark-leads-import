@@ -52,7 +52,7 @@
             
             <div class="form-container">
                 <div class="form-section">
-                                            <div class="form-group">
+                    <div class="form-group">
                             <label>O que você deseja importar hoje? *</label>
                             <div class="checkbox-group" id="importTypeGroup">
                                 <div class="checkbox-option">
@@ -348,14 +348,74 @@
                                     <input type="radio" id="multiple-agents-option" name="agentType" value="multiple-agents">
                                     <label for="multiple-agents-option">Múltiplos Agentes</label>
                                 </div>
-                                <div class="radio-option disabled">
-                                    <input type="radio" id="single-agent-option" name="agentType" value="single-agent" disabled>
+                                <div class="radio-option">
+                                    <input type="radio" id="single-agent-option" name="agentType" value="single-agent">
                                     <label for="single-agent-option">
                                         Agente Único
-                                        <span class="coming-soon">EM BREVE</span>
                                     </label>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2B: Single Agent Form (Initially Hidden) -->
+                    <div class="step" id="singleAgentStep" style="display: none;">
+                        <div class="form-section">
+                            <h3>Cadastro de Agente Único</h3>
+                            <p>Preencha as informações do agente.</p>
+                            
+                            <!-- Agent Information -->
+                            <div class="form-group-section">
+                                <h4><i class="fas fa-user-tie"></i> Informações do Agente</h4>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="agentName">Nome *</label>
+                                        <input type="text" id="agentName" name="agentName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="agentEmail">Email *</label>
+                                        <input type="email" id="agentEmail" name="agentEmail" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="agentPhone">Telefone *</label>
+                                        <input type="tel" id="agentPhone" name="agentPhone" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="agentStartDate">Data de Início *</label>
+                                        <input type="date" id="agentStartDate" name="agentStartDate" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="agentBirthDate">Data de Nascimento *</label>
+                                        <input type="date" id="agentBirthDate" name="agentBirthDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="agentCompensationLevel">Nível de Compensação *</label>
+                                        <select id="agentCompensationLevel" name="agentCompensationLevel" required>
+                                            <option value="">Selecione o nível</option>
+                                            <option value="proposed_agent">Proposed Agent</option>
+                                            <option value="studying">Studying</option>
+                                            <option value="agent_45">Agent (45%)</option>
+                                            <option value="district_leader_50">District Leader (50%)</option>
+                                            <option value="division_leader_55">Division Leader (55%)</option>
+                                            <option value="regional_leader_60">Regional Leader (60%)</option>
+                                            <option value="agency_vice_president_65">Agency Vice President (65%)</option>
+                                            <option value="regional_vice_president_70">Regional Vice President (70%)</option>
+                                            <option value="national_vice_president_80">National Vice President (80%)</option>
+                                            <option value="senior_vice_president_85">Senior Vice President (85%)</option>
+                                            <option value="executive_vice_president_90">Executive Vice President (90%)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+
                         </div>
                     </div>
                     
