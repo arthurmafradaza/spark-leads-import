@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkboxOptions = document.querySelectorAll('input[name="importTypes"]');
     const policyTypeStep = document.getElementById('policyTypeStep');
     const policyTypeOptions = document.querySelectorAll('input[name="policyType"]');
+    const singlePolicyStep = document.getElementById('singlePolicyStep');
+    const policyInfoStep = document.getElementById('policyInfoStep');
+    const documentsStep = document.getElementById('documentsStep');
     const agentTypeStep = document.getElementById('agentTypeStep');
     const agentTypeOptions = document.querySelectorAll('input[name="agentType"]');
     const policiesStep = document.getElementById('policiesStep');
@@ -303,7 +306,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Configurar etapas com base no tipo de importação
         let steps = [];
         
-        if (importType === 'multiple-policies') {
+        if (importType === 'single-policy') {
+            steps = [
+                { number: 1, title: 'Tipo de Importação' },
+                { number: 2, title: 'Informações do Contato' },
+                { number: 3, title: 'Informações da Apólice' },
+                { number: 4, title: 'Documentos' },
+                { number: 5, title: 'Confirmação' }
+            ];
+            totalSteps = 5;
+        } else if (importType === 'multiple-policies') {
             steps = [
                 { number: 1, title: 'Tipo de Importação' },
                 { number: 2, title: 'Apólices/Clientes' },
@@ -402,11 +414,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     showErrorModal('Por favor, selecione o tipo de apólice.');
                     return;
                 }
-                adjustProgressBar('multiple-policies');
+                
+                if (selectedPolicyType === 'single-policy') {
+                    // APÓLICE ÚNICA - vai para formulário manual
+                    adjustProgressBar('single-policy');
+                    singlePolicyStep.style.display = 'block';
+                    policyTypeStep.style.display = 'none';
+                    updateStep(2); // Corrigido: formulário de contato é etapa 2
+                } else {
+                    // MÚLTIPLAS APÓLICES - vai para upload
+                    adjustProgressBar('multiple-policies');
             policiesStep.style.display = 'block';
             clientsUploadGroup.style.display = 'block';
-                policyTypeStep.style.display = 'none';
-                updateStep(3);
+                    policyTypeStep.style.display = 'none';
+                    updateStep(3);
+                }
             } else if (hasAgents && !hasPolicies) {
                 // Sub-etapa de agentes
                 if (!selectedAgentType) {
@@ -563,6 +585,10 @@ document.addEventListener('DOMContentLoaded', function() {
         selectedImportTypes = [];
         selectedPolicyType = null;
         selectedAgentType = null;
+        
+        // Forçar reset do currentStep
+        currentStep = 1;
+        
         // Desmarcar todos os checkboxes
         checkboxOptions.forEach(checkbox => {
             checkbox.checked = false;
@@ -574,11 +600,21 @@ document.addEventListener('DOMContentLoaded', function() {
             radio.checked = false;
         });
         
+        // Limpar todos os formulários
+        const allInputs = document.querySelectorAll('#singlePolicyStep input, #policyInfoStep input, #policyInfoStep select');
+        allInputs.forEach(input => {
+            input.value = '';
+            input.checked = false;
+        });
+        
         // Voltar para a primeira etapa
         policiesStep.style.display = 'none';
         agentsStep.style.display = 'none';
         confirmationStep.style.display = 'none';
         policyTypeStep.style.display = 'none';
+        singlePolicyStep.style.display = 'none';
+        policyInfoStep.style.display = 'none';
+        documentsStep.style.display = 'none';
         agentTypeStep.style.display = 'none';
         clientsUploadGroup.style.display = 'none';
         importTypeGroup.parentElement.style.display = 'block';
@@ -920,7 +956,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Prepara a confirmação final
     function prepareConfirmation() {
-        confirmationFiles.innerHTML = '';
+        const confirmationMessage = document.getElementById('confirmationMessage');
+        const confirmationContent = document.getElementById('confirmationContent');
+        
+        confirmationContent.innerHTML = '';
+        
+        // Verificar se é formulário manual ou upload de arquivos
+        if (selectedPolicyType === 'single-policy') {
+            // FORMULÁRIO MANUAL - mostrar informações preenchidas
+            confirmationMessage.textContent = 'Confira antes de enviar:';
+            
+            const formData = collectFormData();
+            const confirmationHtml = generateConfirmationHtml(formData);
+            confirmationContent.innerHTML = confirmationHtml;
+            
+        } else {
+            // UPLOAD DE ARQUIVOS - mostrar arquivos como antes
+            confirmationMessage.textContent = 'Você está prestes a importar os seguintes arquivos:';
         
         if (uploadedFiles.policies) {
             const div = document.createElement('div');
@@ -929,7 +981,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <i class="fas fa-file-csv"></i>
                 <span class="file-name">${uploadedFiles.policies.name}</span>
             `;
-            confirmationFiles.appendChild(div);
+                confirmationContent.appendChild(div);
         }
         
         if (uploadedFiles.clients) {
@@ -939,32 +991,170 @@ document.addEventListener('DOMContentLoaded', function() {
                 <i class="fas fa-file-csv"></i>
                 <span class="file-name">${uploadedFiles.clients.name}</span>
             `;
-            confirmationFiles.appendChild(div);
+                confirmationContent.appendChild(div);
         }
         
         if (uploadedFiles.agents) {
-            // Determinar o ícone correto com base na extensão do arquivo
-            const fileExtension = uploadedFiles.agents.name.split('.').pop().toLowerCase();
-            const iconClass = fileExtension === 'csv' ? 'fa-file-csv' : 'fa-file-excel';
-            
+                // Determinar o ícone correto com base na extensão do arquivo
+                const fileExtension = uploadedFiles.agents.name.split('.').pop().toLowerCase();
+                const iconClass = fileExtension === 'csv' ? 'fa-file-csv' : 'fa-file-excel';
+                
             const div = document.createElement('div');
             div.className = 'confirmation-file';
             div.innerHTML = `
-                <i class="fas ${iconClass}"></i>
+                    <i class="fas ${iconClass}"></i>
                 <span class="file-name">${uploadedFiles.agents.name}</span>
-            `;
-            confirmationFiles.appendChild(div);
+                `;
+                confirmationContent.appendChild(div);
+            }
         }
+    }
+    
+    // Função para coletar dados do formulário manual (APENAS dados preenchidos à mão)
+    function collectFormData() {
+        const data = {};
+        
+        // Informações do Contato
+        data.contactName = document.getElementById('contactName')?.value || '';
+        data.contactPhone = document.getElementById('contactPhone')?.value || '';
+        data.contactEmail = document.getElementById('contactEmail')?.value || '';
+        data.contactBirthDate = document.getElementById('contactBirthDate')?.value || '';
+        data.contactStreet = document.getElementById('contactStreet')?.value || '';
+        data.contactState = document.getElementById('contactState')?.value || '';
+        data.contactZipCode = document.getElementById('contactZipCode')?.value || '';
+        
+        // Informações da Apólice
+        data.policyNumber = document.getElementById('policyNumber')?.value || '';
+        data.issueDate = document.getElementById('issueDate')?.value || '';
+        data.annualPremium = document.getElementById('annualPremium')?.value || '';
+        data.totalCommission = document.getElementById('totalCommission')?.value || '';
+        data.productCategory = document.getElementById('productCategory')?.value || '';
+        data.carrier = document.getElementById('carrier')?.value || '';
+        data.carrierOther = document.getElementById('carrierOther')?.value || '';
+        
+        // Informações do Assegurado
+        data.insuredType = document.getElementById('insuredType')?.value || '';
+        data.insuredTypeOther = document.getElementById('insuredTypeOther')?.value || '';
+        data.insuredName = document.getElementById('insuredName')?.value || '';
+        data.insuredBirthDate = document.getElementById('insuredBirthDate')?.value || '';
+        
+        // Documentos/Fotos (opcionais) - arquivos para envio via webhook
+        data.documents = {
+            policyDocument: document.getElementById('policyDocument')?.files[0] || null,
+            idDocument: document.getElementById('idDocument')?.files[0] || null,
+            insuredIdDocument: document.getElementById('insuredIdDocument')?.files[0] || null,
+            otherDocuments: []
+        };
+        
+        // Coletar outros documentos (pode haver múltiplos)
+        const otherDocsInput = document.getElementById('otherDocuments');
+        if (otherDocsInput && otherDocsInput.files) {
+            for (let i = 0; i < otherDocsInput.files.length; i++) {
+                data.documents.otherDocuments.push(otherDocsInput.files[i]);
+            }
+        }
+        
+        return data;
+    }
+    
+    // Função para gerar HTML de confirmação
+    function generateConfirmationHtml(data) {
+        const sections = [];
+        
+        // Seção: Informações do Contato
+        sections.push(`
+            <div class="confirmation-section">
+                <h4><i class="fas fa-user"></i> Informações do Contato</h4>
+                <div class="confirmation-grid">
+                    <div class="confirmation-item"><strong>Nome:</strong> ${data.contactName}</div>
+                    <div class="confirmation-item"><strong>Telefone:</strong> ${data.contactPhone}</div>
+                    <div class="confirmation-item"><strong>Email:</strong> ${data.contactEmail}</div>
+                    <div class="confirmation-item"><strong>Data de Nascimento:</strong> ${formatDate(data.contactBirthDate)}</div>
+                    <div class="confirmation-item"><strong>Endereço:</strong> ${data.contactStreet}</div>
+                    <div class="confirmation-item"><strong>Estado:</strong> ${data.contactState}</div>
+                    <div class="confirmation-item"><strong>ZIP Code:</strong> ${data.contactZipCode}</div>
+                </div>
+            </div>
+        `);
+        
+        // Seção: Informações da Apólice
+        const carrierDisplay = data.carrier === 'other' ? data.carrierOther : data.carrier;
+        const productCategoryDisplay = getSelectText('productCategory', data.productCategory);
+        
+        sections.push(`
+            <div class="confirmation-section">
+                <h4><i class="fas fa-file-contract"></i> Informações da Apólice</h4>
+                <div class="confirmation-grid">
+                    <div class="confirmation-item"><strong>Número da Apólice:</strong> ${data.policyNumber}</div>
+                    <div class="confirmation-item"><strong>Data de Emissão:</strong> ${formatDate(data.issueDate)}</div>
+                    <div class="confirmation-item"><strong>Annual Premium:</strong> $${data.annualPremium}</div>
+                    <div class="confirmation-item"><strong>Comissão Total:</strong> $${data.totalCommission}</div>
+                    <div class="confirmation-item"><strong>Categoria do Produto:</strong> ${productCategoryDisplay}</div>
+                    <div class="confirmation-item"><strong>Carrier:</strong> ${carrierDisplay}</div>
+                </div>
+            </div>
+        `);
+        
+        // Seção: Informações do Assegurado
+        if (data.insuredType && data.insuredType !== 'proprio') {
+            const insuredTypeDisplay = data.insuredType === 'other' ? data.insuredTypeOther : getSelectText('insuredType', data.insuredType);
+            
+            sections.push(`
+                <div class="confirmation-section">
+                    <h4><i class="fas fa-user-shield"></i> Informações do Assegurado</h4>
+                    <div class="confirmation-grid">
+                        <div class="confirmation-item"><strong>Tipo:</strong> ${insuredTypeDisplay}</div>
+                        ${data.insuredName ? `<div class="confirmation-item"><strong>Nome:</strong> ${data.insuredName}</div>` : ''}
+                        ${data.insuredBirthDate ? `<div class="confirmation-item"><strong>Data de Aniversário:</strong> ${formatDate(data.insuredBirthDate)}</div>` : ''}
+                    </div>
+                </div>
+            `);
+        }
+        
+        return sections.join('');
+    }
+    
+    // Função auxiliar para formatar datas
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('pt-BR');
+    }
+    
+    // Função auxiliar para obter texto de selects
+    function getSelectText(selectId, value) {
+        const select = document.getElementById(selectId);
+        if (!select || !value) return value || '';
+        const option = select.querySelector(`option[value="${value}"]`);
+        return option ? option.textContent : value;
     }
     
     // Navegação entre etapas
     nextBtn.addEventListener('click', function() {
-        console.log('NextBtn clicado - Etapa:', currentStep, 'Tipos:', selectedImportTypes);
+
         
         // Verificar etapa atual
         if (currentStep === 1) {
             goToNextStep();
         } else if (currentStep === 2) {
+            // VERIFICAÇÃO EXTRA DE SEGURANÇA - só continuar se realmente estiver na tela correta
+            const actuallyInContactForm = singlePolicyStep && singlePolicyStep.style.display !== 'none';
+            const actuallyInUploadForm = (policiesStep && policiesStep.style.display !== 'none') || (agentsStep && agentsStep.style.display !== 'none');
+            const actuallyInSubStep = (policyTypeStep && policyTypeStep.style.display !== 'none') || (agentTypeStep && agentTypeStep.style.display !== 'none');
+            
+            // Se não estiver em nenhuma tela válida, resetar tudo
+            if (!actuallyInContactForm && !actuallyInUploadForm && !actuallyInSubStep) {
+                console.log('ERRO DE ESTADO DETECTADO - Resetando tudo!');
+                resetForm();
+                return;
+            }
+            
+            // Se estiver em sub-etapa, chamar goToNextStep
+            if (actuallyInSubStep) {
+                goToNextStep();
+                return;
+            }
+            
             // Determinar baseado nas seleções - SISTEMA ATUALIZADO!
             const hasPolicies = selectedImportTypes.includes('policies');
             const hasAgents = selectedImportTypes.includes('agents');
@@ -986,25 +1176,109 @@ document.addEventListener('DOMContentLoaded', function() {
                 agentsStep.style.display = 'block';
                 updateStep(3);
             } else if (hasPolicies && !hasAgents) {
-                // SÓ APÓLICES - etapa 2 = sub-etapa, chamar goToNextStep
-                goToNextStep();
+                // SÓ APÓLICES - verificar se é formulário manual ou upload
+                if (selectedPolicyType === 'single-policy') {
+                    // VERIFICAÇÃO EXTRA: só validar se realmente estiver no formulário de contato
+                    if (!actuallyInContactForm) {
+                        console.log('ERRO: Tentando validar contato mas não está na tela de contato!');
+                        resetForm();
+                        return;
+                    }
+                    
+                    // FORMULÁRIO MANUAL - validar campos do contato
+                    const requiredFields = ['contactName', 'contactPhone', 'contactEmail', 'contactBirthDate', 'contactStreet', 'contactState', 'contactZipCode'];
+                    const emptyFields = [];
+                    
+                    requiredFields.forEach(fieldId => {
+                        const field = document.getElementById(fieldId);
+                        if (!field || !field.value.trim()) {
+                            if (field && field.previousElementSibling) {
+                                emptyFields.push(field.previousElementSibling.textContent.replace(' *', ''));
+                            }
+                        }
+                    });
+                    
+                    if (emptyFields.length > 0) {
+                        showErrorModal(`Por favor, preencha os seguintes campos obrigatórios:<br><br>• ${emptyFields.join('<br>• ')}`);
+                        return;
+                    }
+                    
+                    // Todos os campos do contato preenchidos, avançar para informações da apólice
+                    singlePolicyStep.style.display = 'none';
+                    policyInfoStep.style.display = 'block';
+                    updateStep(3); // Informações da apólice é etapa 3
+                    return;
+                } else {
+                    // MÚLTIPLAS APÓLICES - etapa 2 = sub-etapa, chamar goToNextStep
+                    goToNextStep();
+                }
             } else if (hasAgents && !hasPolicies) {
                 // SÓ AGENTES - etapa 2 = sub-etapa, chamar goToNextStep  
                 goToNextStep();
             }
         } else if (currentStep === 3) {
-            // Determinar baseado nas seleções - SISTEMA ATUALIZADO!
+            // Etapa 3 - pode ser informações da apólice ou outras validações
             const hasPolicies = selectedImportTypes.includes('policies');
             const hasAgents = selectedImportTypes.includes('agents');
             
             if (hasPolicies && !hasAgents) {
-                // SÓ APÓLICES - etapa 3 = upload, validar arquivos
-                if (!uploadedFiles.policies) {
-                    showErrorModal('Você deve selecionar o arquivo de apólices para prosseguir.');
+                // SÓ APÓLICES - verificar se é formulário manual ou upload
+                if (selectedPolicyType === 'single-policy') {
+                    // FORMULÁRIO MANUAL - validar campos da apólice
+                    const requiredPolicyFields = ['policyNumber', 'issueDate', 'annualPremium', 'totalCommission', 'productCategory', 'carrier', 'insuredType'];
+                    const emptyPolicyFields = [];
+                    
+                    requiredPolicyFields.forEach(fieldId => {
+                        const field = document.getElementById(fieldId);
+                        if (!field.value.trim()) {
+                            const label = field.previousElementSibling;
+                            emptyPolicyFields.push(label.textContent.replace(' *', ''));
+                        }
+                    });
+                    
+                    // Verificar campos condicionais
+                    const carrier = document.getElementById('carrier');
+                    const carrierOther = document.getElementById('carrierOther');
+                    if (carrier.value === 'other' && !carrierOther.value.trim()) {
+                        emptyPolicyFields.push('Nome do Carrier');
+                    }
+                    
+                    const insuredType = document.getElementById('insuredType');
+                    const insuredName = document.getElementById('insuredName');
+                    const insuredBirthDate = document.getElementById('insuredBirthDate');
+                    const insuredTypeOther = document.getElementById('insuredTypeOther');
+                    
+                    if (insuredType.value === 'other' && !insuredTypeOther.value.trim()) {
+                        emptyPolicyFields.push('Tipo de Assegurado (especificar)');
+                    }
+                    
+                    if (insuredType.value !== 'proprio' && insuredType.value !== '') {
+                        if (!insuredName.value.trim()) {
+                            emptyPolicyFields.push('Nome do Assegurado');
+                        }
+                        if (!insuredBirthDate.value.trim()) {
+                            emptyPolicyFields.push('Data de Aniversário do Assegurado');
+                        }
+                    }
+                    
+                    if (emptyPolicyFields.length > 0) {
+                        showErrorModal(`Por favor, preencha os seguintes campos obrigatórios:<br><br>• ${emptyPolicyFields.join('<br>• ')}`);
+                        return;
+                    }
+                    
+                    // Todos os campos preenchidos, avançar para documentos
+                    policyInfoStep.style.display = 'none';
+                    documentsStep.style.display = 'block';
+                    updateStep(4); // Documentos é etapa 4
                     return;
-                }
-                if (!uploadedFiles.clients) {
-                    showErrorModal('Você deve selecionar o arquivo de clientes para prosseguir.');
+                } else {
+                    // MÚLTIPLAS APÓLICES - validar arquivos
+                    if (!uploadedFiles.policies) {
+                        showErrorModal('Você deve selecionar o arquivo de apólices para prosseguir.');
+                        return;
+                    }
+                    if (!uploadedFiles.clients) {
+                        showErrorModal('Você deve selecionar o arquivo de clientes para prosseguir.');
                     return;
                 }
                 
@@ -1015,8 +1289,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 policiesStep.style.display = 'none';
                 confirmationStep.style.display = 'block';
                 nextBtn.style.display = 'none';
-                confirmBtn.style.display = 'flex';
-                updateStep(4);
+                    confirmBtn.style.display = 'flex';
+                    updateStep(4);
+                }
             } else if (hasAgents && !hasPolicies) {
                 // SÓ AGENTES - etapa 3 = upload, validar arquivos
                 if (!uploadedFiles.agents) {
@@ -1050,13 +1325,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmBtn.style.display = 'flex';
                 updateStep(4);
             }
+        } else if (currentStep === 4) {
+            // Etapa 4 - documentos do formulário manual (opcionais)
+            const hasPolicies = selectedImportTypes.includes('policies');
+            const hasAgents = selectedImportTypes.includes('agents');
+            
+            if (hasPolicies && !hasAgents && selectedPolicyType === 'single-policy') {
+                // FORMULÁRIO MANUAL - documentos são opcionais, ir direto para confirmação
+                // Preparar dados para confirmação do formulário manual
+                prepareConfirmation();
+                
+                documentsStep.style.display = 'none';
+                confirmationStep.style.display = 'block';
+                nextBtn.style.display = 'none';
+                confirmBtn.style.display = 'flex';
+                updateStep(5); // Confirmação é etapa 5
+                
+                return;
+            }
         }
     });
     
     // Voltar para etapa anterior - ATUALIZADO PARA CHECKBOXES!
     prevBtn.addEventListener('click', function() {
-        console.log('Botão Anterior clicado! Etapa atual:', currentStep);
-        console.log('Tipos selecionados:', selectedImportTypes);
         
         if (currentStep === 2) {
             // Determinar de onde estamos vindo baseado nas seleções
@@ -1075,19 +1366,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkboxOptions.forEach(checkbox => {
                     checkbox.checked = false;
                 });
-                initSingleStepProgressBar();
-                updateStep(1);
-                console.log('Reset para etapa 1 - AMBOS');
+            initSingleStepProgressBar();
+            updateStep(1);
+
             } else if (hasPolicies) {
-                // SÓ APÓLICES - etapa 2 = sub-etapa de apólices, voltar para inicial
-                policyTypeStep.style.display = 'none';
-                importTypeGroup.parentElement.style.display = 'block';
-                selectedPolicyType = null;
-                policyTypeOptions.forEach(radio => {
-                    radio.checked = false;
-                });
-                updateStep(1);
-                console.log('Reset para etapa 1 - SÓ APÓLICES');
+                // SÓ APÓLICES - verificar se estamos no formulário manual ou na sub-etapa
+                const isInPolicyForm = singlePolicyStep && singlePolicyStep.style.display !== 'none';
+                const isInPolicyTypeStep = policyTypeStep && policyTypeStep.style.display !== 'none';
+                
+                if (isInPolicyForm) {
+                    // Estamos no formulário de contato da apólice única, voltar para sub-etapa
+                    singlePolicyStep.style.display = 'none';
+                    policyTypeStep.style.display = 'block';
+                    
+                    // Limpar dados do formulário de contato
+                    const contactForm = document.querySelectorAll('#singlePolicyStep input');
+                    contactForm.forEach(input => {
+                        input.value = '';
+                    });
+                    
+                    updateStep(2); // Manter na etapa 2 (sub-etapa de seleção)
+
+                } else if (isInPolicyTypeStep) {
+                    // Estamos na sub-etapa de seleção, voltar para inicial
+                    policyTypeStep.style.display = 'none';
+                    importTypeGroup.parentElement.style.display = 'block';
+                    
+                    // Reset completo de todas as variáveis de estado
+                    selectedPolicyType = null;
+                    selectedImportTypes = [];
+                    selectedAgentType = null;
+                    
+                    // Limpar todas as seleções
+                    checkboxOptions.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    policyTypeOptions.forEach(radio => {
+                        radio.checked = false;
+                    });
+                    agentTypeOptions.forEach(radio => {
+                        radio.checked = false;
+                    });
+                    
+                    // Resetar uploads
+                    resetUploads('all');
+                    
+                                        // Resetar a barra de progresso
+            initSingleStepProgressBar();
+                    updateStep(1);
+                    
+                    // Forçar reset completo do estado
+                    currentStep = 1;
+
+                }
             } else if (hasAgents) {
                 // SÓ AGENTES - etapa 2 = sub-etapa de agentes, voltar para inicial
                 agentTypeStep.style.display = 'none';
@@ -1096,8 +1427,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 agentTypeOptions.forEach(radio => {
                     radio.checked = false;
                 });
-                updateStep(1);
-                console.log('Reset para etapa 1 - SÓ AGENTES');
+            updateStep(1);
+
             }
         } else if (currentStep === 3) {
             // Determinar de onde estamos vindo baseado nas seleções
@@ -1105,13 +1436,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const hasAgents = selectedImportTypes.includes('agents');
             
             if (hasPolicies && !hasAgents) {
-                // SÓ APÓLICES - etapa 3 = upload, voltar para sub-etapa de apólices
-                policiesStep.style.display = 'none';
-                clientsUploadGroup.style.display = 'none';
-                policyTypeStep.style.display = 'block';
-                resetUploads('policies');
-                resetUploads('clients');
+                // SÓ APÓLICES - verificar se é formulário manual ou upload
+                if (selectedPolicyType === 'single-policy') {
+                    // FORMULÁRIO MANUAL - Vem das informações da apólice, voltar para informações do contato
+                    policyInfoStep.style.display = 'none';
+                    singlePolicyStep.style.display = 'block';
                 updateStep(2);
+                } else {
+                    // UPLOAD - Vem do upload, voltar para sub-etapa de apólices
+                    policiesStep.style.display = 'none';
+                    clientsUploadGroup.style.display = 'none';
+                    policyTypeStep.style.display = 'block';
+                    resetUploads('policies');
+                    resetUploads('clients');
+                updateStep(2);
+                }
             } else if (hasAgents && !hasPolicies) {
                 // SÓ AGENTES - etapa 3 = upload, voltar para sub-etapa de agentes
                 agentsStep.style.display = 'none';
@@ -1120,7 +1459,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateStep(2);
             }
         } else if (currentStep === 4) {
-            // Lógica para etapas futuras se necessário
+            // Etapa 4 - documentos do formulário manual, voltar para informações da apólice
+            const hasPolicies = selectedImportTypes.includes('policies');
+            const hasAgents = selectedImportTypes.includes('agents');
+            
+            if (hasPolicies && !hasAgents && selectedPolicyType === 'single-policy') {
+                // Vem dos documentos, voltar para informações da apólice
+                documentsStep.style.display = 'none';
+                policyInfoStep.style.display = 'block';
+                updateStep(3);
+            }
+        } else if (currentStep === 5) {
+            // Etapa 5 - confirmação do formulário manual, voltar para documentos
+            const hasPolicies = selectedImportTypes.includes('policies');
+            const hasAgents = selectedImportTypes.includes('agents');
+            
+            if (hasPolicies && !hasAgents && selectedPolicyType === 'single-policy') {
+                // Vem da confirmação, voltar para documentos
+                confirmationStep.style.display = 'none';
+                documentsStep.style.display = 'block';
+                nextBtn.style.display = 'flex';
+                confirmBtn.style.display = 'none';
+                updateStep(4);
+            }
         }
     });
     
@@ -1243,16 +1604,143 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Preparando arquivos para envio via webhook Make...');
             console.log('Codificando arquivos em Base64 para envio...');
             
-            // Garantir que estamos usando HTTPS
-            const webhookUrl = 'https://hook.us1.make.com/gerqw9zrak7lhliutaj0196c75ldn9u4';
+            // Determinar URL do webhook baseado no tipo de envio
+            let webhookUrl;
+            
+            if (selectedPolicyType === 'single-policy') {
+                // FORMULÁRIO MANUAL - webhook específico
+                webhookUrl = 'https://primary-production-38295.up.railway.app/webhook-test/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
+            } else {
+                // UPLOAD DE ARQUIVOS - webhook original
+                webhookUrl = 'https://hook.us1.make.com/gerqw9zrak7lhliutaj0196c75ldn9u4';
+            }
             
             // Verificar se o URL começa com https://
             if (!webhookUrl.startsWith('https://')) {
                 console.error('Erro: O webhook deve usar uma conexão segura (HTTPS)');
                 return false;
             }
+            
+            // Se for formulário manual, enviar dados do formulário
+            if (selectedPolicyType === 'single-policy') {
+                console.log('Enviando dados do formulário manual...');
+                const formData = collectFormData();
+                
+                const manualData = {
+                    location_id: locationId,
+                    type: 'single-policy',
+                    contact_info: {
+                        name: formData.contactName,
+                        phone: formData.contactPhone,
+                        email: formData.contactEmail,
+                        birth_date: formData.contactBirthDate,
+                        address: {
+                            street: formData.contactStreet,
+                            state: formData.contactState,
+                            zip_code: formData.contactZipCode
+                        }
+                    },
+                    policy_info: {
+                        policy_number: formData.policyNumber,
+                        issue_date: formData.issueDate,
+                        annual_premium: formData.annualPremium,
+                        total_commission: formData.totalCommission,
+                        product_category: formData.productCategory,
+                        carrier: formData.carrier === 'other' ? formData.carrierOther : formData.carrier
+                    },
+                    insured_info: {
+                        type: formData.insuredType === 'other' ? formData.insuredTypeOther : formData.insuredType,
+                        name: formData.insuredName || null,
+                        birth_date: formData.insuredBirthDate || null
+                    },
+                    documents: {}
+                };
+                
+                // Processar documentos/fotos opcionais
+                if (formData.documents.policyDocument) {
+                    console.log('Processando foto da apólice...');
+                    const policyBase64 = await fileToBase64(formData.documents.policyDocument);
+                    manualData.documents.policy_photo = {
+                        name: formData.documents.policyDocument.name,
+                        content: policyBase64,
+                        type: formData.documents.policyDocument.type,
+                        size: formData.documents.policyDocument.size
+                    };
+                }
+                
+                if (formData.documents.idDocument) {
+                    console.log('Processando foto do ID...');
+                    const idBase64 = await fileToBase64(formData.documents.idDocument);
+                    manualData.documents.id_photo = {
+                        name: formData.documents.idDocument.name,
+                        content: idBase64,
+                        type: formData.documents.idDocument.type,
+                        size: formData.documents.idDocument.size
+                    };
+                }
+                
+                if (formData.documents.insuredIdDocument) {
+                    console.log('Processando foto do ID do assegurado...');
+                    const insuredIdBase64 = await fileToBase64(formData.documents.insuredIdDocument);
+                    manualData.documents.insured_id_photo = {
+                        name: formData.documents.insuredIdDocument.name,
+                        content: insuredIdBase64,
+                        type: formData.documents.insuredIdDocument.type,
+                        size: formData.documents.insuredIdDocument.size
+                    };
+                }
+                
+                // Processar outras fotos (array)
+                if (formData.documents.otherDocuments.length > 0) {
+                    console.log(`Processando ${formData.documents.otherDocuments.length} outras fotos...`);
+                    manualData.documents.other_photos = [];
+                    
+                    for (let i = 0; i < formData.documents.otherDocuments.length; i++) {
+                        const otherFile = formData.documents.otherDocuments[i];
+                        const otherBase64 = await fileToBase64(otherFile);
+                        manualData.documents.other_photos.push({
+                            name: otherFile.name,
+                            content: otherBase64,
+                            type: otherFile.type,
+                            size: otherFile.size
+                        });
+                    }
+                }
+                
+                console.log('Dados do formulário preparados (com fotos):', {
+                    ...manualData,
+                    documents: Object.keys(manualData.documents).reduce((acc, key) => {
+                        if (Array.isArray(manualData.documents[key])) {
+                            acc[key] = `[${manualData.documents[key].length} fotos]`;
+                        } else if (manualData.documents[key] && manualData.documents[key].content) {
+                            acc[key] = `[Base64: ${manualData.documents[key].content.length} chars]`;
+                        }
+                        return acc;
+                    }, {})
+                });
+                
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(manualData)
+                });
+                
+                console.log('Resposta do webhook manual:', response.status);
+                
+                if (response.ok) {
+                    console.log('Formulário manual enviado com sucesso (com fotos)');
+                    return true;
+                } else {
+                    const errorText = await response.text();
+                    console.error('Erro ao enviar formulário manual:', response.status, errorText);
+                    return false;
+                }
+            }
 
-            // Ler o conteúdo dos arquivos como texto, quando aplicável
+            // Ler o conteúdo dos arquivos como texto, quando aplicável (apenas para upload de arquivos)
             let policiesText = null;
             let clientsText = null;
             
@@ -1629,6 +2117,69 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar a barra de progresso com apenas o primeiro passo
     initSingleStepProgressBar();
+    
+    // Lógica para campos condicionais do formulário manual
+    setupConditionalFields();
+
+    // Configurar campos condicionais do formulário manual
+    function setupConditionalFields() {
+        // Carrier - mostrar campo "outro" quando selecionado
+        const carrier = document.getElementById('carrier');
+        const carrierOther = document.getElementById('carrierOther');
+        
+        if (carrier && carrierOther) {
+            carrier.addEventListener('change', function() {
+                if (this.value === 'other') {
+                    carrierOther.style.display = 'block';
+                    carrierOther.setAttribute('required', 'required');
+                } else {
+                    carrierOther.style.display = 'none';
+                    carrierOther.removeAttribute('required');
+                    carrierOther.value = '';
+                }
+            });
+        }
+        
+        // Tipo de Assegurado - mostrar campos adicionais quando não for "próprio"
+        const insuredType = document.getElementById('insuredType');
+        const insuredTypeOther = document.getElementById('insuredTypeOther');
+        const additionalInsuredFields = document.getElementById('additionalInsuredFields');
+        const insuredIdGroup = document.getElementById('insuredIdGroup');
+        const insuredName = document.getElementById('insuredName');
+        const insuredBirthDate = document.getElementById('insuredBirthDate');
+        const insuredIdDocument = document.getElementById('insuredIdDocument');
+        
+        if (insuredType && additionalInsuredFields) {
+            insuredType.addEventListener('change', function() {
+                if (this.value === 'other') {
+                    insuredTypeOther.style.display = 'block';
+                    insuredTypeOther.setAttribute('required', 'required');
+                } else {
+                    insuredTypeOther.style.display = 'none';
+                    insuredTypeOther.removeAttribute('required');
+                    insuredTypeOther.value = '';
+                }
+                
+                if (this.value !== 'proprio' && this.value !== '') {
+                    // Mostrar campos adicionais do assegurado
+                    additionalInsuredFields.style.display = 'block';
+                    insuredIdGroup.style.display = 'block';
+                    insuredName.setAttribute('required', 'required');
+                    insuredBirthDate.setAttribute('required', 'required');
+                    // insuredIdDocument.setAttribute('required', 'required'); // Removido - documentos são opcionais
+                } else {
+                    // Ocultar campos adicionais
+                    additionalInsuredFields.style.display = 'none';
+                    insuredIdGroup.style.display = 'none';
+                    insuredName.removeAttribute('required');
+                    insuredBirthDate.removeAttribute('required');
+                    // insuredIdDocument.removeAttribute('required'); // Já é opcional
+                    insuredName.value = '';
+                    insuredBirthDate.value = '';
+                }
+            });
+        }
+    }
 
     // Configurar funcionalidade de arrastar e soltar para áreas de upload
     function setupDragAndDrop() {

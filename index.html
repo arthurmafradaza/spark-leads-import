@@ -75,12 +75,232 @@
                                     <input type="radio" id="multiple-policies-option" name="policyType" value="multiple-policies">
                                     <label for="multiple-policies-option">Múltiplas Apólices</label>
                                 </div>
-                                <div class="radio-option disabled">
-                                    <input type="radio" id="single-policy-option" name="policyType" value="single-policy" disabled>
+                                <div class="radio-option">
+                                    <input type="radio" id="single-policy-option" name="policyType" value="single-policy">
                                     <label for="single-policy-option">
                                         Apólice Única
-                                        <span class="coming-soon">EM BREVE</span>
                                     </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2A: Single Policy Form (Initially Hidden) -->
+                    <div class="step" id="singlePolicyStep" style="display: none;">
+                        <div class="form-section">
+                            <h3>Cadastro de Apólice Única</h3>
+                            <p>Preencha as informações do contato e da apólice.</p>
+                            
+                            <!-- Contact Information -->
+                            <div class="form-group-section">
+                                <h4><i class="fas fa-user"></i> Informações do Contato</h4>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="contactName">Nome *</label>
+                                        <input type="text" id="contactName" name="contactName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="contactPhone">Telefone *</label>
+                                        <input type="tel" id="contactPhone" name="contactPhone" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="contactEmail">Email *</label>
+                                        <input type="email" id="contactEmail" name="contactEmail" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="contactBirthDate">Data de Nascimento *</label>
+                                        <input type="date" id="contactBirthDate" name="contactBirthDate" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Address Information -->
+                            <div class="form-group-section">
+                                <h4><i class="fas fa-map-marker-alt"></i> Endereço</h4>
+                                
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label for="contactStreet">Rua *</label>
+                                        <input type="text" id="contactStreet" name="contactStreet" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="contactState">Estado *</label>
+                                        <input type="text" id="contactState" name="contactState" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="contactZipCode">ZIP Code *</label>
+                                        <input type="text" id="contactZipCode" name="contactZipCode" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2B: Policy Information Form (Initially Hidden) -->
+                    <div class="step" id="policyInfoStep" style="display: none;">
+                        <div class="form-section">
+                            <h3>Informações da Apólice</h3>
+                            <p>Preencha os dados da apólice e do assegurado.</p>
+                            
+                            <!-- Policy Information -->
+                            <div class="form-group-section">
+                                <h4><i class="fas fa-file-contract"></i> Apólice</h4>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="policyNumber">Número da Apólice *</label>
+                                        <input type="text" id="policyNumber" name="policyNumber" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="issueDate">Data de Emissão *</label>
+                                        <input type="date" id="issueDate" name="issueDate" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="annualPremium">Annual Premium *</label>
+                                        <input type="number" id="annualPremium" name="annualPremium" step="0.01" min="0" required placeholder="0.00">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="totalCommission">Comissão Total *</label>
+                                        <input type="number" id="totalCommission" name="totalCommission" step="0.01" min="0" required placeholder="0.00">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="productCategory">Product Category *</label>
+                                        <select id="productCategory" name="productCategory" required>
+                                            <option value="">Selecione uma categoria</option>
+                                            <option value="Universal">Universal</option>
+                                            <option value="Indexed Universal Life">Indexed Universal Life</option>
+                                            <option value="Term">Term</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="carrier">Carrier *</label>
+                                        <select id="carrier" name="carrier" required>
+                                            <option value="">Selecione um carrier</option>
+                                            <option value="National Life">National Life</option>
+                                            <option value="Pan American">Pan American</option>
+                                            <option value="other">Outro (escrever)</option>
+                                        </select>
+                                        <input type="text" id="carrierOther" name="carrierOther" style="display: none; margin-top: 8px;" placeholder="Digite o nome do carrier">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Insured Information -->
+                            <div class="form-group-section">
+                                <h4><i class="fas fa-user-shield"></i> Informações do Assegurado</h4>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="insuredType">Tipo de Assegurado *</label>
+                                        <select id="insuredType" name="insuredType" required>
+                                            <option value="">Selecione o tipo</option>
+                                            <option value="proprio">Próprio</option>
+                                            <option value="filho">Filho(a)</option>
+                                            <option value="esposo">Esposo(a)</option>
+                                            <option value="other">Outro (escrever)</option>
+                                        </select>
+                                        <input type="text" id="insuredTypeOther" name="insuredTypeOther" style="display: none; margin-top: 8px;" placeholder="Digite o tipo de assegurado">
+                                    </div>
+                                </div>
+                                
+                                <!-- Additional Insured Fields (Initially Hidden) -->
+                                <div id="additionalInsuredFields" style="display: none;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="insuredName">Nome do Assegurado *</label>
+                                            <input type="text" id="insuredName" name="insuredName">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="insuredBirthDate">Data de Aniversário *</label>
+                                            <input type="date" id="insuredBirthDate" name="insuredBirthDate">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2C: Documents Upload (Initially Hidden) -->
+                    <div class="step" id="documentsStep" style="display: none;">
+                        <div class="form-section">
+                            <h3>Upload de Documentos</h3>
+                            <p>Faça o upload dos documentos necessários para a apólice.</p>
+                            
+                            <!-- Documents Section -->
+                            <div class="form-group-section">
+                                <h4><i class="fas fa-file-upload"></i> Documentos</h4>
+                                
+                                <div class="form-group">
+                                    <label for="policyDocument">Apólice</label>
+                                    <div class="upload-area" id="policyDocumentArea">
+                                        <div class="upload-icon">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                        </div>
+                                        <div class="upload-text">Inserir arquivo da apólice</div>
+                                        <div class="upload-help">Arraste ou clique para selecionar o arquivo da apólice.</div>
+                                        <div class="upload-btn">Escolher arquivo</div>
+                                        <input type="file" id="policyDocument" style="display: none;" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                        <div class="file-info" id="policyDocumentInfo"></div>
+                                        <div class="status" id="policyDocumentStatus"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="idDocument">ID (Drivers License ou Passaporte)</label>
+                                    <div class="upload-area" id="idDocumentArea">
+                                        <div class="upload-icon">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                        </div>
+                                        <div class="upload-text">Inserir ID do contratante</div>
+                                        <div class="upload-help">Arraste ou clique para selecionar o documento de identidade.</div>
+                                        <div class="upload-btn">Escolher arquivo</div>
+                                        <input type="file" id="idDocument" style="display: none;" accept=".pdf,.jpg,.jpeg,.png">
+                                        <div class="file-info" id="idDocumentInfo"></div>
+                                        <div class="status" id="idDocumentStatus"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group" id="insuredIdGroup" style="display: none;">
+                                    <label for="insuredIdDocument">ID do Assegurado</label>
+                                    <div class="upload-area" id="insuredIdDocumentArea">
+                                        <div class="upload-icon">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                        </div>
+                                        <div class="upload-text">Inserir ID do assegurado</div>
+                                        <div class="upload-help">Arraste ou clique para selecionar o documento do assegurado.</div>
+                                        <div class="upload-btn">Escolher arquivo</div>
+                                        <input type="file" id="insuredIdDocument" style="display: none;" accept=".pdf,.jpg,.jpeg,.png">
+                                        <div class="file-info" id="insuredIdDocumentInfo"></div>
+                                        <div class="status" id="insuredIdDocumentStatus"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="otherDocuments">Outros Documentos (Opcional)</label>
+                                    <div class="upload-area" id="otherDocumentsArea">
+                                        <div class="upload-icon">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                        </div>
+                                        <div class="upload-text">Inserir outros documentos</div>
+                                        <div class="upload-help">Arraste ou clique para selecionar documentos adicionais (opcional).</div>
+                                        <div class="upload-btn">Escolher arquivos</div>
+                                        <input type="file" id="otherDocuments" style="display: none;" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple>
+                                        <div class="file-info" id="otherDocumentsInfo"></div>
+                                        <div class="status" id="otherDocumentsStatus"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -164,9 +384,9 @@
                                 <i class="fas fa-check-circle"></i>
                             </div>
                             <h3>Confirme sua importação</h3>
-                            <p>Você está prestes a importar os seguintes arquivos:</p>
-                            <div class="confirmation-files" id="confirmationFiles">
-                                <!-- Files will be listed here by JavaScript -->
+                            <p id="confirmationMessage">Você está prestes a importar os seguintes arquivos:</p>
+                            <div class="confirmation-content" id="confirmationContent">
+                                <!-- Content will be populated by JavaScript -->
                             </div>
                         </div>
                     </div>
