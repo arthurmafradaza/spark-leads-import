@@ -719,6 +719,46 @@ document.addEventListener('DOMContentLoaded', function() {
             input.checked = false;
         });
         
+        // Resetar documentos do formulário manual
+        const documentInputs = document.querySelectorAll('#policyDocument, #idDocument, #insuredIdDocument, #otherDocuments');
+        documentInputs.forEach(input => {
+            input.value = '';
+        });
+        
+        // Limpar informações dos documentos
+        const documentInfoElements = document.querySelectorAll('#policyDocumentInfo, #idDocumentInfo, #insuredIdDocumentInfo, #otherDocumentsInfo');
+        documentInfoElements.forEach(element => {
+            if (element) {
+                element.innerHTML = '';
+                element.classList.remove('show');
+            }
+        });
+        
+        // Limpar status dos documentos
+        const documentStatusElements = document.querySelectorAll('#policyDocumentStatus, #idDocumentStatus, #insuredIdDocumentStatus, #otherDocumentsStatus');
+        documentStatusElements.forEach(element => {
+            if (element) {
+                element.innerHTML = '';
+                element.className = 'status';
+            }
+        });
+        
+        // Resetar texto das áreas de upload de documentos
+        const documentAreas = document.querySelectorAll('#policyDocumentArea .upload-text, #idDocumentArea .upload-text, #insuredIdDocumentArea .upload-text, #otherDocumentsArea .upload-text');
+        documentAreas.forEach(element => {
+            if (element) {
+                if (element.closest('#otherDocumentsArea')) {
+                    element.textContent = 'Inserir outros documentos';
+                } else if (element.closest('#policyDocumentArea')) {
+                    element.textContent = 'Inserir arquivo da apólice';
+                } else if (element.closest('#idDocumentArea')) {
+                    element.textContent = 'Inserir ID do contratante';
+                } else if (element.closest('#insuredIdDocumentArea')) {
+                    element.textContent = 'Inserir ID do assegurado';
+                }
+            }
+        });
+        
         // Voltar para a primeira etapa
         policiesStep.style.display = 'none';
         agentsStep.style.display = 'none';
@@ -1754,6 +1794,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Vem dos documentos, voltar para informações da apólice
                 documentsStep.style.display = 'none';
                 policyInfoStep.style.display = 'block';
+                
+                // Resetar documentos ao voltar
+                const documentInputs = document.querySelectorAll('#policyDocument, #idDocument, #insuredIdDocument, #otherDocuments');
+                documentInputs.forEach(input => {
+                    input.value = '';
+                });
+                
+                // Limpar informações dos documentos
+                const documentInfoElements = document.querySelectorAll('#policyDocumentInfo, #idDocumentInfo, #insuredIdDocumentInfo, #otherDocumentsInfo');
+                documentInfoElements.forEach(element => {
+                    if (element) {
+                        element.innerHTML = '';
+                        element.classList.remove('show');
+                    }
+                });
+                
+                // Limpar status dos documentos
+                const documentStatusElements = document.querySelectorAll('#policyDocumentStatus, #idDocumentStatus, #insuredIdDocumentStatus, #otherDocumentsStatus');
+                documentStatusElements.forEach(element => {
+                    if (element) {
+                        element.innerHTML = '';
+                        element.className = 'status';
+                    }
+                });
+                
+                // Resetar texto das áreas de upload de documentos
+                const documentAreas = document.querySelectorAll('#policyDocumentArea .upload-text, #idDocumentArea .upload-text, #insuredIdDocumentArea .upload-text, #otherDocumentsArea .upload-text');
+                documentAreas.forEach(element => {
+                    if (element) {
+                        if (element.closest('#otherDocumentsArea')) {
+                            element.textContent = 'Inserir outros documentos';
+                        } else if (element.closest('#policyDocumentArea')) {
+                            element.textContent = 'Inserir arquivo da apólice';
+                        } else if (element.closest('#idDocumentArea')) {
+                            element.textContent = 'Inserir ID do contratante';
+                        } else if (element.closest('#insuredIdDocumentArea')) {
+                            element.textContent = 'Inserir ID do assegurado';
+                        }
+                    }
+                });
+                
                 updateStep(3);
             }
         } else if (currentStep === 5) {
