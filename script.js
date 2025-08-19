@@ -1978,8 +1978,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Determinar URL do webhook baseado no tipo de envio
             let webhookUrl;
             
-            // Usar webhook do Railway - NUNCA REVERTER
-            webhookUrl = 'https://primary-production-38295.up.railway.app/webhook/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
+            // Usar webhook do Railway através do proxy CORS
+            const originalWebhookUrl = 'https://primary-production-38295.up.railway.app/webhook/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
+            webhookUrl = `http://cors-anywhere-production-7ede.up.railway.app/${originalWebhookUrl}`;
             
             // Verificar se o URL começa com https://
             if (!webhookUrl.startsWith('https://')) {
@@ -2086,36 +2087,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, {})
                 });
                 
-                // Tentar diferentes abordagens para contornar CORS
-                let response;
-                try {
-                    // Primeira tentativa: requisição normal com headers CORS
-                    response = await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'Origin': window.location.origin,
-                            'Access-Control-Request-Method': 'POST',
-                            'Access-Control-Request-Headers': 'Content-Type, Accept'
-                        },
-                        mode: 'cors',
-                        credentials: 'omit',
-                        body: JSON.stringify(manualData)
-                    });
-                } catch (corsError) {
-                    console.log('Erro CORS detectado, tentando sem mode...');
-                    
-                    // Segunda tentativa: sem mode CORS
-                    response = await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(manualData)
-                    });
-                }
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(manualData)
+                });
                 
                 console.log('Resposta do webhook manual:', response.status);
                 
@@ -2367,36 +2346,14 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log('Estrutura dos dados enviados:', debugData);
             
-            // Tentar diferentes abordagens para contornar CORS
-            let jsonResponse;
-            try {
-                // Primeira tentativa: requisição normal com headers CORS
-                jsonResponse = await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Origin': window.location.origin,
-                        'Access-Control-Request-Method': 'POST',
-                        'Access-Control-Request-Headers': 'Content-Type, Accept'
-                    },
-                    mode: 'cors',
-                    credentials: 'omit',
-                    body: JSON.stringify(requestData)
-                });
-            } catch (corsError) {
-                console.log('Erro CORS detectado, tentando sem mode...');
-                
-                // Segunda tentativa: sem mode CORS
-                jsonResponse = await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(requestData)
-                });
-            }
+            const jsonResponse = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
             
             console.log('Resposta do webhook Make:', jsonResponse.status);
             
@@ -2440,26 +2397,11 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Enviando arquivos para o webhook via FormData...');
             
             // Enviar os arquivos diretamente via FormData (multipart/form-data)
-            let response;
-            try {
-                // Primeira tentativa: requisição normal com headers CORS
-                response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    mode: 'cors',
-                    credentials: 'omit',
-                    // Não definimos o Content-Type aqui, pois o navegador o define automaticamente para FormData
-                    body: formData
-                });
-            } catch (corsError) {
-                console.log('Erro CORS detectado, tentando sem mode...');
-                
-                // Segunda tentativa: sem mode CORS
-                response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    // Não definimos o Content-Type aqui, pois o navegador o define automaticamente para FormData
-                    body: formData
-                });
-            }
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                // Não definimos o Content-Type aqui, pois o navegador o define automaticamente para FormData
+                body: formData
+            });
             
             console.log('Resposta do webhook (FormData):', response.status);
             
