@@ -1972,15 +1972,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // Obter o client_location_id da URL
             const locationId = getUrlParameter('client_location_id') || '';
             
-            console.log('Preparando arquivos para envio via webhook Make...');
+            console.log('Preparando arquivos para envio via webhook Railway...');
             console.log('Codificando arquivos em Base64 para envio...');
             
             // Determinar URL do webhook baseado no tipo de envio
             let webhookUrl;
             
-            // Usar webhook do Railway através do proxy CORS
+            // Webhook do Railway - tentar diferentes abordagens
             const originalWebhookUrl = 'https://primary-production-38295.up.railway.app/webhook/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
-            webhookUrl = `https://cors-anywhere-production-7ede.up.railway.app/${originalWebhookUrl}`;
+            webhookUrl = originalWebhookUrl;
             
             // Verificar se o URL começa com https://
             if (!webhookUrl.startsWith('https://')) {
@@ -2087,14 +2087,57 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, {})
                 });
                 
-                const response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(manualData)
-                });
+                // Tentar diferentes abordagens para contornar CORS
+                let response;
+                let success = false;
+                
+                // Primeira tentativa: webhook direto
+                try {
+                    console.log('Tentativa 1: Webhook direto');
+                    response = await fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(manualData)
+                    });
+                    success = response.ok;
+                    if (success) console.log('✅ Webhook direto funcionou!');
+                } catch (error) {
+                    console.log('❌ Webhook direto falhou:', error.message);
+                }
+                
+                // Segunda tentativa: sem headers (evita preflight CORS)
+                if (!success) {
+                    try {
+                        console.log('Tentativa 2: Sem headers');
+                        response = await fetch(webhookUrl, {
+                            method: 'POST',
+                            body: JSON.stringify(manualData)
+                        });
+                        success = response.ok;
+                        if (success) console.log('✅ Sem headers funcionou!');
+                    } catch (error) {
+                        console.log('❌ Sem headers falhou:', error.message);
+                    }
+                }
+                
+                // Terceira tentativa: com mode no-cors
+                if (!success) {
+                    try {
+                        console.log('Tentativa 3: Mode no-cors');
+                        response = await fetch(webhookUrl, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            body: JSON.stringify(manualData)
+                        });
+                        success = true; // no-cors sempre retorna success
+                        console.log('✅ Mode no-cors funcionou!');
+                    } catch (error) {
+                        console.log('❌ Mode no-cors falhou:', error.message);
+                    }
+                }
                 
                 console.log('Resposta do webhook manual:', response.status);
                 
@@ -2310,7 +2353,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            console.log('Enviando dados para o webhook Make via JSON/Base64...');
+            console.log('Enviando dados para o webhook Railway via JSON/Base64...');
             
             // Log para diagnóstico - mostra a estrutura do objeto enviado (sem os conteúdos reais do Base64)
             const debugData = JSON.parse(JSON.stringify(requestData));
@@ -2346,19 +2389,62 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log('Estrutura dos dados enviados:', debugData);
             
-            const jsonResponse = await fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            });
+            // Tentar diferentes abordagens para contornar CORS
+            let jsonResponse;
+            let success = false;
             
-            console.log('Resposta do webhook Make:', jsonResponse.status);
+            // Primeira tentativa: webhook direto
+            try {
+                console.log('Tentativa 1: Webhook direto (JSON)');
+                jsonResponse = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                success = jsonResponse.ok;
+                if (success) console.log('✅ Webhook direto (JSON) funcionou!');
+            } catch (error) {
+                console.log('❌ Webhook direto (JSON) falhou:', error.message);
+            }
+            
+            // Segunda tentativa: sem headers
+            if (!success) {
+                try {
+                    console.log('Tentativa 2: Sem headers (JSON)');
+                    jsonResponse = await fetch(webhookUrl, {
+                        method: 'POST',
+                        body: JSON.stringify(requestData)
+                    });
+                    success = jsonResponse.ok;
+                    if (success) console.log('✅ Sem headers (JSON) funcionou!');
+                } catch (error) {
+                    console.log('❌ Sem headers (JSON) falhou:', error.message);
+                }
+            }
+            
+            // Terceira tentativa: mode no-cors
+            if (!success) {
+                try {
+                    console.log('Tentativa 3: Mode no-cors (JSON)');
+                    jsonResponse = await fetch(webhookUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: JSON.stringify(requestData)
+                    });
+                    success = true; // no-cors sempre retorna success
+                    console.log('✅ Mode no-cors (JSON) funcionou!');
+                } catch (error) {
+                    console.log('❌ Mode no-cors (JSON) falhou:', error.message);
+                }
+            }
+            
+            console.log('Resposta do webhook Railway:', jsonResponse.status);
             
             if (jsonResponse.ok) {
-                console.log('Webhook enviado com sucesso para o Make');
+                console.log('Webhook enviado com sucesso para o Railway');
                 return true;
             }
             
@@ -2397,11 +2483,37 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Enviando arquivos para o webhook via FormData...');
             
             // Enviar os arquivos diretamente via FormData (multipart/form-data)
-            const response = await fetch(webhookUrl, {
-                method: 'POST',
-                // Não definimos o Content-Type aqui, pois o navegador o define automaticamente para FormData
-                body: formData
-            });
+            let response;
+            let formDataSuccess = false;
+            
+            // Primeira tentativa: FormData normal
+            try {
+                console.log('Tentativa 1: FormData normal');
+                response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+                formDataSuccess = response.ok;
+                if (formDataSuccess) console.log('✅ FormData normal funcionou!');
+            } catch (error) {
+                console.log('❌ FormData normal falhou:', error.message);
+            }
+            
+            // Segunda tentativa: FormData com mode no-cors
+            if (!formDataSuccess) {
+                try {
+                    console.log('Tentativa 2: FormData com no-cors');
+                    response = await fetch(webhookUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: formData
+                    });
+                    formDataSuccess = true; // no-cors sempre retorna success
+                    console.log('✅ FormData com no-cors funcionou!');
+                } catch (error) {
+                    console.log('❌ FormData com no-cors falhou:', error.message);
+                }
+            }
             
             console.log('Resposta do webhook (FormData):', response.status);
             
