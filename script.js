@@ -1043,6 +1043,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Função para coletar dados do formulário manual (APENAS dados preenchidos à mão)
     function collectFormData() {
+        console.log('Coletando dados do formulário...');
         const data = {};
         
         // Informações do Contato
@@ -1085,6 +1086,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
+        console.log('Dados coletados:', data);
         return data;
     }
     
@@ -1757,13 +1759,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Determinar URL do webhook baseado no tipo de envio
             let webhookUrl;
             
-            if (selectedPolicyType === 'single-policy' || selectedAgentType === 'single-agent') {
-                // FORMULÁRIO MANUAL - webhook específico
-                webhookUrl = 'https://primary-production-38295.up.railway.app/webhook-test/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
-            } else {
-                // UPLOAD DE ARQUIVOS - webhook original
-                webhookUrl = 'https://hook.us1.make.com/gerqw9zrak7lhliutaj0196c75ldn9u4';
-            }
+            // Usar webhook do Make para todos os casos (já funciona com CORS)
+            webhookUrl = 'https://hook.us1.make.com/gerqw9zrak7lhliutaj0196c75ldn9u4';
             
             // Verificar se o URL começa com https://
             if (!webhookUrl.startsWith('https://')) {
@@ -1870,33 +1867,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, {})
                 });
                 
-                // Tentar diferentes abordagens para contornar CORS
-                let response;
-                try {
-                    // Primeira tentativa: requisição normal
-                    response = await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(manualData)
-                    });
-                } catch (corsError) {
-                    console.log('Erro CORS detectado, tentando proxy...');
-                    
-                    // Segunda tentativa: usar proxy CORS
-                    const proxyUrl = `https://cors-anywhere.herokuapp.com/${webhookUrl}`;
-                    response = await fetch(proxyUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'Origin': window.location.origin
-                        },
-                        body: JSON.stringify(manualData)
-                    });
-                }
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(manualData)
+                });
                 
                 console.log('Resposta do webhook manual:', response.status);
                 
