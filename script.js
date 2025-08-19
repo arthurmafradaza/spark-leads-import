@@ -2187,6 +2187,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Botão de confirmação final
     confirmBtn.addEventListener('click', async function() {
+        console.log('Botão Confirmar clicado!');
+        console.log('selectedPolicyType:', selectedPolicyType);
+        console.log('selectedAgentType:', selectedAgentType);
+        console.log('uploadedFiles:', uploadedFiles);
+        
         // Simular envio com um breve atraso para feedback visual
         confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
         confirmBtn.disabled = true;
@@ -2194,29 +2199,36 @@ document.addEventListener('DOMContentLoaded', function() {
         // Verificar número de colunas nos arquivos antes de enviar
         let validationErrors = [];
         
-        // Validar Policies (16 colunas)
-        if (uploadedFiles.policies) {
-            const policiesValidation = await validateCSVFile(uploadedFiles.policies, 16, 'policies');
-            if (!policiesValidation.valid) {
-                validationErrors.push(`Arquivo de Apólices`);
+        // SÓ validar arquivos se NÃO for formulário manual
+        if (selectedPolicyType !== 'single-policy' && selectedAgentType !== 'single-agent') {
+            console.log('Validando arquivos de upload...');
+            
+            // Validar Policies (16 colunas)
+            if (uploadedFiles.policies) {
+                const policiesValidation = await validateCSVFile(uploadedFiles.policies, 16, 'policies');
+                if (!policiesValidation.valid) {
+                    validationErrors.push(`Arquivo de Apólices`);
+                }
             }
-        }
-        
-        // Validar Clients (15 colunas)
-        if (uploadedFiles.clients) {
-            const clientsValidation = await validateCSVFile(uploadedFiles.clients, 15, 'clients');
-            if (!clientsValidation.valid) {
-                validationErrors.push(`Arquivo de Clientes`);
+            
+            // Validar Clients (15 colunas)
+            if (uploadedFiles.clients) {
+                const clientsValidation = await validateCSVFile(uploadedFiles.clients, 15, 'clients');
+                if (!clientsValidation.valid) {
+                    validationErrors.push(`Arquivo de Clientes`);
+                }
             }
-        }
-        
-        // Validar Agents (10 colunas)
-        if (uploadedFiles.agents && uploadedFiles.agentsCSV) {
-            // Para agentes, validamos o CSV convertido
-            const isValid = validateColumnCount(uploadedFiles.agentsCSV, 11, 'agents');
-            if (!isValid) {
-                validationErrors.push('Arquivo de Agentes');
+            
+            // Validar Agents (11 colunas)
+            if (uploadedFiles.agents && uploadedFiles.agentsCSV) {
+                // Para agentes, validamos o CSV convertido
+                const isValid = validateColumnCount(uploadedFiles.agentsCSV, 11, 'agents');
+                if (!isValid) {
+                    validationErrors.push('Arquivo de Agentes');
+                }
             }
+        } else {
+            console.log('Formulário manual detectado - pulando validação de arquivos');
         }
         
         // Se houver erros de validação, mostrar mensagem e não prosseguir
@@ -2259,7 +2271,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Se todos os arquivos foram validados, prosseguir com o envio
+        console.log('Chamando sendWebhook...');
         const webhookSuccess = await sendWebhook(uploadedFiles);
+        console.log('Resultado do webhook:', webhookSuccess);
         
         // Processar a submissão final dos arquivos
         console.log('Dados importados:', uploadedFiles);
