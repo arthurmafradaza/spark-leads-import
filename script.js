@@ -484,6 +484,70 @@ document.addEventListener('DOMContentLoaded', function() {
         agentsUpload.click();
     });
     
+    // Event listeners para documentos do formulário manual
+    const policyDocumentArea = document.getElementById('policyDocumentArea');
+    const idDocumentArea = document.getElementById('idDocumentArea');
+    const insuredIdDocumentArea = document.getElementById('insuredIdDocumentArea');
+    const otherDocumentsArea = document.getElementById('otherDocumentsArea');
+    
+    if (policyDocumentArea) {
+        policyDocumentArea.querySelector('.upload-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('policyDocument').click();
+        });
+    }
+    
+    if (idDocumentArea) {
+        idDocumentArea.querySelector('.upload-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('idDocument').click();
+        });
+    }
+    
+    if (insuredIdDocumentArea) {
+        insuredIdDocumentArea.querySelector('.upload-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('insuredIdDocument').click();
+        });
+    }
+    
+    if (otherDocumentsArea) {
+        otherDocumentsArea.querySelector('.upload-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('otherDocuments').click();
+        });
+    }
+    
+    // Event listeners para mudanças nos documentos
+    const policyDocument = document.getElementById('policyDocument');
+    const idDocument = document.getElementById('idDocument');
+    const insuredIdDocument = document.getElementById('insuredIdDocument');
+    const otherDocuments = document.getElementById('otherDocuments');
+    
+    if (policyDocument) {
+        policyDocument.addEventListener('change', function() {
+            handleDocumentChange(this, 'policyDocumentInfo', 'policyDocumentStatus');
+        });
+    }
+    
+    if (idDocument) {
+        idDocument.addEventListener('change', function() {
+            handleDocumentChange(this, 'idDocumentInfo', 'idDocumentStatus');
+        });
+    }
+    
+    if (insuredIdDocument) {
+        insuredIdDocument.addEventListener('change', function() {
+            handleDocumentChange(this, 'insuredIdDocumentInfo', 'insuredIdDocumentStatus');
+        });
+    }
+    
+    if (otherDocuments) {
+        otherDocuments.addEventListener('change', function() {
+            handleMultipleDocumentsChange(this, 'otherDocumentsInfo', 'otherDocumentsStatus');
+        });
+    }
+    
     // Permitir clique em toda a área de upload para selecionar arquivo
     policiesUploadArea.addEventListener('click', function() {
         policiesUpload.click();
@@ -496,6 +560,31 @@ document.addEventListener('DOMContentLoaded', function() {
     agentsUploadArea.addEventListener('click', function() {
         agentsUpload.click();
     });
+    
+    // Permitir clique em toda a área de upload para documentos do formulário manual
+    if (policyDocumentArea) {
+        policyDocumentArea.addEventListener('click', function() {
+            document.getElementById('policyDocument').click();
+        });
+    }
+    
+    if (idDocumentArea) {
+        idDocumentArea.addEventListener('click', function() {
+            document.getElementById('idDocument').click();
+        });
+    }
+    
+    if (insuredIdDocumentArea) {
+        insuredIdDocumentArea.addEventListener('click', function() {
+            document.getElementById('insuredIdDocument').click();
+        });
+    }
+    
+    if (otherDocumentsArea) {
+        otherDocumentsArea.addEventListener('click', function() {
+            document.getElementById('otherDocuments').click();
+        });
+    }
     
     // Função para converter arquivo XLSX para CSV usando SheetJS
     function convertToCSV(file) {
@@ -1462,8 +1551,48 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Voltar para etapa anterior - ATUALIZADO PARA CHECKBOXES!
     prevBtn.addEventListener('click', function() {
+        console.log('Botão Anterior clicado!');
+        console.log('currentStep:', currentStep);
+        console.log('selectedImportTypes:', selectedImportTypes);
+        console.log('confirmationStep:', confirmationStep);
+        console.log('confirmationStep display:', confirmationStep?.style.display);
+        console.log('confirmationStep existe?', !!confirmationStep);
+        console.log('confirmationStep display !== none?', confirmationStep?.style.display !== 'none');
         
-        if (currentStep === 2) {
+        if (confirmationStep && confirmationStep.style.display !== 'none') {
+            console.log('Detectada etapa de confirmação - voltando para upload');
+            console.log('Entrando na lógica de confirmação');
+            // Etapa de confirmação (upload de arquivos) - voltar para etapa anterior
+            const hasPolicies = selectedImportTypes.includes('policies');
+            const hasAgents = selectedImportTypes.includes('agents');
+            
+            if (hasPolicies && !hasAgents) {
+                // SÓ APÓLICES - voltar para upload
+                console.log('Voltando para upload de apólices');
+                confirmationStep.style.display = 'none';
+                policiesStep.style.display = 'block';
+                clientsUploadGroup.style.display = 'block';
+                nextBtn.style.display = 'flex';
+                confirmBtn.style.display = 'none';
+                updateStep(3);
+            } else if (hasAgents && !hasPolicies) {
+                // SÓ AGENTES - voltar para upload
+                console.log('Voltando para upload de agentes');
+                confirmationStep.style.display = 'none';
+                agentsStep.style.display = 'block';
+                nextBtn.style.display = 'flex';
+                confirmBtn.style.display = 'none';
+                updateStep(3);
+            } else if (hasPolicies && hasAgents) {
+                // AMBOS - voltar para upload de agentes
+                console.log('Voltando para upload de agentes (ambos)');
+                confirmationStep.style.display = 'none';
+                agentsStep.style.display = 'block';
+                nextBtn.style.display = 'flex';
+                confirmBtn.style.display = 'none';
+                updateStep(3);
+            }
+        } else if (currentStep === 2) {
             // Determinar de onde estamos vindo baseado nas seleções
             const hasPolicies = selectedImportTypes.includes('policies');
             const hasAgents = selectedImportTypes.includes('agents');
@@ -1609,6 +1738,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 agentTypeStep.style.display = 'block';
                 resetUploads('agents');
                 updateStep(2);
+            } else if (hasPolicies && hasAgents) {
+                // AMBOS SELECIONADOS - etapa 3 = upload de agentes, voltar para upload de apólices
+                agentsStep.style.display = 'none';
+                policiesStep.style.display = 'block';
+                clientsUploadGroup.style.display = 'block';
+                updateStep(2);
             }
         } else if (currentStep === 4) {
             // Etapa 4 - documentos do formulário manual, voltar para informações da apólice
@@ -1634,7 +1769,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmBtn.style.display = 'none';
                 updateStep(4);
             }
+
         }
+        
+        console.log('Fim da função prevBtn - nenhuma condição foi executada');
     });
     
     // Função para obter parâmetros da URL
@@ -2408,6 +2546,25 @@ document.addEventListener('DOMContentLoaded', function() {
         setupDragAndDropArea(clientsUploadArea, clientsUpload);
         setupDragAndDropArea(agentsUploadArea, agentsUpload);
         
+        // Configurar drag and drop para documentos do formulário manual
+        const policyDocumentArea = document.getElementById('policyDocumentArea');
+        const idDocumentArea = document.getElementById('idDocumentArea');
+        const insuredIdDocumentArea = document.getElementById('insuredIdDocumentArea');
+        const otherDocumentsArea = document.getElementById('otherDocumentsArea');
+        
+        if (policyDocumentArea) {
+            setupDragAndDropArea(policyDocumentArea, document.getElementById('policyDocument'));
+        }
+        if (idDocumentArea) {
+            setupDragAndDropArea(idDocumentArea, document.getElementById('idDocument'));
+        }
+        if (insuredIdDocumentArea) {
+            setupDragAndDropArea(insuredIdDocumentArea, document.getElementById('insuredIdDocument'));
+        }
+        if (otherDocumentsArea) {
+            setupDragAndDropArea(otherDocumentsArea, document.getElementById('otherDocuments'));
+        }
+        
         function setupDragAndDropArea(dropArea, fileInput) {
             // Prevenir comportamento padrão para eventos de arrastar
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -2468,6 +2625,58 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     showErrorModal(`Por favor, selecione um arquivo ${fileType} válido.`);
                 }
+            }
+        }
+    }
+    
+    // Função para processar mudanças em documentos únicos
+    function handleDocumentChange(fileInput, infoElementId, statusElementId) {
+        if (fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            const infoElement = document.getElementById(infoElementId);
+            const statusElement = document.getElementById(statusElementId);
+            
+            if (infoElement) {
+                infoElement.innerHTML = `
+                    <strong>Arquivo:</strong> ${file.name}<br>
+                    <strong>Tamanho:</strong> ${(file.size / 1024).toFixed(2)} KB
+                `;
+                infoElement.classList.add('show');
+            }
+            
+            if (statusElement) {
+                statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Arquivo adicionado com sucesso';
+                statusElement.className = 'status success';
+            }
+        }
+    }
+    
+    // Função para processar mudanças em múltiplos documentos
+    function handleMultipleDocumentsChange(fileInput, infoElementId, statusElementId) {
+        if (fileInput.files && fileInput.files.length > 0) {
+            const infoElement = document.getElementById(infoElementId);
+            const statusElement = document.getElementById(statusElementId);
+            
+            let fileList = '';
+            let totalSize = 0;
+            
+            for (let i = 0; i < fileInput.files.length; i++) {
+                const file = fileInput.files[i];
+                totalSize += file.size;
+                fileList += `<strong>Arquivo ${i + 1}:</strong> ${file.name}<br>`;
+            }
+            
+            if (infoElement) {
+                infoElement.innerHTML = `
+                    ${fileList}
+                    <strong>Total:</strong> ${(totalSize / 1024).toFixed(2)} KB
+                `;
+                infoElement.classList.add('show');
+            }
+            
+            if (statusElement) {
+                statusElement.innerHTML = `<i class="fas fa-check-circle"></i> ${fileInput.files.length} arquivo(s) adicionado(s) com sucesso`;
+                statusElement.className = 'status success';
             }
         }
     }
