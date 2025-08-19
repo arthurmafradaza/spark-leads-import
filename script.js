@@ -1978,8 +1978,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Determinar URL do webhook baseado no tipo de envio
             let webhookUrl;
             
-            // Usar webhook do Railway para todos os casos
-            webhookUrl = 'https://primary-production-38295.up.railway.app/webhook-test/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
+            // Usar webhook do Railway - NUNCA REVERTER
+            webhookUrl = 'https://primary-production-38295.up.railway.app/webhook/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
             
             // Verificar se o URL começa com https://
             if (!webhookUrl.startsWith('https://')) {
