@@ -1980,7 +1980,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Usar webhook do Railway através do proxy CORS
             const originalWebhookUrl = 'https://primary-production-38295.up.railway.app/webhook/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
-            webhookUrl = `http://cors-anywhere-production-7ede.up.railway.app/${originalWebhookUrl}`;
+            webhookUrl = `https://cors-anywhere-production-7ede.up.railway.app/${originalWebhookUrl}`;
             
             // Verificar se o URL começa com https://
             if (!webhookUrl.startsWith('https://')) {
