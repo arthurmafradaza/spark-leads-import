@@ -387,8 +387,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedImportTypes.length === 0) {
                 console.log('Nenhum tipo selecionado - mostrando modal de erro');
                 showErrorModal('Por favor, selecione pelo menos um tipo de importação.');
-                return;
-            }
+            return;
+        }
         
             // Determinar fluxo baseado nas seleções
             const hasPolicies = selectedImportTypes.includes('policies');
@@ -1212,11 +1212,12 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (currentStep === 2) {
             // VERIFICAÇÃO EXTRA DE SEGURANÇA - só continuar se realmente estiver na tela correta
             const actuallyInContactForm = singlePolicyStep && singlePolicyStep.style.display !== 'none';
+            const actuallyInAgentForm = singleAgentStep && singleAgentStep.style.display !== 'none';
             const actuallyInUploadForm = (policiesStep && policiesStep.style.display !== 'none') || (agentsStep && agentsStep.style.display !== 'none');
             const actuallyInSubStep = (policyTypeStep && policyTypeStep.style.display !== 'none') || (agentTypeStep && agentTypeStep.style.display !== 'none');
             
             // Se não estiver em nenhuma tela válida, resetar tudo
-            if (!actuallyInContactForm && !actuallyInUploadForm && !actuallyInSubStep) {
+            if (!actuallyInContactForm && !actuallyInAgentForm && !actuallyInUploadForm && !actuallyInSubStep) {
                 console.log('ERRO DE ESTADO DETECTADO - Resetando tudo!');
                 resetForm();
                 return;
@@ -1573,7 +1574,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Resetar a barra de progresso
                     initSingleStepProgressBar();
-                    updateStep(1);
+            updateStep(1);
                     
                     // Forçar reset completo do estado
                     currentStep = 1;
@@ -1756,7 +1757,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Determinar URL do webhook baseado no tipo de envio
             let webhookUrl;
             
-            if (selectedPolicyType === 'single-policy') {
+            if (selectedPolicyType === 'single-policy' || selectedAgentType === 'single-agent') {
                 // FORMULÁRIO MANUAL - webhook específico
                 webhookUrl = 'https://primary-production-38295.up.railway.app/webhook-test/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
             } else {
@@ -2341,9 +2342,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Verificar se o agente foi enviado com CSV
-            if (uploadedFiles.agents && uploadedFiles.agentsCSV) {
-                mensagemAdicional += '<br><br>O arquivo de agentes XLSX foi automaticamente convertido para CSV e enviado com sucesso.';
-            }
+            // Removido mensagem sobre conversão automática
             
             showSuccessModal('Importação concluída com sucesso!' + mensagemAdicional);
         } else {
