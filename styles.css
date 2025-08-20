@@ -97,6 +97,77 @@ header {
     line-height: 1.4;
 }
 
+/* Estilos de manutenção */
+.maintenance-mode {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.maintenance-mode input[type="checkbox"] {
+    cursor: not-allowed;
+}
+
+.maintenance-mode label {
+    cursor: not-allowed;
+    color: var(--text-muted);
+}
+
+.maintenance-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--warning);
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-sm);
+}
+
+.maintenance-notice {
+    margin-top: 20px;
+    padding: 16px;
+    background-color: var(--primary);
+    color: white;
+    border-radius: var(--radius);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.maintenance-notice i {
+    font-size: 18px;
+}
+
+.maintenance-notice p {
+    margin: 0;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* Botão desabilitado durante manutenção */
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: var(--primary) !important;
+    color: var(--white) !important;
+}
+
+.btn:disabled:hover {
+    transform: none;
+    box-shadow: var(--shadow);
+    background-color: var(--primary) !important;
+    color: var(--white) !important;
+}
+
 /* Barra de progresso */
 .progress-bar {
     margin-bottom: 15px;
