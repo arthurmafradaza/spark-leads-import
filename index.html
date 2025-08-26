@@ -55,20 +55,14 @@
                     <div class="form-group">
                             <label>O que você deseja importar hoje? *</label>
                             <div class="checkbox-group" id="importTypeGroup">
-                                <div class="checkbox-option maintenance-mode">
-                                    <input type="checkbox" id="policies-checkbox" name="importTypes" value="policies" disabled>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="policies-checkbox" name="importTypes" value="policies">
                                     <label for="policies-checkbox">Apólices</label>
-                                    <span class="maintenance-badge">Em Manutenção</span>
                                 </div>
-                                <div class="checkbox-option maintenance-mode">
-                                    <input type="checkbox" id="agents-checkbox" name="importTypes" value="agents" disabled>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="agents-checkbox" name="importTypes" value="agents">
                                     <label for="agents-checkbox">Agentes</label>
-                                    <span class="maintenance-badge">Em Manutenção</span>
                                 </div>
-                            </div>
-                            <div class="maintenance-notice">
-                                <i class="fas fa-tools"></i>
-                                <p>Sistema em manutenção no backend. Volte em breve!</p>
                             </div>
                         </div>
                     
@@ -81,11 +75,12 @@
                                     <input type="radio" id="multiple-policies-option" name="policyType" value="multiple-policies">
                                     <label for="multiple-policies-option">Múltiplas Apólices</label>
                                 </div>
-                                <div class="radio-option">
-                                    <input type="radio" id="single-policy-option" name="policyType" value="single-policy">
+                                <div class="radio-option maintenance-mode">
+                                    <input type="radio" id="single-policy-option" name="policyType" value="single-policy" disabled>
                                     <label for="single-policy-option">
                                         Apólice Única
                                     </label>
+                                    <span class="maintenance-badge">Em breve</span>
                                 </div>
                             </div>
                         </div>
@@ -354,11 +349,12 @@
                                     <input type="radio" id="multiple-agents-option" name="agentType" value="multiple-agents">
                                     <label for="multiple-agents-option">Múltiplos Agentes</label>
                                 </div>
-                                <div class="radio-option">
-                                    <input type="radio" id="single-agent-option" name="agentType" value="single-agent">
+                                <div class="radio-option maintenance-mode">
+                                    <input type="radio" id="single-agent-option" name="agentType" value="single-agent" disabled>
                                     <label for="single-agent-option">
                                         Agente Único
                                     </label>
+                                    <span class="maintenance-badge">Em breve</span>
                                 </div>
                             </div>
                         </div>
@@ -461,7 +457,7 @@
                         <button class="btn btn-outline" id="prevBtn" style="display: none;">
                             <i class="fas fa-arrow-left"></i> Anterior
                         </button>
-                        <button class="btn btn-primary btn-next" id="nextBtn" disabled>
+                        <button class="btn btn-primary btn-next" id="nextBtn">
                             Próximo <i class="fas fa-arrow-right"></i>
                         </button>
                         <button class="btn btn-success btn-confirm" id="confirmBtn" style="display: none;">

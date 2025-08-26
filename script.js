@@ -1978,8 +1978,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Determinar URL do webhook baseado no tipo de envio
             let webhookUrl;
             
-            // Webhook do Railway - tentar diferentes abordagens
-            const originalWebhookUrl = 'https://primary-production-38295.up.railway.app/webhook/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
+            // Webhook do Make.com
+            const originalWebhookUrl = 'https://hook.us1.make.com/gerqw9zrak7lhliutaj0196c75ldn9u4';
             webhookUrl = originalWebhookUrl;
             
             // Verificar se o URL começa com https://
