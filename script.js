@@ -1978,7 +1978,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Determinar URL do webhook baseado no tipo de envio
             let webhookUrl;
             
-            // Webhook do Make.com
+            // Webhook do Make.comm
             const originalWebhookUrl = 'https://hook.us1.make.com/gerqw9zrak7lhliutaj0196c75ldn9u4';
             webhookUrl = originalWebhookUrl;
             
