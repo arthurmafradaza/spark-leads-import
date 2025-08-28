@@ -2065,3 +2065,86 @@ footer::before {
         margin-right: 12px;
     }
 }
+
+/* Estilos para o toggle do webhook alternativo */
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.webhook-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.webhook-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    user-select: none;
+    opacity: 0.6;
+}
+
+.webhook-toggle-label:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    opacity: 0.8;
+}
+
+.toggle-icon {
+    font-size: 10px;
+    transition: transform 0.3s ease;
+}
+
+.toggle-text {
+    font-weight: 400;
+    letter-spacing: 0.3px;
+}
+
+/* Estado ativo do toggle */
+#alternativeWebhook:checked + .webhook-toggle-label {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.3);
+    color: rgba(34, 197, 94, 0.8);
+    opacity: 0.8;
+}
+
+#alternativeWebhook:checked + .webhook-toggle-label .toggle-icon {
+    transform: rotate(180deg);
+    color: rgba(34, 197, 94, 0.8);
+}
+
+#alternativeWebhook:checked + .webhook-toggle-label .toggle-text {
+    color: rgba(34, 197, 94, 0.8);
+    font-weight: 500;
+}
+
+/* Responsividade para o footer */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .webhook-toggle-label {
+        font-size: 9px;
+        padding: 3px 6px;
+    }
+    
+    .toggle-icon {
+        font-size: 9px;
+    }
+}
