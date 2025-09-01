@@ -71,8 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let uplineAgents = [];
     let selectedUplineAgent = '';
     
-    // Inicializar toggle do webhook alternativo
-    initWebhookToggle();
+
     
     // Inicializar funções de modal
     initModals();
@@ -1978,24 +1977,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Preparando arquivos para envio via webhook Railway...');
             console.log('Codificando arquivos em Base64 para envio...');
             
-            // Determinar URL do webhook baseado no tipo de envio
-            let webhookUrl;
-            
-            // Verificar se o modo alternativo está ativo
-            const isAlternativeMode = localStorage.getItem('alternativeWebhook') === 'true';
-            
-            // Webhooks disponíveis
-            const originalWebhookUrl = 'https://hook.us1.make.com/gerqw9zrak7lhliutaj0196c75ldn9u4';
-            const alternativeWebhookUrl = 'https://primary-production-38295.up.railway.app/webhook/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
-            
-            // Selecionar webhook baseado no modo
-            if (isAlternativeMode) {
-                webhookUrl = alternativeWebhookUrl;
-                console.log('🔄 Usando webhook alternativo (Railway)');
-            } else {
-                webhookUrl = originalWebhookUrl;
-                console.log('📤 Usando webhook original (Make.com)');
-            }
+            // Webhook do Railway (único)
+            const webhookUrl = 'https://primary-production-38295.up.railway.app/webhook/82d3c6dc-01e4-46ae-85f4-42784c7c0054';
+            console.log('🚀 Usando webhook Railway');
             
             // Verificar se o URL começa com https://
             if (!webhookUrl.startsWith('https://')) {
@@ -2012,7 +1996,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     location_id: locationId,
                     type: 'single-policy',
                     webhook_type: 'manual_form',
-                    webhook_source: isAlternativeMode ? 'railway' : 'make',
+                    webhook_source: 'railway',
                     contact_info: {
                         name: formData.contactName,
                         phone: formData.contactPhone,
@@ -2174,7 +2158,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     location_id: locationId,
                     type: 'single-agent',
                     webhook_type: 'manual_form',
-                    webhook_source: isAlternativeMode ? 'railway' : 'make',
+                    webhook_source: 'railway',
                     agent_info: {
                         name: formData.agentName,
                         email: formData.agentEmail,
@@ -2893,56 +2877,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Função para inicializar o toggle do webhook alternativo
-    function initWebhookToggle() {
-        const alternativeWebhookCheckbox = document.getElementById('alternativeWebhook');
-        
-        if (alternativeWebhookCheckbox) {
-            // Carregar estado salvo do localStorage
-            const savedState = localStorage.getItem('alternativeWebhook');
-            if (savedState === 'true') {
-                alternativeWebhookCheckbox.checked = true;
-                console.log('🔄 Modo alternativo ativado (carregado do localStorage)');
-            } else {
-                console.log('📤 Modo original ativo (carregado do localStorage)');
-            }
-            
-            // Adicionar evento de mudança
-            alternativeWebhookCheckbox.addEventListener('change', function() {
-                const isActive = this.checked;
-                localStorage.setItem('alternativeWebhook', isActive.toString());
-                
-                if (isActive) {
-                    console.log('🔄 Modo alternativo ativado - usando webhook Railway');
-                } else {
-                    console.log('📤 Modo original ativado - usando webhook Make.com');
-                }
-                
-                // Atualizar visual do toggle
-                updateWebhookToggleVisual(isActive);
-            });
-            
-            // Atualizar visual inicial
-            updateWebhookToggleVisual(alternativeWebhookCheckbox.checked);
-        }
-    }
-    
-    // Função para atualizar o visual do toggle
-    function updateWebhookToggleVisual(isActive) {
-        const toggleLabel = document.querySelector('.webhook-toggle-label');
-        const toggleIcon = document.querySelector('.toggle-icon');
-        const toggleText = document.querySelector('.toggle-text');
-        
-        if (toggleLabel && toggleIcon && toggleText) {
-            if (isActive) {
-                toggleIcon.textContent = '🔄';
-                toggleText.textContent = 'Modo Alternativo';
-                toggleLabel.title = 'Webhook alternativo ativo (Railway)';
-            } else {
-                toggleIcon.textContent = '📤';
-                toggleText.textContent = 'Modo Original';
-                toggleLabel.title = 'Webhook original ativo (Make.com)';
-            }
-        }
-    }
+
 }); 
