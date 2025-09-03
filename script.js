@@ -2238,7 +2238,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 location_id: locationId,
                 correct_agent: selectedUplineAgent || '',
                 webhook_type: 'file_upload',
-                webhook_source: isAlternativeMode ? 'railway' : 'make',
+                webhook_source: 'railway',
                 parse_options: {
                     has_headers: true,
                     delimiter: ',',
