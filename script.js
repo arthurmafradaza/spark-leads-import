@@ -26,8 +26,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalOverlay = document.getElementById('modalOverlay');
     const successModal = document.getElementById('successModal');
     const errorModal = document.getElementById('errorModal');
+    const importAlertModal = document.getElementById('importAlertModal');
     const modalOkButton = document.getElementById('modalOkButton');
     const errorModalButton = document.getElementById('errorModalButton');
+    const cancelImportButton = document.getElementById('cancelImportButton');
+    const continueImportButton = document.getElementById('continueImportButton');
     const errorMessage = document.getElementById('errorMessage');
     
     // Upload areas
@@ -156,6 +159,22 @@ document.addEventListener('DOMContentLoaded', function() {
         modalOkButton.addEventListener('click', closeModals);
         errorModalButton.addEventListener('click', closeModals);
         
+        // Configurar botões do modal de alerta de importação
+        cancelImportButton.addEventListener('click', function() {
+            closeModals();
+            // Resetar seleções se cancelar
+            selectedImportTypes = [];
+            document.querySelectorAll('input[name="importTypes"]:checked').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        });
+        
+        continueImportButton.addEventListener('click', function() {
+            closeModals();
+            // Continuar com o fluxo normal após o alerta
+            proceedWithImport();
+        });
+        
         // Fechar modal ao clicar fora (overlay)
         modalOverlay.addEventListener('click', function(e) {
             if (e.target === modalOverlay) {
@@ -215,11 +234,67 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => errorModalButton.focus(), 100);
     }
     
+    // Exibir modal de alerta de importação
+    function showImportAlertModal(hasPolicies, hasAgents) {
+        modalOverlay.classList.add('active');
+        importAlertModal.classList.add('active');
+        successModal.classList.remove('active');
+        errorModal.classList.remove('active');
+        
+        // Centralizar o modal na tela
+        setTimeout(() => {
+            const viewportHeight = window.innerHeight;
+            const modalHeight = importAlertModal.offsetHeight;
+            
+            if (modalHeight > viewportHeight * 0.8) {
+                importAlertModal.style.maxHeight = (viewportHeight * 0.8) + 'px';
+                importAlertModal.style.overflowY = 'auto';
+            } else {
+                importAlertModal.style.maxHeight = '';
+                importAlertModal.style.overflowY = '';
+            }
+        }, 10);
+        
+        // Foco no botão "Continuar" para acessibilidade
+        setTimeout(() => continueImportButton.focus(), 100);
+    }
+    
+    // Função para continuar com a importação após o alerta
+    function proceedWithImport() {
+        // Determinar fluxo baseado nas seleções
+        const hasPolicies = selectedImportTypes.includes('policies');
+        const hasAgents = selectedImportTypes.includes('agents');
+        
+        if (hasPolicies && hasAgents) {
+            // AMBOS SELECIONADOS - vai direto para upload
+            selectedPolicyType = 'multiple-policies'; // Auto-definir como múltiplas
+            adjustProgressBar('import-both');
+            policiesStep.style.display = 'block';
+            clientsUploadGroup.style.display = 'block';
+            importTypeGroup.parentElement.style.display = 'none';
+            updateStep(2);
+            return;
+        } else if (hasPolicies) {
+            // SÓ APÓLICES - vai para sub-etapa de apólices
+            policyTypeStep.style.display = 'block';
+            importTypeGroup.parentElement.style.display = 'none';
+            updateStep(2);
+            return;
+        } else if (hasAgents) {
+            // SÓ AGENTES - vai para sub-etapa de agentes
+            agentTypeStep.style.display = 'block';
+            importTypeGroup.parentElement.style.display = 'none';
+            updateStep(2);
+            return;
+        }
+    }
+    
     // Fechar todos os modais
     function closeModals() {
         modalOverlay.classList.remove('active');
         successModal.classList.remove('active');
         errorModal.classList.remove('active');
+        importAlertModal.classList.remove('active');
     }
     
     // Função para criar tooltips
@@ -395,6 +470,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Determinar fluxo baseado nas seleções
             const hasPolicies = selectedImportTypes.includes('policies');
             const hasAgents = selectedImportTypes.includes('agents');
+            
+            // Mostrar pop-up de alerta antes de prosseguir
+            if (hasPolicies || hasAgents) {
+                showImportAlertModal(hasPolicies, hasAgents);
+                return;
+            }
             
             if (hasPolicies && hasAgents) {
                 // AMBOS SELECIONADOS - vai direto para upload

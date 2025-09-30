@@ -526,6 +526,25 @@
                 </div>
                 <button class="modal-button" id="errorModalButton">OK</button>
             </div>
+            
+            <div class="modal" id="importAlertModal">
+                <div class="modal-header">
+                    <div class="modal-icon warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 class="modal-title">Alerta</h3>
+                </div>
+                <div class="modal-content">
+                    <div class="alert-message">
+                        <p><strong>Somente apólices com status INFORCE serão exportadas.</strong></p>
+                        <p>Agentes ou Clientes sem registros de telefone ou e-mail serão ignorados, os demais do arquivo seguirão normalmente.</p>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-button modal-button-secondary" id="cancelImportButton">Cancelar</button>
+                    <button class="modal-button modal-button-primary" id="continueImportButton">Continuar</button>
+                </div>
+            </div>
         </div>
     </div>
 </body>

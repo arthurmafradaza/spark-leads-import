@@ -1523,6 +1523,13 @@ footer::before {
     font-size: 35px;
 }
 
+/* Estilo para o ícone de aviso */
+.modal-icon.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    font-size: 35px;
+}
+
 /* Ajuste para a validação */
 .validation-header {
     display: flex;
@@ -1575,6 +1582,45 @@ footer::before {
 }
 
 .modal-button:hover {
+    background-color: #367cb8;
+}
+
+/* Estilos para o modal de alerta de importação */
+.alert-message {
+    text-align: left;
+    line-height: 1.6;
+}
+
+.alert-message p {
+    margin-bottom: 10px;
+}
+
+.alert-message p:last-child {
+    margin-bottom: 0;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.modal-button-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.modal-button-secondary:hover {
+    background-color: #5a6268;
+}
+
+.modal-button-primary {
+    background-color: #3e8ed0;
+    color: white;
+}
+
+.modal-button-primary:hover {
     background-color: #367cb8;
 }
 
