@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const importAlertModal = document.getElementById('importAlertModal');
     const modalOkButton = document.getElementById('modalOkButton');
     const errorModalButton = document.getElementById('errorModalButton');
-    const cancelImportButton = document.getElementById('cancelImportButton');
     const continueImportButton = document.getElementById('continueImportButton');
     const errorMessage = document.getElementById('errorMessage');
     
@@ -159,16 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modalOkButton.addEventListener('click', closeModals);
         errorModalButton.addEventListener('click', closeModals);
         
-        // Configurar botões do modal de alerta de importação
-        cancelImportButton.addEventListener('click', function() {
-            closeModals();
-            // Resetar seleções se cancelar
-            selectedImportTypes = [];
-            document.querySelectorAll('input[name="importTypes"]:checked').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-        });
-        
+        // Configurar botão do modal de alerta de importação
         continueImportButton.addEventListener('click', function() {
             closeModals();
             // Continuar com o fluxo normal após o alerta
